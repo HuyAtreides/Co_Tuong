@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
-import Chess from "./Components/chess.jsx";
+import Chess from "./Components/Chess/Chess.jsx";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import rootReducer from "./reducer/rootReducer.js";
