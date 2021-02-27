@@ -4,6 +4,7 @@ import Board from "../Board/Board.jsx";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import Login from "../Login/Login.jsx";
 import Main from "../Main/Main.jsx";
+import Signup from "../Signup/Signup.jsx";
 
 function Chess(props) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,12 +14,15 @@ function Chess(props) {
         <Route path="/login">
           <Login setIsAuthenticated={setIsAuthenticated} />
         </Route>
+        <Route path="/signup">
+          <Signup />
+        </Route>
         <Route path="/">
           <Main isAuthenticated={isAuthenticated} />
         </Route>
       </Switch>
     </Router>
-    // <Board side={["red", "black"]} />;
+    // <Board side={["red", "black"]} />
   );
 }
 

@@ -5,14 +5,13 @@ import Chess from "./Components/Chess/Chess.jsx";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import rootReducer from "./reducer/rootReducer.js";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const store = createStore(rootReducer);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <Chess />
-    </Provider>
-  </React.StrictMode>,
+  <Provider store={store}>
+    <Chess />
+  </Provider>,
   document.getElementById("root")
 );

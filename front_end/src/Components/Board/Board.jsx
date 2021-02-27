@@ -178,7 +178,7 @@ function Board(props) {
         <Piece board={board} handleMouseDown={handleMouseDown} />
       </svg>
       <span>{findMatch}</span>
-      <button onClick={startPlay}>play</button>
+      {/* <button onClick={startPlay}>play</button> */}
     </div>
   );
 }

@@ -1,0 +1,81 @@
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("../../../Fonts/Montserrat-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../../Fonts/Montserrat-Regular.ttf");
+}
+.nav-bar {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+
+  justify-content: space-between;
+  .navbar-toggler {
+    background-color: hsla(0, 0%, 100%, 0.65) !important;
+  }
+  .navbar-brand {
+    font-family: "Montserrat-Bold";
+    .link-brand {
+      color: white !important;
+      font-size: 27px;
+      text-decoration: none;
+    }
+  }
+  .link {
+    font-family: "Montserrat-Regular";
+    text-decoration: none;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    color: hsla(0, 0%, 100%, 0.65) !important;
+    font-weight: bold;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.45);
+      color: white !important;
+    }
+  }
+  #basic-navbar-nav {
+    justify-content: flex-end;
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      @media screen and (max-width: 770px) {
+        & {
+          align-items: center;
+          justify-content: center;
+          a {
+            padding: 15px;
+          }
+        }
+      }
+      .dropdown {
+        min-width: 7rem;
+        .dropdown-toggle {
+          font-family: "Montserrat-Regular";
+          font-weight: bold;
+          color: hsla(0, 0%, 100%, 0.65);
+        }
+        .dropdown-menu {
+          background-color: rgba(0, 0, 0, 0.3);
+          text-align: center;
+          min-width: 7rem;
+          max-width: 7.7rem;
+          .dropdown-item {
+            font-family: "Montserrat-Regular";
+            color: hsla(0, 0%, 100%, 0.65);
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.45);
+              color: white !important;
+            }
+          }
+        }
+        @media screen and (max-width: 770px) {
+          & {
+            min-width: 6.5rem;
+            max-width: 7rem;
+          }
+        }
+      }
+    }
+  }
+}

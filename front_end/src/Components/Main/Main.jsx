@@ -1,12 +1,15 @@
 import React from "react";
 import EntryComponent from "./EntryComponent/EntryComponent.jsx";
+import NavBar from "./NavBar/NavBar.jsx";
+import { Container } from "react-bootstrap";
+import "./Main.scss";
 
 const Main = (props) => {
   return (
-    <div className="main-page">
+    <Container fluid>
       <NavBar />
       <EntryComponent />
-    </div>
+    </Container>
   );
 };
 
