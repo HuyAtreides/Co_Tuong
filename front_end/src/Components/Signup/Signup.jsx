@@ -8,7 +8,6 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
 const Signup = (props) => {
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
@@ -73,6 +72,7 @@ const Signup = (props) => {
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
+
             <Button type="submit">
               {waitForData ? (
                 <Spinner animation="border" variant="dark" />
@@ -81,6 +81,31 @@ const Signup = (props) => {
               )}
             </Button>
           </Form>
+          <p className="seperator">
+            <span></span>
+            <span className="seperator-text">or connect with</span>
+            <span></span>
+          </p>
+          <div className="social-login">
+            <a
+              className="google"
+              href="http://localhost:8080/login-with-google"
+            >
+              <i className="fab fa-google"></i> Google
+            </a>
+            <a
+              className="facebook"
+              href="http://localhost:8080/login-with-facebook"
+            >
+              <i className="fab fa-facebook "></i> Facebook
+            </a>
+            <a
+              className="github"
+              href="http://localhost:8080/login-with-github"
+            >
+              <i className="fab fa-github "></i> Github
+            </a>
+          </div>
         </Col>
       </Row>
     </Container>

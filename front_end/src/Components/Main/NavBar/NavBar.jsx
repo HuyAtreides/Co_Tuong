@@ -6,7 +6,7 @@ import "./NavBar.scss";
 
 const NavBar = (props) => {
   const dispatch = useDispatch();
-  const lang = useSelector((state) => state.gameState.lang);
+  const lang = useSelector((state) => state.appState.lang);
 
   const handleSetLang = (event) => {
     const selectedLang = event.currentTarget.text;

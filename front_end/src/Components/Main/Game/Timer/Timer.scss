@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("../../../../Fonts/Montserrat-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../../../Fonts/Montserrat-Regular.ttf");
+}
+.clock {
+  background-color: #26211b;
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 7px 5px;
+  border-radius: 0.3rem;
+  align-items: center;
+  max-width: 7rem;
+  min-width: 7rem;
+  color: hsla(0, 0%, 100%, 0.65);
+  font-family: "Montserrat-Bold";
+  font-size: 20px;
+}

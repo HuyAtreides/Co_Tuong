@@ -66,7 +66,11 @@ const Login = (props) => {
             </Button>
             <Button className="log-in-as-guest">Log In As Guest</Button>
           </Form>
-          <p className="seperator">or log in with</p>
+          <p className="seperator">
+            <span></span>
+            <span className="seperator-text">or connect with</span>
+            <span></span>
+          </p>
           <div className="social-login">
             <a className="google" href="/login-with-google">
               <i className="fab fa-google"></i> Google

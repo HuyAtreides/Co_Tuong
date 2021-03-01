@@ -1,10 +1,10 @@
 import boardReducer from "./boardReducer.js";
-import gameReducer from "./gameReducer.js";
+import appReducer from "./appReducer.js";
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
   boardState: boardReducer,
-  gameState: gameReducer,
+  appState: appReducer,
 });
 
 export default rootReducer;

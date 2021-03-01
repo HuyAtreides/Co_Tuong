@@ -61,12 +61,23 @@
         }
       }
       .seperator {
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+        display: flex;
+        align-items: center;
         font-family: "Montserrat-Regular";
         font-size: 0.9rem;
         color: #666463;
-        span {
+        & > :first-child,
+        & > :last-child {
           background-color: #dbd9d7;
           height: 0.1rem;
+          flex-grow: 1;
+        }
+        .seperator-text {
+          padding-left: 5px;
+          padding-right: 5px;
         }
       }
       .social-login {

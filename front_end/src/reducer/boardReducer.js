@@ -1,4 +1,4 @@
-import initializeBoard from "../initializeBoard";
+import initializeBoard from "../Components/Main/Game/Board/initializeBoard.js";
 
 const boardReducer = (
   state = {
@@ -10,8 +10,8 @@ const boardReducer = (
     getClicked: false,
     draggable: false,
     capturedPiece: [],
-    findMatch: "",
     turnToMove: false,
+    side: ["red", "black"],
   },
   action
 ) => {
@@ -42,11 +42,13 @@ const boardReducer = (
     case "setCapturedPiece":
       newState.capturedPiece = value;
       return newState;
-    case "setFindMatch":
-      newState.findMatch = value;
-      return newState;
     case "setTurnToMove":
       newState.turnToMove = value;
+      return newState;
+    case "switchSide":
+      const width = +document.querySelector(".board-container").offsetWidth;
+      newState.board = initializeBoard(width / 9, value);
+      newState.side = value;
       return newState;
     default:
       return state;
