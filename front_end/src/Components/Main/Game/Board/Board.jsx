@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import initializeBoard from "./initializeBoard.js";
-import Piece from "../../../Piece/Piece.jsx";
+import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
@@ -16,6 +16,7 @@ function Board() {
   const draggable = useSelector((state) => state.boardState.draggable);
   const capturedPiece = useSelector((state) => state.boardState.capturedPiece);
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
+  const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const side = useSelector((state) => state.boardState.side);
   const socketRef = useRef();
   const svgRef = useRef();
@@ -60,6 +61,16 @@ function Board() {
     }
   };
 
+  const updateCurrentPiece = (newPosition) => {
+    if (newPosition || getClicked) {
+      dispatch({ type: "setTargetDisplay", value: "none" });
+      dispatch({ type: "setCurrentPiece", value: null });
+      dispatch({ type: "setGetClicked", value: false });
+    } else {
+      dispatch({ type: "setGetClicked", value: true });
+    }
+  };
+
   const handleMouseUp = (event) => {
     if (currentPiece) {
       const svg = svgRef.current;
@@ -68,13 +79,7 @@ function Board() {
       const newPosition = currentPiece.setNewPosition(x, y, board, turnToMove);
       updateBoard(newPosition, [curRow, curCol]);
       dispatch({ type: "setDraggable", value: false });
-      if (!getClicked) {
-        dispatch({ type: "setGetClicked", value: true });
-      } else {
-        dispatch({ type: "setTargetDisplay", value: "none" });
-        dispatch({ type: "setCurrentPiece", value: null });
-        dispatch({ type: "setGetClicked", value: false });
-      }
+      updateCurrentPiece(newPosition);
       dispatch({ type: "setBoard", value: [...board] });
       if (newPosition) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
@@ -137,31 +142,35 @@ function Board() {
     });
 
     window.ondragstart = () => false;
-    // socketRef.current = io("http://localhost:8080/play");
+    socketRef.current = io("http://localhost:8080/play");
   }, []);
 
   useEffect(() => {
+    if (findingMatch) {
+      socketRef.current.emit("findMatch", side);
+    }
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;
-    // socketRef.current.on("foundMatch", (opponentId, firstMove) => {
-    //   dispatch({ type: "setTurnToMove", value: firstMove });
-    //   socketRef.current.opponentId = opponentId;
-    //   dispatch({ type: "setFindMatch", value: `foundMatch ${opponentId}` });
-    // });
+    socketRef.current.on("foundMatch", (opponentID, firstMove) => {
+      socketRef.current.opponentID = opponentID;
+      dispatch({ type: "setFindingMatch", value: false });
+      dispatch({ type: "setTurnToMove", value: firstMove });
+    });
 
-    // socketRef.current.on("timeout", () => {
-    //   dispatch({ type: "setFindMatch", value: "no players online" });
-    // });
+    socketRef.current.on("timeout", () => {
+      dispatch({ type: "setFindingMatch", value: null });
+    });
 
-    // socketRef.current.once("move", ([curRow, curCol], [newRow, newCol]) => {
-    //   handleOpponentMove([curRow, curCol], [newRow, newCol]);
-    // });
+    socketRef.current.on("move", ([curRow, curCol], [newRow, newCol]) => {
+      handleOpponentMove([curRow, curCol], [newRow, newCol]);
+    });
 
     return () => {
       window.onmouseup = null;
       window.onmousemove = null;
-      // socketRef.current.removeAllListeners();
+      window.onresize = null;
+      socketRef.current.removeAllListeners();
     };
   });
 

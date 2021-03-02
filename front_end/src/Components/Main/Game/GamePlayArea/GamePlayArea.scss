@@ -1,0 +1,36 @@
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../../../Fonts/Montserrat-Regular.ttf");
+}
+.board-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 390px;
+  min-width: 350px;
+  padding: 0 !important;
+  .player-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .avatar-and-name {
+      display: flex;
+      justify-content: space-between;
+      img {
+        user-select: none;
+        width: 40px;
+        height: 40px;
+      }
+      .user-name {
+        user-select: none;
+        font-family: "Montserrat-Regular";
+        color: hsla(0, 0%, 100%, 0.65);
+        margin-left: 7px;
+        word-break: unset;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}

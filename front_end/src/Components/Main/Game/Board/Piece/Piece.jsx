@@ -2,10 +2,8 @@ import React, { createRef, useRef } from "react";
 
 function Piece(props) {
   const pieces = [];
-
-  for (let i = 0; i < 10; i++)
+  for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 9; j++) {
-      // console.log(props.board[i][j]);
       if (props.board[i][j]) {
         const [row, col] = props.board[i][j].position;
         pieces.push(
@@ -21,6 +19,7 @@ function Piece(props) {
         );
       }
     }
+  }
 
   return <g>{pieces}</g>;
 }
