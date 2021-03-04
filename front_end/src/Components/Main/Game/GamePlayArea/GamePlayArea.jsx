@@ -3,8 +3,18 @@ import { Col } from "react-bootstrap";
 import Timer from "../Timer/Timer.jsx";
 import Board from "../Board/Board";
 import "./GamePlayArea.scss";
+import { useSelector } from "react-redux";
 
 const GamePlayArea = (props) => {
+  const opponentTimeLeftToMove = useSelector(
+    (state) => state.gameState.opponentTimeLeftToMove
+  );
+  const playerTimeLeftToMove = useSelector(
+    (state) => state.gameState.playerTimeLeftToMove
+  );
+  const turnToMove = useSelector((state) => state.boardState.turnToMove);
+  const foundMatch = useSelector((state) => state.gameState.foundMatch);
+
   return (
     <Col
       md={{ span: 4 }}
@@ -20,9 +30,12 @@ const GamePlayArea = (props) => {
           />
           <p className="user-name">Opponent</p>
         </div>
-        <Timer timeLeftToMove={props.timeLeftToMove} />
+        <Timer
+          timeLeftToMove={opponentTimeLeftToMove}
+          turnToMove={foundMatch ? !turnToMove : turnToMove}
+        />
       </div>
-      <Board />
+      <Board setTimer={props.setTimer} />
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
@@ -30,7 +43,7 @@ const GamePlayArea = (props) => {
             <p className="user-name">Phan Gia Huy</p>
           </div>
         </div>
-        <Timer timeLeftToMove={props.timeLeftToMove} />
+        <Timer timeLeftToMove={playerTimeLeftToMove} turnToMove={turnToMove} />
       </div>
     </Col>
   );

@@ -6,6 +6,7 @@ function registerIOEvents(io) {
 
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);
+    EventHandlers.registerSendMessageHandlers(io.of("/play"), socket);
 
     socket.on("disconnect", () => {
       console.log(`${socket.id} disconnect`);

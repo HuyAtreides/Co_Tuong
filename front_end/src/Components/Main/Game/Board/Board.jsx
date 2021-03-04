@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useEffect, useRef } from "react";
 import initializeBoard from "./initializeBoard.js";
 import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { io } from "socket.io-client";
 
-function Board() {
+function Board(props) {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.boardState.board);
   const targetDisplay = useSelector((state) => state.boardState.targetDisplay);
@@ -18,11 +18,31 @@ function Board() {
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const side = useSelector((state) => state.boardState.side);
+  const pause = useSelector((state) => state.gameState.pause);
   const socketRef = useRef();
   const svgRef = useRef();
+  const timerRef = useRef();
+  const messageToSend = useSelector((state) => state.gameState.messageToSend);
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
+  const store = useStore();
+
+  const setTimer = (playerMove) => {
+    if (playerMove) {
+      clearInterval(timerRef.current);
+      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
+      timerRef.current = setInterval(() => {
+        dispatch({ type: "setPlayerTimeLeftToMove" });
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+      dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
+      timerRef.current = setInterval(() => {
+        dispatch({ type: "setOpponentTimeLeftToMove" });
+      }, 1000);
+    }
+  };
 
   const handleMouseDown = (event) => {
     const elementId = event.currentTarget.id;
@@ -58,6 +78,7 @@ function Board() {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
       dispatch({ type: "setTurnToMove", value: !turnToMove });
+      setTimer(true);
     }
   };
 
@@ -83,6 +104,7 @@ function Board() {
       dispatch({ type: "setBoard", value: [...board] });
       if (newPosition) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
+        setTimer(false);
         socketRef.current.emit("opponentMove", newPosition, [curRow, curCol]);
       }
     }
@@ -106,6 +128,7 @@ function Board() {
     dispatch({ type: "setBoard", value: [...board] });
     if (newPosition) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
+      setTimer(false);
       socketRef.current.emit("opponentMove", newPosition, [curRow, curCol]);
     }
   };
@@ -130,6 +153,35 @@ function Board() {
     });
   };
 
+  const registerEventHandler = () => {
+    socketRef.current.on("foundMatch", (opponentID, firstMove) => {
+      socketRef.current.opponentID = opponentID;
+      dispatch({ type: "setFindingMatch", value: false });
+      dispatch({ type: "setTurnToMove", value: firstMove });
+      dispatch({ type: "setFoundMatch", value: true });
+      setTimer(firstMove);
+    });
+
+    socketRef.current.on("incomingMessage", (message) => {
+      const messagesLength = store.getState().gameState.messages.length;
+      const listItemRef = React.createRef();
+      const displayMess = (
+        <li key={messagesLength} ref={listItemRef}>
+          <span>Opponent</span>: {message}
+        </li>
+      );
+      dispatch({ type: "setMessage", value: displayMess });
+    });
+
+    socketRef.current.on("timeout", () => {
+      dispatch({ type: "setFindingMatch", value: null });
+    });
+
+    socketRef.current.on("move", ([curRow, curCol], [newRow, newCol]) => {
+      handleOpponentMove([curRow, curCol], [newRow, newCol]);
+    });
+  };
+
   useEffect(() => {
     const width = document.querySelector(".board-container").offsetWidth;
     dispatch({
@@ -148,23 +200,15 @@ function Board() {
   useEffect(() => {
     if (findingMatch) {
       socketRef.current.emit("findMatch", side);
+    } else if (messageToSend !== null) {
+      socketRef.current.emit("sendMessage", messageToSend);
+      dispatch({ type: "setMessageToSend", value: null });
     }
+
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;
-    socketRef.current.on("foundMatch", (opponentID, firstMove) => {
-      socketRef.current.opponentID = opponentID;
-      dispatch({ type: "setFindingMatch", value: false });
-      dispatch({ type: "setTurnToMove", value: firstMove });
-    });
-
-    socketRef.current.on("timeout", () => {
-      dispatch({ type: "setFindingMatch", value: null });
-    });
-
-    socketRef.current.on("move", ([curRow, curCol], [newRow, newCol]) => {
-      handleOpponentMove([curRow, curCol], [newRow, newCol]);
-    });
+    registerEventHandler();
 
     return () => {
       window.onmouseup = null;

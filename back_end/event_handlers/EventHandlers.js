@@ -12,7 +12,7 @@ class EventHandlers {
     });
   }
 
-  static handleAssignFirstMove(socket, currentSocket, id) {
+  static assignFirstMove(socket, currentSocket, id) {
     currentSocket.opponentID = socket.id;
     socket.opponentID = id;
     if (socket.side !== currentSocket.side) {
@@ -23,7 +23,6 @@ class EventHandlers {
       socket.firstMove = firstMove === 1;
       currentSocket.firstMove = firstMove !== 1;
     }
-    socket.emit("foundMatch", id, socket.firstMove);
   }
 
   static registerFindMatchHandlers(io, socket) {
@@ -31,25 +30,32 @@ class EventHandlers {
       const start = new Date();
       socket.opponentID = null;
       socket.side = side[1];
-      const intervalId = setInterval(() => {
+      const intervalID = setInterval(() => {
         const timeElapse = (new Date() - start) / 1000;
         if (timeElapse > 10) {
           socket.emit("timeout");
-          clearInterval(intervalId);
+          clearInterval(intervalID);
         } else if (socket.opponentID) {
           socket.emit("foundMatch", socket.opponentID, socket.firstMove);
-          clearInterval(intervalId);
+          clearInterval(intervalID);
         } else {
           for (let [id, currentSocket] of io.sockets) {
             if (id !== socket.id && currentSocket.opponentID === null) {
-              EventHandlers.handleAssignFirstMove(socket, currentSocket, id);
+              EventHandlers.assignFirstMove(socket, currentSocket, id);
               socket.emit("foundMatch", id, socket.firstMove);
-              clearInterval(intervalId);
+              clearInterval(intervalID);
               return;
             }
           }
         }
       }, 1000);
+    });
+  }
+
+  static registerSendMessageHandlers(io, socket) {
+    socket.on("sendMessage", (message) => {
+      console.log(`${socket.id} send message`);
+      io.to(socket.opponentID).emit("incomingMessage", message);
     });
   }
 }
