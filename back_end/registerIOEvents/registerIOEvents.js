@@ -9,6 +9,8 @@ function registerIOEvents(io) {
     EventHandlers.registerSendMessageHandlers(io.of("/play"), socket);
     EventHandlers.registerCheckMateHandlers(io.of("/play"), socket);
     EventHandlers.registerDisconnectHandlers(io.of("/play"), socket);
+    EventHandlers.registerDrawHandlers(io.of("/play"), socket);
+    EventHandlers.registerGameFinish(io.of("/play"), socket);
   };
 
   io.of("/play").on("connection", onConnectionHandler);

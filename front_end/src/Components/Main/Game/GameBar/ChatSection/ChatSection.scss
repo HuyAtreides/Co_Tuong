@@ -11,13 +11,6 @@
     right: 0.4rem;
     top: 0.6rem;
   }
-  ::-webkit-scrollbar {
-    width: 5px;
-    background-color: transparent; /* or add it to the track */
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.45);
-  }
   ul {
     position: relative;
     background-color: hsla(0, 0%, 100%, 0.2);
@@ -30,40 +23,11 @@
     min-height: 150px;
     scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
     scrollbar-width: thin;
-    .draw-offer {
+    .announce-new-game {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      p {
-        margin: 5px;
-      }
-      .answer {
-        display: flex;
-        width: 65%;
-        justify-content: space-between;
-        .accept-offer {
-          background-color: #dbd9d7;
-          color: #666463;
-          padding: 7px !important;
-          &:hover {
-            background-color: #bfbeba;
-            color: #666463;
-          }
-        }
-        .decline-offer {
-          padding: 7px !important;
-          background-color: #e6912c;
-          color: white;
-          &:hover {
-            background-color: #d37e19;
-          }
-        }
-      }
-    }
-
-    .announce-new-game {
-      @extend .draw-offer;
       p {
         margin-bottom: 0px;
         text-align: center;

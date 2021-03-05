@@ -69,6 +69,26 @@ class EventHandlers {
       io.to(socket.opponentID).emit("won");
     });
   }
+
+  static registerDrawHandlers(io, socket) {
+    socket.on("sendDrawOffer", () => {
+      io.to(socket.opponentID).emit("receiveDrawOffer");
+    });
+
+    socket.on("declineDrawOffer", () => {
+      io.to(socket.opponentID).emit("decline");
+    });
+
+    socket.on("acceptDrawOffer", () => {
+      io.to(socket.opponentID).emit("accept");
+    });
+  }
+
+  static registerGameFinish(io, socket) {
+    socket.on("gameFinish", (gameResult) => {
+      io.to(socket.opponentID).emit("gameOver", gameResult);
+    });
+  }
 }
 
 module.exports = EventHandlers;

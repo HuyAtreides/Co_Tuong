@@ -29,11 +29,13 @@ const GameResult = () => {
         onClick={handleHideGameResult}
       ></i>
       <div className="won-side">
-        <p>Black Won</p>
+        <p>{gameResult}</p>
       </div>
       <div className="players">
         <div className="player-info">
-          <div className="img-container">
+          <div
+            className={`img-container ${gameResult === "won" ? "winner" : ""}`}
+          >
             <img
               src="https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png"
               alt=""
@@ -44,7 +46,9 @@ const GameResult = () => {
         </div>
         <span>VS</span>
         <div className="player-info">
-          <div className="img-container winner">
+          <div
+            className={`img-container ${gameResult === "won" ? "winner" : ""}`}
+          >
             <img src="/user_profile_pic/P.svg" alt="" />
           </div>
 

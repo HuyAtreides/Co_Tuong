@@ -2,18 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
 import "./ChatSection.scss";
+import renderMessages from "./renderMessages.js";
+import DrawOffer from "./DrawOffer/DrawOffer.jsx";
 
 const ChatSection = () => {
   const dispatch = useDispatch();
-  const offeredADraw = useSelector((state) => state.gameState.offeredADraw);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef();
   const messages = useSelector((state) => state.gameState.messages);
   const [hideChat, setHideChat] = useState(false);
-
-  const handleAcceptOffer = () => {};
-
-  const handleDeclineOffer = () => {};
+  const displayMessages = renderMessages(messages);
 
   const handleOnChange = (event) => {
     setInput(event.currentTarget.value);
@@ -31,10 +29,23 @@ const ChatSection = () => {
     const listItemRef = React.createRef();
     dispatch({
       type: "setMessage",
-      value: { from: "Phan Gia Huy", message: input, ref: listItemRef },
+      value: {
+        from: "Phan Gia Huy:",
+        message: input,
+        className: "",
+        ref: listItemRef,
+      },
     });
     setInput("");
-    dispatch({ type: "setMessageToSend", value: input });
+    dispatch({
+      type: "setMessageToSend",
+      value: {
+        from: "Opponent:",
+        message: input,
+        className: "",
+        ref: listItemRef,
+      },
+    });
     event.preventDefault();
   };
 
@@ -46,14 +57,6 @@ const ChatSection = () => {
         list.scrollTop = lastListItem.offsetTop;
       }
     }
-  });
-
-  const displayMessages = messages.map((element, index) => {
-    return (
-      <li key={`m${index}`} ref={element.ref}>
-        <span>{element.from}</span>: {element.message}
-      </li>
-    );
   });
 
   return hideChat ? (
@@ -69,23 +72,9 @@ const ChatSection = () => {
             <span>Opponent</span> vs <span>Phan Gia Huy</span>
           </p>
         </li>
-        {!offeredADraw ? (
-          <li className="draw-offer">
-            <p>
-              <span>Opponent</span> Offer A Draw
-            </p>
-            <div className="answer">
-              <Button className="accept-offer" onClick={handleAcceptOffer}>
-                Accept <i className="fas fa-check"></i>
-              </Button>
-              <Button className="decline-offer" onClick={handleDeclineOffer}>
-                Decline <i className="fas fa-times"></i>
-              </Button>
-            </div>
-          </li>
-        ) : null}
         {displayMessages}
       </ul>
+      <DrawOffer />
       <form className="chat-input" onSubmit={handleSendMessage}>
         <input
           type="text"

@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from "react";
 import initializeBoard from "./initializeBoard.js";
 import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
-import { useSelector, useDispatch, useStore } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { io } from "socket.io-client";
+import GameResult from "../GamePlayArea/GameResult/GameResult.jsx";
 
 function Board() {
   const dispatch = useDispatch();
@@ -22,9 +23,11 @@ function Board() {
   const svgRef = useRef();
   const timerRef = useRef();
   const messageToSend = useSelector((state) => state.gameState.messageToSend);
+  const sendDrawOffer = useSelector((state) => state.gameState.sendDrawOffer);
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
+  const gameResult = useSelector((state) => state.gameState.gameResult);
 
   const setTimer = (playerMove) => {
     if (playerMove) {
@@ -176,10 +179,9 @@ function Board() {
     });
 
     socketRef.current.on("incomingMessage", (message) => {
-      const listItemRef = React.createRef();
       dispatch({
         type: "setMessage",
-        value: { from: "Opponent", message: message, ref: listItemRef },
+        value: message,
       });
     });
 
@@ -189,6 +191,24 @@ function Board() {
 
     socketRef.current.on("move", ([curRow, curCol], [newRow, newCol]) => {
       handleOpponentMove([curRow, curCol], [newRow, newCol]);
+    });
+
+    socketRef.current.on("receiveDrawOffer", () => {
+      dispatch({ type: "setReceiveDrawOffer", value: true });
+    });
+
+    socketRef.current.on("gameOver", (gameResult) => {
+      const listItemRef = React.createRef();
+      dispatch({ type: "setGameResult", value: gameResult });
+      dispatch({
+        type: "setMessage",
+        value: {
+          type: "draw message",
+          reason: "",
+          className: "game-message",
+          ref: listItemRef,
+        },
+      });
     });
   };
 
@@ -206,15 +226,19 @@ function Board() {
     window.ondragstart = () => false;
     socketRef.current = io("http://localhost:8080/play");
   }, []);
-
+  if (findingMatch) {
+    socketRef.current.emit("findMatch", side);
+  } else if (messageToSend !== null) {
+    socketRef.current.emit("sendMessage", messageToSend);
+    dispatch({ type: "setMessageToSend", value: null });
+  } else if (sendDrawOffer) {
+    socketRef.current.emit("sendDrawOffer");
+    dispatch({ type: "setSendDrawOffer", value: false });
+  } else if (gameResult && gameResult !== false) {
+    socketRef.current.emit("gameFinish", gameResult);
+    dispatch({ type: "setGameResult", value: false });
+  }
   useEffect(() => {
-    if (findingMatch) {
-      socketRef.current.emit("findMatch", side);
-    } else if (messageToSend !== null) {
-      socketRef.current.emit("sendMessage", messageToSend);
-      dispatch({ type: "setMessageToSend", value: null });
-    }
-
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;

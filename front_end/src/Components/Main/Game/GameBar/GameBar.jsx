@@ -1,12 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
 
-const GameBar = (props) => {
+const GameBar = () => {
   const dispatch = useDispatch();
-  const handleOfferDraw = () => {};
+
+  const handleOfferDraw = () => {
+    const listItemRef = React.createRef();
+    dispatch({
+      type: "setMessage",
+      value: {
+        from: "You",
+        message: "Offered A Draw",
+        className: "game-message",
+        ref: listItemRef,
+      },
+    });
+    dispatch({ type: "setSendDrawOffer", value: true });
+  };
+
+  const handleResign = () => {};
 
   return (
     <Col
@@ -23,7 +38,11 @@ const GameBar = (props) => {
           >
             &#189; Draw
           </Button>
-          <Button className="black-side resign-btn" value="resign">
+          <Button
+            className="black-side resign-btn"
+            value="resign"
+            onClick={handleResign}
+          >
             <i className="fas fa-flag"></i> Resign
           </Button>
         </div>

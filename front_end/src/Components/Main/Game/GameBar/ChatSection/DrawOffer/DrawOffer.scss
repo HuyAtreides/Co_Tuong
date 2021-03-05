@@ -1,0 +1,38 @@
+.draw-offer {
+  position: absolute;
+  top: 0px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #312e2b;
+  p {
+    color: #f8f9fa;
+    margin: 5px;
+  }
+  .answer {
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    .accept-offer {
+      background-color: #dbd9d7;
+      color: #666463;
+      padding: 7px !important;
+
+      &:hover {
+        background-color: #bfbeba;
+        color: #666463;
+      }
+    }
+    .decline-offer {
+      padding: 7px !important;
+      background-color: #e6912c;
+      color: white;
+      &:hover {
+        background-color: #d37e19;
+      }
+    }
+  }
+}

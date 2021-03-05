@@ -44,13 +44,6 @@
         width: 40px;
         height: 40px;
       }
-      ::-webkit-scrollbar {
-        width: 5px;
-        background-color: transparent; /* or add it to the track */
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.45);
-      }
       .user-name {
         user-select: none;
         font-family: "Montserrat-Regular";
@@ -59,6 +52,7 @@
         max-width: 110px;
         max-height: 40px;
         overflow: auto;
+        overflow-y: hidden;
         scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
         scrollbar-width: thin;
       }

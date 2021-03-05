@@ -6,10 +6,11 @@ const gameReducer = (
     opponentTimeLeftToMove: 10 * 60,
     playerTimeLeftToMove: 10 * 60,
     pause: false,
-    offeredADraw: false,
-    getADrawOffer: false,
+    receiveDrawOffer: false,
+    sendDrawOffer: false,
     messages: [],
     gameResult: null,
+    broadcastGameResult: false,
     messageToSend: null,
   },
   action
@@ -17,6 +18,12 @@ const gameReducer = (
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
+    case "setBoardcastGameResult":
+      newState.broadcastGameResult = value;
+      return newState;
+    case "setGameResult":
+      newState.gameResult = value;
+      return newState;
     case "setFindingMatch":
       newState.findingMatch = value;
       return newState;
@@ -39,11 +46,11 @@ const gameReducer = (
     case "setPause":
       newState.pause = value;
       return newState;
-    case "setOfferedDraw":
-      newState.offeredADraw = value;
+    case "setReceiveDrawOffer":
+      newState.receiveDrawOffer = value;
       return newState;
-    case "setADrawOffer":
-      newState.getADrawOffer = value;
+    case "setSendDrawOffer":
+      newState.sendDrawOffer = value;
       return newState;
     case "setMessageToSend":
       newState.messageToSend = value;
