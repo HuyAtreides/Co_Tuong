@@ -54,8 +54,19 @@ class EventHandlers {
 
   static registerSendMessageHandlers(io, socket) {
     socket.on("sendMessage", (message) => {
-      console.log(`${socket.id} send message`);
       io.to(socket.opponentID).emit("incomingMessage", message);
+    });
+  }
+
+  static registerCheckMateHandlers(io, socket) {
+    socket.on("checkmate", () => {
+      io.to(socket.opponentID).emit("won");
+    });
+  }
+
+  static registerDisconnectHandlers(io, socket) {
+    socket.on("disconnect", () => {
+      io.to(socket.opponentID).emit("won");
     });
   }
 }

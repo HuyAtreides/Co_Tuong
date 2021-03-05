@@ -6,7 +6,7 @@ import { useSelector, useDispatch, useStore } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { io } from "socket.io-client";
 
-function Board(props) {
+function Board() {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.boardState.board);
   const targetDisplay = useSelector((state) => state.boardState.targetDisplay);
@@ -14,7 +14,6 @@ function Board(props) {
   const currentPiece = useSelector((state) => state.boardState.currentPiece);
   const getClicked = useSelector((state) => state.boardState.getClicked);
   const draggable = useSelector((state) => state.boardState.draggable);
-  const capturedPiece = useSelector((state) => state.boardState.capturedPiece);
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const side = useSelector((state) => state.boardState.side);
@@ -26,20 +25,19 @@ function Board(props) {
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
-  const store = useStore();
 
   const setTimer = (playerMove) => {
     if (playerMove) {
       clearInterval(timerRef.current);
       dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
       timerRef.current = setInterval(() => {
-        dispatch({ type: "setPlayerTimeLeftToMove" });
+        dispatch({ type: "setPlayerTimeLeftToMove", value: null });
       }, 1000);
     } else {
       clearInterval(timerRef.current);
       dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
       timerRef.current = setInterval(() => {
-        dispatch({ type: "setOpponentTimeLeftToMove" });
+        dispatch({ type: "setOpponentTimeLeftToMove", value: null });
       }, 1000);
     }
   };
@@ -66,8 +64,7 @@ function Board(props) {
     if (newPostion) {
       const [capture, newRow, newCol] = newPostion;
       if (capture) {
-        capturedPiece.push(board[newRow][newCol]);
-        dispatch({ type: "setCapturedPiece", value: [...capturedPiece] });
+        dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
       }
       board[curRow][curCol] = 0;
       board[newRow][newCol] = currentPiece;
@@ -77,7 +74,7 @@ function Board(props) {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      dispatch({ type: "setTurnToMove", value: !turnToMove });
+      // dispatch({ type: "setTurnToMove", value: !turnToMove });
       setTimer(true);
     }
   };
@@ -141,6 +138,22 @@ function Board(props) {
     }
   };
 
+  const constructNewBoard = (width) => {
+    const newBoard = board.map((row) => {
+      const newRow = row.map((piece) => {
+        if (piece) {
+          const [row, col] = piece.position;
+          piece.width = width;
+          piece.translate = `translate(${width * col}, ${width * row})`;
+          return piece;
+        }
+        return 0;
+      });
+      return newRow;
+    });
+    return newBoard;
+  };
+
   const handleResize = () => {
     const width = document.querySelector(".board-container").offsetWidth;
     dispatch({
@@ -149,7 +162,7 @@ function Board(props) {
     });
     dispatch({
       type: "setBoard",
-      value: initializeBoard(width / 9, side),
+      value: constructNewBoard(width / 9),
     });
   };
 
@@ -163,14 +176,11 @@ function Board(props) {
     });
 
     socketRef.current.on("incomingMessage", (message) => {
-      const messagesLength = store.getState().gameState.messages.length;
       const listItemRef = React.createRef();
-      const displayMess = (
-        <li key={messagesLength} ref={listItemRef}>
-          <span>Opponent</span>: {message}
-        </li>
-      );
-      dispatch({ type: "setMessage", value: displayMess });
+      dispatch({
+        type: "setMessage",
+        value: { from: "Opponent", message: message, ref: listItemRef },
+      });
     });
 
     socketRef.current.on("timeout", () => {
@@ -230,8 +240,8 @@ function Board(props) {
     >
       <image
         href="/images/Target_Icon/target.gif"
-        width={boardSize[0] / 9}
-        height={boardSize[0] / 9}
+        width={boardSize[0] / 9 - 3}
+        height={boardSize[0] / 9 - 3}
         style={{ display: targetDisplay }}
         transform={targetTranslate}
       ></image>
@@ -240,4 +250,4 @@ function Board(props) {
   );
 }
 
-export default Board;
+export default React.memo(Board);

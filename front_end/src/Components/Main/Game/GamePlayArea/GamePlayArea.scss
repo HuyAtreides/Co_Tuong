@@ -3,6 +3,7 @@
   src: url("../../../../Fonts/Montserrat-Regular.ttf");
 }
 .board-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -11,8 +12,30 @@
   padding: 0 !important;
   .player-area {
     display: flex;
-    justify-content: space-between;
+
     align-items: center;
+    ::-webkit-scrollbar {
+      width: 5px;
+      background-color: transparent; /* or add it to the track */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.45);
+    }
+    .captured-pieces {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-height: 40px;
+      flex-wrap: wrap;
+
+      overflow: auto;
+      scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
+      scrollbar-width: thin;
+      p {
+        margin: 0;
+      }
+    }
     .avatar-and-name {
       display: flex;
       justify-content: space-between;
@@ -21,15 +44,23 @@
         width: 40px;
         height: 40px;
       }
+      ::-webkit-scrollbar {
+        width: 5px;
+        background-color: transparent; /* or add it to the track */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.45);
+      }
       .user-name {
         user-select: none;
         font-family: "Montserrat-Regular";
         color: hsla(0, 0%, 100%, 0.65);
         margin-left: 7px;
-        word-break: unset;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        max-width: 110px;
+        max-height: 40px;
+        overflow: auto;
+        scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
+        scrollbar-width: thin;
       }
     }
   }

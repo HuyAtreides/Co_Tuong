@@ -61,17 +61,23 @@ const GameController = (props) => {
             className="time-select-table"
             style={{ display: props.timeSelectorDisplay }}
           >
-            <Button className="1-min" onClick={handleSelectTime} value="1">
+            <Button onClick={handleSelectTime} value="1">
               1 min
             </Button>
-            <Button className="3-min" onClick={handleSelectTime} value="3">
+            <Button onClick={handleSelectTime} value="3">
               3 min
             </Button>
-            <Button className="5-min" onClick={handleSelectTime} value="5">
+            <Button onClick={handleSelectTime} value="5">
               5 min
             </Button>
-            <Button className="10-min" onClick={handleSelectTime} value="10">
+            <Button onClick={handleSelectTime} value="10">
               10 min
+            </Button>
+            <Button onClick={handleSelectTime} value="15">
+              15 min
+            </Button>
+            <Button onClick={handleSelectTime} value="30">
+              30 min
             </Button>
           </div>
         </div>

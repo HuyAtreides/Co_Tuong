@@ -28,13 +28,11 @@ const ChatSection = () => {
   };
 
   const handleSendMessage = (event) => {
-    const ref = React.createRef();
-    const displayMess = (
-      <li key={messages.length} ref={ref}>
-        <span>Phan Gia Huy</span>: {input}
-      </li>
-    );
-    dispatch({ type: "setMessage", value: displayMess });
+    const listItemRef = React.createRef();
+    dispatch({
+      type: "setMessage",
+      value: { from: "Phan Gia Huy", message: input, ref: listItemRef },
+    });
     setInput("");
     dispatch({ type: "setMessageToSend", value: input });
     event.preventDefault();
@@ -44,8 +42,18 @@ const ChatSection = () => {
     if (messages.length > 0) {
       const list = messagesContainerRef.current;
       const lastListItem = messages[messages.length - 1].ref.current;
-      if (lastListItem) list.scrollTop = lastListItem.offsetTop;
+      if (lastListItem) {
+        list.scrollTop = lastListItem.offsetTop;
+      }
     }
+  });
+
+  const displayMessages = messages.map((element, index) => {
+    return (
+      <li key={`m${index}`} ref={element.ref}>
+        <span>{element.from}</span>: {element.message}
+      </li>
+    );
   });
 
   return hideChat ? (
@@ -57,11 +65,11 @@ const ChatSection = () => {
       <i className="fas fa-times hide-chat" onClick={handleHideChat}></i>
       <ul className="message-container" ref={messagesContainerRef}>
         <li className="announce-new-game">
-          <p className="versus">
+          <p className="versus game-message">
             <span>Opponent</span> vs <span>Phan Gia Huy</span>
           </p>
         </li>
-        {offeredADraw ? (
+        {!offeredADraw ? (
           <li className="draw-offer">
             <p>
               <span>Opponent</span> Offer A Draw
@@ -76,7 +84,7 @@ const ChatSection = () => {
             </div>
           </li>
         ) : null}
-        {messages}
+        {displayMessages}
       </ul>
       <form className="chat-input" onSubmit={handleSendMessage}>
         <input

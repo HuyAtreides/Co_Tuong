@@ -4,6 +4,7 @@ import Timer from "../Timer/Timer.jsx";
 import Board from "../Board/Board";
 import "./GamePlayArea.scss";
 import { useSelector } from "react-redux";
+import GameResult from "./GameResult/GameResult.jsx";
 
 const GamePlayArea = (props) => {
   const opponentTimeLeftToMove = useSelector(
@@ -14,6 +15,9 @@ const GamePlayArea = (props) => {
   );
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
+  const capturedPieces = useSelector(
+    (state) => state.boardState.capturedPieces
+  );
 
   return (
     <Col
@@ -30,6 +34,19 @@ const GamePlayArea = (props) => {
           />
           <p className="user-name">Opponent</p>
         </div>
+        <div className="captured-pieces">
+          {capturedPieces.map((element) => {
+            if (element.side === element.choosenSide[1])
+              return (
+                <img
+                  src={`/images/Pieces/${element.name}.png`}
+                  style={{ width: "27px" }}
+                  key={`c${element.position[0]}${element.position[1]}`}
+                ></img>
+              );
+            return null;
+          })}
+        </div>
         <Timer
           timeLeftToMove={opponentTimeLeftToMove}
           turnToMove={foundMatch ? !turnToMove : turnToMove}
@@ -43,8 +60,22 @@ const GamePlayArea = (props) => {
             <p className="user-name">Phan Gia Huy</p>
           </div>
         </div>
+        <div className="captured-pieces">
+          {capturedPieces.map((element, index) => {
+            if (element.side === element.choosenSide[0])
+              return (
+                <img
+                  src={`/images/Pieces/${element.name}.png`}
+                  style={{ width: "27px" }}
+                  key={`c${index}`}
+                ></img>
+              );
+            return null;
+          })}
+        </div>
         <Timer timeLeftToMove={playerTimeLeftToMove} turnToMove={turnToMove} />
       </div>
+      <GameResult />
     </Col>
   );
 };

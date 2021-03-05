@@ -120,8 +120,11 @@ class Piece {
     if (board) {
       this.setPosition(null, yB, xB);
       const tmp = board[yA][xA];
+      if (board[yB][xB])
+        dispatch({ type: "setCapturedPieces", value: board[yB][xB] });
       board[yA][xA] = 0;
       board[yB][xB] = tmp;
+      dispatch({ type: "setTurnToMove", value: true });
       dispatch({ type: "setBoard", value: [...board] });
     }
   }

@@ -1,0 +1,81 @@
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("../../../../../Fonts/Montserrat-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../../../../Fonts/Montserrat-Regular.ttf");
+}
+
+.game-result {
+  position: absolute;
+  top: 4rem;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 0.3rem;
+  animation: appear 0.4s linear 0s 1;
+  @keyframes appear {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  .hide-game-result {
+    cursor: pointer;
+    position: absolute;
+    right: 0.4rem;
+    top: 0.6rem;
+  }
+  .won-side {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Montserrat-Bold";
+    color: white;
+    background-color: #666463;
+  }
+  .players {
+    margin-top: 7px;
+    width: 75%;
+    align-self: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .img-container {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        border-radius: 0.6rem;
+        img {
+          width: 80%;
+        }
+      }
+      .winner {
+        background-color: #85a94e;
+      }
+      p {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #a7a6a2;
+        font-size: 1rem;
+        font-family: "Montserrat-Regular";
+      }
+    }
+  }
+}

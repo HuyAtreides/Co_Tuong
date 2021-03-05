@@ -7,10 +7,8 @@ function registerIOEvents(io) {
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);
     EventHandlers.registerSendMessageHandlers(io.of("/play"), socket);
-
-    socket.on("disconnect", () => {
-      console.log(`${socket.id} disconnect`);
-    });
+    EventHandlers.registerCheckMateHandlers(io.of("/play"), socket);
+    EventHandlers.registerDisconnectHandlers(io.of("/play"), socket);
   };
 
   io.of("/play").on("connection", onConnectionHandler);

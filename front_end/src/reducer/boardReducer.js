@@ -9,7 +9,7 @@ const boardReducer = (
     currentPiece: null,
     getClicked: false,
     draggable: false,
-    capturedPiece: [],
+    capturedPieces: [],
     turnToMove: false,
     side: ["red", "black"],
   },
@@ -39,8 +39,10 @@ const boardReducer = (
     case "setDraggable":
       newState.draggable = value;
       return newState;
-    case "setCapturedPiece":
-      newState.capturedPiece = value;
+    case "setCapturedPieces":
+      const newCapturedPieces = [...newState.capturedPieces];
+      newCapturedPieces.push(value);
+      newState.capturedPieces = newCapturedPieces;
       return newState;
     case "setTurnToMove":
       newState.turnToMove = value;

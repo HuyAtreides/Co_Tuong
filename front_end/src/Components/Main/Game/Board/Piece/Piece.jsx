@@ -9,9 +9,9 @@ function Piece(props) {
         pieces.push(
           <image
             id={`p${row}${col}`}
-            href={`/images/Pieces/${props.board[i][j].name}.gif`}
-            width={props.board[i][j].width}
-            height={props.board[i][j].width}
+            href={`/images/Pieces/${props.board[i][j].name}.png`}
+            width={props.board[i][j].width - 3}
+            height={props.board[i][j].width - 3}
             transform={props.board[i][j].translate}
             key={`${i}${j}`}
             onMouseDown={props.handleMouseDown}

@@ -9,6 +9,7 @@ const gameReducer = (
     offeredADraw: false,
     getADrawOffer: false,
     messages: [],
+    gameResult: null,
     messageToSend: null,
   },
   action
@@ -28,13 +29,11 @@ const gameReducer = (
       newState.opponentTimeLeftToMove = value * 60;
       return newState;
     case "setPlayerTimeLeftToMove":
-      if (value === "restart")
-        newState.playerTimeLeftToMove = newState.time * 60;
+      if (value !== null) newState.playerTimeLeftToMove = newState.time * 60;
       else newState.playerTimeLeftToMove -= 1;
       return newState;
     case "setOpponentTimeLeftToMove":
-      if (value === "restart")
-        newState.opponentTimeLeftToMove = newState.time * 60;
+      if (value !== null) newState.opponentTimeLeftToMove = newState.time * 60;
       else newState.opponentTimeLeftToMove -= 1;
       return newState;
     case "setPause":
