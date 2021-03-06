@@ -28,7 +28,6 @@
       align-items: center;
       max-height: 40px;
       flex-wrap: wrap;
-
       overflow: auto;
       scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
       scrollbar-width: thin;
@@ -50,9 +49,9 @@
         color: hsla(0, 0%, 100%, 0.65);
         margin-left: 7px;
         max-width: 110px;
-        max-height: 40px;
+        min-width: 83px;
+        max-height: 24px;
         overflow: auto;
-        overflow-y: hidden;
         scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
         scrollbar-width: thin;
       }

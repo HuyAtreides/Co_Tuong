@@ -14,6 +14,7 @@ const GamePlayArea = (props) => {
     (state) => state.gameState.playerTimeLeftToMove
   );
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
+  const gameResult = useSelector((state) => state.gameState.gameResult);
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
   const capturedPieces = useSelector(
     (state) => state.boardState.capturedPieces
@@ -49,7 +50,7 @@ const GamePlayArea = (props) => {
         </div>
         <Timer
           timeLeftToMove={opponentTimeLeftToMove}
-          turnToMove={foundMatch ? !turnToMove : turnToMove}
+          turnToMove={foundMatch && !gameResult ? !turnToMove : turnToMove}
         />
       </div>
       <Board setTimer={props.setTimer} />

@@ -66,6 +66,7 @@ class EventHandlers {
 
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", () => {
+      console.log(socket.opponentID + "disconnect");
       io.to(socket.opponentID).emit("won");
     });
   }
@@ -86,7 +87,7 @@ class EventHandlers {
 
   static registerGameFinish(io, socket) {
     socket.on("gameFinish", (gameResult) => {
-      io.to(socket.opponentID).emit("gameOver", gameResult);
+      io.to(socket.opponentID).emit("draw", gameResult);
     });
   }
 }

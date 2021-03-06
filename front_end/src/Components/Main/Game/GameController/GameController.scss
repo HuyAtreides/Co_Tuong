@@ -36,13 +36,13 @@
         background-color: hsla(0, 0%, 100%, 0.2);
         width: 45%;
         font-size: 1.5rem;
-        &:hover {
+        &:hover:enabled {
           background-color: red;
         }
       }
       .black-side {
         @extend .red-side;
-        &:hover {
+        &:hover:enabled {
           background-color: black;
         }
       }
@@ -51,7 +51,7 @@
       font-size: 1.5rem;
       background-color: #7fa650;
       width: 100%;
-      &:hover {
+      &:hover:enabled {
         background-color: #95bb4a !important;
       }
     }
@@ -74,7 +74,7 @@
       @extend .play;
       color: hsla(0, 0%, 100%, 0.65);
       background-color: rgba(2, 1, 1, 0.18);
-      &:hover {
+      &:hover:enabled {
         background-color: rgba(2, 1, 1, 0.1) !important;
         color: white;
       }
@@ -95,7 +95,7 @@
         width: 100%;
         background-color: hsla(0, 0%, 100%, 0.1);
         color: hsla(0, 0%, 100%, 0.65);
-        &:hover {
+        &:hover:enabled {
           background-color: hsla(0, 0%, 100%, 0.2);
           color: #ffffff;
         }

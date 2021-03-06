@@ -23,8 +23,10 @@
     .select-side-container {
       .draw-btn,
       .resign-btn {
+        color: hsla(0, 0%, 100%, 0.65);
+        background-color: hsla(0, 0%, 100%, 0.2);
         font-size: 1.2rem;
-        &:hover {
+        &:hover:enabled {
           color: #26211b !important;
           background-color: white !important;
         }
@@ -36,120 +38,13 @@
       }
     }
   }
-  // .chat-section {
-  //   position: relative;
-  //   width: 100%;
-  //   display: flex;
-  //   flex-direction: column;
-  //   .hide-chat {
-  //     cursor: pointer;
-  //     position: absolute;
-  //     color: #312e2b;
-  //     z-index: 1000;
-  //     right: 0.4rem;
-  //     top: 0.6rem;
-  //   }
-  //   ul {
-  //     position: relative;
-  //     background-color: hsla(0, 0%, 100%, 0.2);
-  //     width: 100%;
-  //     overflow: auto;
-  //     scroll-padding-top: 100%;
-  //     margin: 0px;
-  //     padding-left: 5px;
-  //     list-style: none;
-  //     height: 170px;
-  //     min-height: 150px;
-  //     scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
-  //     scrollbar-width: thin;
-  //     .draw-offer {
-  //       display: flex;
-  //       flex-direction: column;
-  //       justify-content: center;
-  //       align-items: center;
-  //       .answer {
-  //         display: flex;
-  //         width: 65%;
-  //         justify-content: space-between;
-  //         .accept-offer {
-  //           background-color: #dbd9d7;
-  //           color: #666463;
-  //           padding: 0.5rem !important;
-  //           &:hover {
-  //             background-color: #bfbeba;
-  //             color: #666463;
-  //           }
-  //         }
-  //         .decline-offer {
-  //           padding: 0.5rem !important;
-  //           background-color: #e6912c;
-  //           color: white;
-  //           &:hover {
-  //             background-color: #d37e19;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     .announce-new-game {
-  //       @extend .draw-offer;
-  //       p {
-  //         margin-bottom: 0px;
-  //         text-align: center;
-  //       }
-  //     }
-  //     .game-message {
-  //       color: #e6912c !important;
-  //     }
-
-  //     li {
-  //       flex-shrink: unset;
-  //       text-align: left;
-  //       margin-top: 7px;
-  //       color: hsla(0, 0%, 100%, 0.65);
-  //       font-family: "Montserrat-Regular";
-  //       span {
-  //         font-family: "Montserrat-Bold";
-  //       }
-  //     }
-  //   }
-
-  //   .chat-input {
-  //     flex-grow: 1;
-  //     display: flex;
-  //     width: 100%;
-  //     input {
-  //       word-break: break-all;
-  //       border: none;
-  //       width: 80%;
-  //       font-size: 1.2rem;
-  //       font-family: "Montserrat-Regular";
-  //       color: hsla(0, 0%, 100%, 0.65);
-  //       background-color: #312e2b;
-  //       &:focus {
-  //         outline: none;
-  //       }
-  //     }
-  //     .send-btn {
-  //       width: 20%;
-  //       font-family: "Montserrat-Bold";
-  //       border-radius: 0px !important;
-  //       padding: 0 !important;
-  //       background-color: hsla(0, 0%, 100%, 0.1);
-  //       color: hsla(0, 0%, 100%, 0.65);
-  //       &:hover {
-  //         color: #26211b !important;
-  //         background-color: white !important;
-  //       }
-  //     }
-  //   }
-  // }
   .exit-game {
     width: 100%;
     font-size: 1.2rem;
     font-family: "Montserrat-Bold";
     color: #db4437;
     background-color: hsla(0, 0%, 100%, 0.2);
-    &:hover {
+    &:hover:enabled {
       color: #26211b;
       background-color: white;
     }

@@ -27,10 +27,19 @@ function Board() {
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
-  const gameResult = useSelector((state) => state.gameState.gameResult);
+  const sendGameResult = useSelector((state) => state.gameState.sendGameResult);
+  const socket = useSelector((state) => state.appState.socket);
+  const currentTimerID = useSelector((state) => state.appState.currentTimerID);
 
-  const setTimer = (playerMove) => {
-    if (playerMove) {
+  const setTimer = (playerTurn, gameFinish) => {
+    if (gameFinish) {
+      clearInterval(timerRef.current);
+      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
+      dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
+      dispatch({ type: "setTurnToMove", value: false });
+      return;
+    }
+    if (playerTurn) {
       clearInterval(timerRef.current);
       dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
       timerRef.current = setInterval(() => {
@@ -43,6 +52,7 @@ function Board() {
         dispatch({ type: "setOpponentTimeLeftToMove", value: null });
       }, 1000);
     }
+    dispatch({ type: "setCurrentTimerID", value: timerRef.current });
   };
 
   const handleMouseDown = (event) => {
@@ -77,7 +87,6 @@ function Board() {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      // dispatch({ type: "setTurnToMove", value: !turnToMove });
       setTimer(true);
     }
   };
@@ -197,7 +206,7 @@ function Board() {
       dispatch({ type: "setReceiveDrawOffer", value: true });
     });
 
-    socketRef.current.on("gameOver", (gameResult) => {
+    socketRef.current.on("draw", (gameResult) => {
       const listItemRef = React.createRef();
       dispatch({ type: "setGameResult", value: gameResult });
       dispatch({
@@ -209,23 +218,25 @@ function Board() {
           ref: listItemRef,
         },
       });
+      setTimer(null, true);
     });
   };
 
   useEffect(() => {
     const width = document.querySelector(".board-container").offsetWidth;
-    dispatch({
-      type: "setBoardSize",
-      value: [width, width / (521 / 577)],
-    });
-    dispatch({
-      type: "setBoard",
-      value: initializeBoard(width / 9, side),
-    });
+    dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
+    dispatch({ type: "setBoard", value: constructNewBoard(width / 9) });
 
     window.ondragstart = () => false;
-    socketRef.current = io("http://localhost:8080/play");
+    if (socket) {
+      socketRef.current = socket;
+      if (currentTimerID) timerRef.current = currentTimerID;
+    } else {
+      socketRef.current = io("http://localhost:8080/play");
+      dispatch({ type: "setSocket", value: socketRef.current });
+    }
   }, []);
+
   if (findingMatch) {
     socketRef.current.emit("findMatch", side);
   } else if (messageToSend !== null) {
@@ -234,10 +245,12 @@ function Board() {
   } else if (sendDrawOffer) {
     socketRef.current.emit("sendDrawOffer");
     dispatch({ type: "setSendDrawOffer", value: false });
-  } else if (gameResult && gameResult !== false) {
-    socketRef.current.emit("gameFinish", gameResult);
-    dispatch({ type: "setGameResult", value: false });
+  } else if (sendGameResult) {
+    socketRef.current.emit("gameFinish", sendGameResult);
+    setTimer(null, true);
+    dispatch({ type: "setSendGameResult", value: false });
   }
+
   useEffect(() => {
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;

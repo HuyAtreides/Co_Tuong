@@ -10,7 +10,7 @@ const gameReducer = (
     sendDrawOffer: false,
     messages: [],
     gameResult: null,
-    broadcastGameResult: false,
+    sendGameResult: false,
     messageToSend: null,
   },
   action
@@ -18,8 +18,8 @@ const gameReducer = (
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
-    case "setBoardcastGameResult":
-      newState.broadcastGameResult = value;
+    case "setSendGameResult":
+      newState.sendGameResult = value;
       return newState;
     case "setGameResult":
       newState.gameResult = value;

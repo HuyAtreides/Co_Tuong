@@ -12,11 +12,13 @@ const DrawOffer = (props) => {
     const listItemRef = React.createRef();
     dispatch({ type: "setReceiveDrawOffer", value: false });
     dispatch({ type: "setGameResult", value: "Draw" });
+    dispatch({ type: "setSendGameResult", value: "Draw" });
     dispatch({
       type: "setMessage",
       value: {
-        type: "draw message",
-        reason: "",
+        type: "game result message",
+        winner: "",
+        reason: "Game Draw By Agreement",
         className: "game-message",
         ref: listItemRef,
       },

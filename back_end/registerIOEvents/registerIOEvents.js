@@ -2,6 +2,9 @@ const EventHandlers = require("../event_handlers/EventHandlers.js");
 
 function registerIOEvents(io) {
   const onConnectionHandler = (socket) => {
+    for (let [id, currentSocket] of io.of("/play").sockets) {
+      console.log([id, currentSocket.opponentID]);
+    }
     console.log(`${socket.id} connect`);
 
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
