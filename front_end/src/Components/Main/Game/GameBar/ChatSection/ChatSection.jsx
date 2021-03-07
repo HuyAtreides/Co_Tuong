@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
 import "./ChatSection.scss";
@@ -7,6 +7,7 @@ import DrawOffer from "./DrawOffer/DrawOffer.jsx";
 
 const ChatSection = () => {
   const dispatch = useDispatch();
+  const socket = useSelector((state) => state.appState.socket);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef();
   const messages = useSelector((state) => state.gameState.messages);
@@ -27,25 +28,19 @@ const ChatSection = () => {
 
   const handleSendMessage = (event) => {
     const listItemRef = React.createRef();
+    const message = {
+      from: "Phan Gia Huy:",
+      message: input,
+      className: "",
+      ref: listItemRef,
+    };
     dispatch({
       type: "setMessage",
-      value: {
-        from: "Phan Gia Huy:",
-        message: input,
-        className: "",
-        ref: listItemRef,
-      },
+      value: message,
     });
+    messages.from = "Opponent:";
     setInput("");
-    dispatch({
-      type: "setMessageToSend",
-      value: {
-        from: "Opponent:",
-        message: input,
-        className: "",
-        ref: listItemRef,
-      },
-    });
+    socket.emit("sendMessage", message);
     event.preventDefault();
   };
 
@@ -57,6 +52,13 @@ const ChatSection = () => {
         list.scrollTop = lastListItem.offsetTop;
       }
     }
+    socket.on("incomingMessage", (message) => {
+      dispatch({ type: "setMessage", value: message });
+    });
+
+    return () => {
+      socket.removeAllListeners("incomingMessage");
+    };
   });
 
   return hideChat ? (

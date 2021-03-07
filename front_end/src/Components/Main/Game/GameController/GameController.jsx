@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameController.scss";
 import { useDispatch, useSelector } from "react-redux";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
+  const socket = useSelector((state) => state.appState.socket);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const time = useSelector((state) => state.gameState.time);
+  const side = useSelector((state) => state.boardState.side);
 
   const handlePlay = () => {
-    if (!findingMatch) dispatch({ type: "setFindingMatch", value: true });
+    if (!findingMatch) {
+      socket.emit("findMatch", side);
+      dispatch({ type: "setFindingMatch", value: true });
+    }
   };
 
   const handleSelectTime = (event) => {
@@ -26,6 +31,16 @@ const GameController = (props) => {
       dispatch({ type: "switchSide", value: ["red", "black"] });
     else dispatch({ type: "switchSide", value: ["black", "red"] });
   };
+
+  useEffect(() => {
+    socket.on("timeout", () => {
+      dispatch({ type: "setFindingMatch", value: null });
+    });
+
+    return () => {
+      socket.removeAllListeners("timeout");
+    };
+  });
 
   return (
     <Col md={{ span: 4 }} xs={{ span: 10 }} className="game-controller mb-3">

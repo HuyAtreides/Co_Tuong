@@ -1,20 +1,19 @@
 import initializeBoard from "../Components/Main/Game/Board/initializeBoard.js";
 
-const boardReducer = (
-  state = {
-    board: initializeBoard(520 / 9, ["red", "black"]),
-    targetDisplay: "none",
-    targetTranslate: "translate(0, 0)",
-    boardSize: [520, 520 / (521 / 577)],
-    currentPiece: null,
-    getClicked: false,
-    draggable: false,
-    capturedPieces: [],
-    turnToMove: false,
-    side: ["red", "black"],
-  },
-  action
-) => {
+const defaultState = {
+  board: initializeBoard(520 / 9, ["red", "black"]),
+  targetDisplay: "none",
+  targetTranslate: "translate(0, 0)",
+  boardSize: [520, 520 / (521 / 577)],
+  currentPiece: null,
+  getClicked: false,
+  draggable: false,
+  capturedPieces: [],
+  turnToMove: false,
+  side: ["red", "black"],
+};
+
+const boardReducer = (state = defaultState, action) => {
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
@@ -52,6 +51,10 @@ const boardReducer = (
       newState.board = initializeBoard(width / 9, value);
       newState.side = value;
       return newState;
+    case "resetBoardState":
+      defaultState.board = initializeBoard(value / 9, ["red", "black"]);
+      defaultState.boardSize = [value, value / (521 / 577)];
+      return defaultState;
     default:
       return state;
   }

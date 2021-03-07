@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./DrawOffer.scss";
 import { Button } from "react-bootstrap";
 
-const DrawOffer = (props) => {
+const DrawOffer = () => {
   const dispatch = useDispatch();
+  const socket = useSelector((state) => state.appState.socket);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
+
   const handleAcceptOffer = () => {
     const listItemRef = React.createRef();
     dispatch({ type: "setReceiveDrawOffer", value: false });
@@ -32,21 +34,28 @@ const DrawOffer = (props) => {
       type: "setMessage",
       value: {
         from: "You",
-        message: "Decline A Draw",
+        message: "Declined A Draw",
         className: "game-message",
         ref: listItemRef,
       },
     });
-    dispatch({
-      type: "setMessageToSend",
-      value: {
-        from: "Opponent",
-        message: "Decline A Draw",
-        className: "game-message",
-        ref: listItemRef,
-      },
+    socket.emit("sendMessage", {
+      from: "Opponent",
+      message: "Declined A Draw",
+      className: "game-message",
+      ref: listItemRef,
     });
   };
+
+  useEffect(() => {
+    socket.on("receiveDrawOffer", () => {
+      dispatch({ type: "setReceiveDrawOffer", value: true });
+    });
+
+    return () => {
+      socket.removeAllListeners("receiveDrawOffer");
+    };
+  });
 
   if (!receiveDrawOffer) return null;
   return (

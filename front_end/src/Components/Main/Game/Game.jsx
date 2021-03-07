@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./Game.scss";
 import { Row } from "react-bootstrap";
 import GameController from "./GameController/GameController.jsx";
 import GamePlayArea from "./GamePlayArea/GamePlayArea.jsx";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import GameBar from "./GameBar/GameBar.jsx";
 
 const Game = () => {

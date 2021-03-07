@@ -1,20 +1,18 @@
-const gameReducer = (
-  state = {
-    findingMatch: false,
-    foundMatch: false,
-    time: 10,
-    opponentTimeLeftToMove: 10 * 60,
-    playerTimeLeftToMove: 10 * 60,
-    pause: false,
-    receiveDrawOffer: false,
-    sendDrawOffer: false,
-    messages: [],
-    gameResult: null,
-    sendGameResult: false,
-    messageToSend: null,
-  },
-  action
-) => {
+const defaultState = {
+  findingMatch: false,
+  foundMatch: false,
+  time: 10,
+  opponentTimeLeftToMove: 10 * 60,
+  playerTimeLeftToMove: 10 * 60,
+  pause: false,
+  receiveDrawOffer: false,
+  messages: [],
+  gameResult: null,
+  sendGameResult: false,
+  gameResultDisplay: "flex",
+};
+
+const gameReducer = (state = defaultState, action) => {
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
@@ -49,17 +47,16 @@ const gameReducer = (
     case "setReceiveDrawOffer":
       newState.receiveDrawOffer = value;
       return newState;
-    case "setSendDrawOffer":
-      newState.sendDrawOffer = value;
-      return newState;
-    case "setMessageToSend":
-      newState.messageToSend = value;
-      return newState;
     case "setMessage":
       const newMessages = [...newState.messages];
       newMessages.push(value);
       newState.messages = newMessages;
       return newState;
+    case "setGameResultDisplay":
+      newState.gameResultDisplay = value;
+      return newState;
+    case "resetGameState":
+      return defaultState;
     default:
       return state;
   }

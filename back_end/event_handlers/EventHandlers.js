@@ -34,15 +34,16 @@ class EventHandlers {
         const timeElapse = (new Date() - start) / 1000;
         if (timeElapse > 10) {
           socket.emit("timeout");
+          socket.opponentID = undefined;
           clearInterval(intervalID);
         } else if (socket.opponentID) {
-          socket.emit("foundMatch", socket.opponentID, socket.firstMove);
           clearInterval(intervalID);
         } else {
           for (let [id, currentSocket] of io.sockets) {
             if (id !== socket.id && currentSocket.opponentID === null) {
               EventHandlers.assignFirstMove(socket, currentSocket, id);
               socket.emit("foundMatch", id, socket.firstMove);
+              currentSocket.emit("foundMatch", socket.id, !socket.firstMove);
               clearInterval(intervalID);
               return;
             }
@@ -65,9 +66,9 @@ class EventHandlers {
   }
 
   static registerDisconnectHandlers(io, socket) {
-    socket.on("disconnect", () => {
-      console.log(socket.opponentID + "disconnect");
-      io.to(socket.opponentID).emit("won");
+    socket.on("disconnect", (reason) => {
+      if (reason !== "client namespace disconnect")
+        io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
     });
   }
 
@@ -75,19 +76,14 @@ class EventHandlers {
     socket.on("sendDrawOffer", () => {
       io.to(socket.opponentID).emit("receiveDrawOffer");
     });
-
-    socket.on("declineDrawOffer", () => {
-      io.to(socket.opponentID).emit("decline");
-    });
-
-    socket.on("acceptDrawOffer", () => {
-      io.to(socket.opponentID).emit("accept");
-    });
   }
 
   static registerGameFinish(io, socket) {
     socket.on("gameFinish", (gameResult) => {
-      io.to(socket.opponentID).emit("draw", gameResult);
+      if (gameResult !== "Draw") {
+        const [result, reason] = gameResult;
+        io.to(socket.opponentID).emit("gameOver", result, reason);
+      } else io.to(socket.opponentID).emit("gameOver", gameResult, null);
     });
   }
 }

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
+import { io } from "socket.io-client";
 
 const GameBar = () => {
   const dispatch = useDispatch();
@@ -10,6 +11,7 @@ const GameBar = () => {
     (state) => state.gameState.receiveDrawOffer
   );
   const gameResult = useSelector((state) => state.gameState.gameResult);
+  const socket = useSelector((state) => state.appState.socket);
 
   const handleOfferDraw = () => {
     if (!receiveDrawOffer) {
@@ -23,14 +25,14 @@ const GameBar = () => {
           ref: listItemRef,
         },
       });
-      dispatch({ type: "setSendDrawOffer", value: true });
+      socket.emit("sendDrawOffer");
     }
   };
 
   const handleResign = () => {
     const listItemRef = React.createRef();
-    dispatch({ type: "setGameResult", value: "lose" });
-    dispatch({ type: "setSendGameResult", value: "lose" });
+    dispatch({ type: "setGameResult", value: "Lose" });
+    dispatch({ type: "setSendGameResult", value: ["Won", "Opponent Resign"] });
     dispatch({
       type: "setMessage",
       value: {
@@ -41,6 +43,15 @@ const GameBar = () => {
         ref: listItemRef,
       },
     });
+  };
+
+  const handleExit = () => {
+    const width = document.querySelector(".board-container").offsetWidth;
+    socket.disconnect();
+    dispatch({ type: "resetBoardState", value: width });
+    dispatch({ type: "resetGameState" });
+    dispatch({ type: "setCurrentTimerID", value: null });
+    dispatch({ type: "setSocket", value: io("http://localhost:8080/play") });
   };
 
   return (
@@ -78,7 +89,11 @@ const GameBar = () => {
         </div>
       </div>
       <ChatSection />
-      <Button className="exit-game" disabled={gameResult === null}>
+      <Button
+        className="exit-game"
+        disabled={gameResult === null}
+        onClick={handleExit}
+      >
         Exit Game
       </Button>
     </Col>

@@ -1,5 +1,11 @@
+import { io } from "socket.io-client";
+
 const gameReducer = (
-  state = { lang: "English", socket: null, currentTimerID: null },
+  state = {
+    lang: "English",
+    socket: io("http://localhost:8080/play"),
+    currentIntervalID: null,
+  },
   action
 ) => {
   const newState = Object.assign({}, state);
@@ -11,8 +17,8 @@ const gameReducer = (
     case "setSocket":
       newState.socket = value;
       return newState;
-    case "setCurrentTimerID":
-      newState.currentTimerID = value;
+    case "setCurrentIntervalID":
+      newState.currentIntervalID = value;
       return newState;
     default:
       return state;

@@ -1,3 +1,7 @@
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../../../../../Fonts/Montserrat-Regular.ttf");
+}
 .draw-offer {
   position: absolute;
   top: 0px;
@@ -8,6 +12,7 @@
   align-items: center;
   background-color: #312e2b;
   p {
+    font-family: "Montserrat-Regular";
     color: #f8f9fa;
     margin: 5px;
   }
