@@ -5,6 +5,7 @@ const defaultState = {
   opponentTimeLeftToMove: 10 * 60,
   playerTimeLeftToMove: 10 * 60,
   pause: false,
+  pauseTime: 20 * 60,
   receiveDrawOffer: false,
   messages: [],
   gameResult: null,
@@ -16,6 +17,9 @@ const gameReducer = (state = defaultState, action) => {
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
+    case "setPauseTime":
+      if (value === "restart") newState.pauseTime = 20 * 60;
+      else newState.pauseTime -= 1;
     case "setSendGameResult":
       newState.sendGameResult = value;
       return newState;
@@ -34,11 +38,13 @@ const gameReducer = (state = defaultState, action) => {
       newState.opponentTimeLeftToMove = value * 60;
       return newState;
     case "setPlayerTimeLeftToMove":
-      if (value !== null) newState.playerTimeLeftToMove = newState.time * 60;
+      if (value === "restart")
+        newState.playerTimeLeftToMove = newState.time * 60;
       else newState.playerTimeLeftToMove -= 1;
       return newState;
     case "setOpponentTimeLeftToMove":
-      if (value !== null) newState.opponentTimeLeftToMove = newState.time * 60;
+      if (value === "restart")
+        newState.opponentTimeLeftToMove = newState.time * 60;
       else newState.opponentTimeLeftToMove -= 1;
       return newState;
     case "setPause":

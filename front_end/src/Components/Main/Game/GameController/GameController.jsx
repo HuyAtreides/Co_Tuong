@@ -2,10 +2,11 @@ import React, { useContext, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameController.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { SocketContext } from "../../../App/App.jsx";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
-  const socket = useSelector((state) => state.appState.socket);
+  const socket = useContext(SocketContext);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const time = useSelector((state) => state.gameState.time);
   const side = useSelector((state) => state.boardState.side);
@@ -20,8 +21,6 @@ const GameController = (props) => {
   const handleSelectTime = (event) => {
     const selectedTime = +event.currentTarget.getAttribute("value");
     dispatch({ type: "setTime", value: selectedTime });
-    dispatch({ type: "setOpponentTimeLeftToMove", value: selectedTime * 60 });
-    dispatch({ type: "setPlayerTimeLeftToMove", value: selectedTime * 60 });
     props.handleToggle();
   };
 

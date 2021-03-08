@@ -4,10 +4,11 @@ import { Button } from "react-bootstrap";
 import "./ChatSection.scss";
 import renderMessages from "./renderMessages.js";
 import DrawOffer from "./DrawOffer/DrawOffer.jsx";
+import { SocketContext } from "../../../../App/App.jsx";
 
 const ChatSection = () => {
   const dispatch = useDispatch();
-  const socket = useSelector((state) => state.appState.socket);
+  const socket = useContext(SocketContext);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef();
   const messages = useSelector((state) => state.gameState.messages);
@@ -29,16 +30,12 @@ const ChatSection = () => {
   const handleSendMessage = (event) => {
     const listItemRef = React.createRef();
     const message = {
-      from: "Phan Gia Huy:",
+      from: "Phan Gia Huy: ",
       message: input,
       className: "",
       ref: listItemRef,
     };
-    dispatch({
-      type: "setMessage",
-      value: message,
-    });
-    messages.from = "Opponent:";
+    dispatch({ type: "setMessage", value: message });
     setInput("");
     socket.emit("sendMessage", message);
     event.preventDefault();
@@ -53,6 +50,9 @@ const ChatSection = () => {
       }
     }
     socket.on("incomingMessage", (message) => {
+      if (message.from && message.className !== "game-message")
+        message.from = "Opponent: ";
+      else message.from = "Opponent ";
       dispatch({ type: "setMessage", value: message });
     });
 

@@ -53,6 +53,12 @@ class EventHandlers {
     });
   }
 
+  static registerExitGameHandlers(io, socket) {
+    socket.on("exitGame", () => {
+      socket.opponentID = undefined;
+    });
+  }
+
   static registerSendMessageHandlers(io, socket) {
     socket.on("sendMessage", (message) => {
       io.to(socket.opponentID).emit("incomingMessage", message);
@@ -67,7 +73,8 @@ class EventHandlers {
 
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", (reason) => {
-      if (reason !== "client namespace disconnect")
+      console.log(socket.id + " disconnect");
+      if (reason !== "client namespace disconnect" && socket.opponentID)
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
     });
   }
@@ -78,12 +85,20 @@ class EventHandlers {
     });
   }
 
-  static registerGameFinish(io, socket) {
+  static registerGameFinishHandlers(io, socket) {
     socket.on("gameFinish", (gameResult) => {
       if (gameResult !== "Draw") {
         const [result, reason] = gameResult;
         io.to(socket.opponentID).emit("gameOver", result, reason);
       } else io.to(socket.opponentID).emit("gameOver", gameResult, null);
+    });
+  }
+
+  static registerPauseGameHandlers(io, socket) {
+    socket.on("pauseGame", () => {
+      console.log("?");
+      console.log(socket.opponentID);
+      io.to(socket.opponentID).emit("gamePaused");
     });
   }
 }

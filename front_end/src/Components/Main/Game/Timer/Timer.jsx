@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import "./Timer.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Timer = (props) => {
   const dispatch = useDispatch();
   const minute = Math.floor(props.timeLeftToMove / 60);
   const second = props.timeLeftToMove % 60;
+  const turnToMove = useSelector((state) => state.boardState.turnToMove);
 
   useEffect(() => {
-    if (props.timeLeftToMove === 0) {
+    if (props.timeLeftToMove === 0 && turnToMove) {
       const listItemRef = React.createRef();
       dispatch({ type: "setGameResult", value: "Lose" });
       dispatch({ type: "setSendGameResult", value: ["Won", "Game Abandoned"] });

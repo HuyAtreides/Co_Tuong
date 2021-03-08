@@ -5,6 +5,7 @@ import Board from "../Board/Board";
 import "./GamePlayArea.scss";
 import { useSelector } from "react-redux";
 import GameResult from "./GameResult/GameResult.jsx";
+import Pause from "./Pause/Pause.jsx";
 
 const GamePlayArea = (props) => {
   const opponentTimeLeftToMove = useSelector(
@@ -77,6 +78,7 @@ const GamePlayArea = (props) => {
         <Timer timeLeftToMove={playerTimeLeftToMove} turnToMove={turnToMove} />
       </div>
       <GameResult />
+      <Pause />
     </Col>
   );
 };

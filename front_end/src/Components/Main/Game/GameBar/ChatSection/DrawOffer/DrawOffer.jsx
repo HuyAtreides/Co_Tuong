@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./DrawOffer.scss";
 import { Button } from "react-bootstrap";
+import { SocketContext } from "../../../../../App/App.jsx";
 
 const DrawOffer = () => {
   const dispatch = useDispatch();
-  const socket = useSelector((state) => state.appState.socket);
+  const socket = useContext(SocketContext);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );

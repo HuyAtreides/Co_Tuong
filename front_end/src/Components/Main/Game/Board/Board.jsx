@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
-import GameResult from "../GamePlayArea/GameResult/GameResult.jsx";
+import { SocketContext, TimerContext } from "../../../App/App.jsx";
 
 function Board() {
   const dispatch = useDispatch();
@@ -15,41 +15,32 @@ function Board() {
   const draggable = useSelector((state) => state.boardState.draggable);
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const side = useSelector((state) => state.boardState.side);
-  const pause = useSelector((state) => state.gameState.pause);
   const svgRef = useRef();
-  const timerRef = useRef();
+  const timer = useContext(TimerContext);
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
   const sendGameResult = useSelector((state) => state.gameState.sendGameResult);
-  const socket = useSelector((state) => state.appState.socket);
-  const currentIntervalID = useSelector(
-    (state) => state.appState.currentIntervalID
-  );
+  const socket = useContext(SocketContext);
   const gameResult = useSelector((state) => state.gameState.gameResult);
 
   const setTimer = (playerTurn, gameFinish) => {
     if (gameFinish) {
-      clearInterval(timerRef.current);
+      timer.postMessage(false);
       dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
       dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
       dispatch({ type: "setTurnToMove", value: false });
       return;
     }
-    if (playerTurn) {
-      clearInterval(timerRef.current);
+    if (playerTurn)
       dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-      timerRef.current = setInterval(() => {
+    else dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
+    timer.postMessage(true);
+    timer.onmessage = (_) => {
+      if (playerTurn)
         dispatch({ type: "setPlayerTimeLeftToMove", value: null });
-      }, 1000);
-    } else {
-      clearInterval(timerRef.current);
-      dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-      timerRef.current = setInterval(() => {
-        dispatch({ type: "setOpponentTimeLeftToMove", value: null });
-      }, 1000);
-    }
-    dispatch({ type: "setCurrentIntervalID", value: timerRef.current });
+      else dispatch({ type: "setOpponentTimeLeftToMove", value: null });
+    };
   };
 
   const handleMouseDown = (event) => {
@@ -226,7 +217,7 @@ function Board() {
 
     window.ondragstart = () => false;
 
-    if (currentIntervalID) timerRef.current = currentIntervalID;
+    // if (currentIntervalID) ref.current = currentIntervalID;
   }, []);
 
   useEffect(() => {

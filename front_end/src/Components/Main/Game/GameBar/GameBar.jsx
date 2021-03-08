@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
 import { io } from "socket.io-client";
+import { SocketContext } from "../../../App/App.jsx";
 
 const GameBar = () => {
   const dispatch = useDispatch();
@@ -11,7 +12,24 @@ const GameBar = () => {
     (state) => state.gameState.receiveDrawOffer
   );
   const gameResult = useSelector((state) => state.gameState.gameResult);
-  const socket = useSelector((state) => state.appState.socket);
+  const socket = useContext(SocketContext);
+  const pause = useSelector((state) => state.gameState.pause);
+
+  const handleResume = () => {};
+
+  const handlePause = () => {
+    const listItemRef = React.createRef();
+    const message = {
+      from: "Phan Gia Huy",
+      message: "Paused Game",
+      className: "game-message",
+      ref: listItemRef,
+    };
+    dispatch({ type: "setMessage", value: message });
+    socket.emit("sendMessage", message);
+    dispatch({ type: "setPause", value: "Phan Gia Huy Paused Game" });
+    socket.emit("pauseGame");
+  };
 
   const handleOfferDraw = () => {
     if (!receiveDrawOffer) {
@@ -47,11 +65,9 @@ const GameBar = () => {
 
   const handleExit = () => {
     const width = document.querySelector(".board-container").offsetWidth;
-    socket.disconnect();
+    socket.emit("exitGame");
     dispatch({ type: "resetBoardState", value: width });
     dispatch({ type: "resetGameState" });
-    dispatch({ type: "setCurrentTimerID", value: null });
-    dispatch({ type: "setSocket", value: io("http://localhost:8080/play") });
   };
 
   return (
@@ -66,7 +82,7 @@ const GameBar = () => {
             className="red-side draw-btn"
             value="draw"
             onClick={handleOfferDraw}
-            disabled={gameResult !== null}
+            disabled={gameResult !== null || pause}
           >
             &#189; Draw
           </Button>
@@ -74,7 +90,7 @@ const GameBar = () => {
             className="black-side resign-btn"
             value="resign"
             onClick={handleResign}
-            disabled={gameResult !== null}
+            disabled={gameResult !== null || pause}
           >
             <i className="fas fa-flag"></i> Resign
           </Button>
@@ -83,8 +99,10 @@ const GameBar = () => {
           <Button
             className="select-timer pause-btn"
             disabled={gameResult !== null}
+            onClick={!pause ? handlePause : handleResume}
           >
-            <i className="fas fa-pause"></i> Pause
+            <i className={`fas fa-${!pause ? "pause" : "play"}`}></i>{" "}
+            {!pause ? "Pause" : "Resume"}
           </Button>
         </div>
       </div>
