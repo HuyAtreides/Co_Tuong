@@ -76,6 +76,7 @@ const GameBar = () => {
 
   useEffect(() => {
     socket.on("gameOver", (result, reason) => {
+      if (gameResult !== null) return;
       const listItemRef = React.createRef();
       dispatch({ type: "setGameResult", value: result });
       dispatch({

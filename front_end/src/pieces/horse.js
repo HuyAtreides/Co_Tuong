@@ -27,6 +27,37 @@ class Horse extends Piece {
     return null;
   }
 
+  canSaveGeneral(piece, board) {
+    const [curRow, curCol] = piece.position;
+    for (let move of piece.moves) {
+      const tmpBoard = board.reduce((acc, row) => {
+        acc.push([...row]);
+        return acc;
+      }, []);
+      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
+      if (
+        newCol >= piece.minCol &&
+        newCol <= piece.maxCol &&
+        newRow >= piece.minRow &&
+        newRow <= piece.maxRow &&
+        !piece.isBlocked(newRow, newCol, tmpBoard)
+      ) {
+        if (!tmpBoard[newRow][newCol].side) {
+          if (piece.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard)) return true;
+          }
+        } else if (tmpBoard[newRow][newCol].side !== piece.side) {
+          if (piece.countPiecesBetween(newRow, newCol, tmpBoard) == 1) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard)) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   isBlocked(newRow, newCol, board) {
     const [curRow, curCol] = this.position;
     const [moveRow, moveCol] = [newRow - curRow, newCol - curCol];

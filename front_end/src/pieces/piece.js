@@ -5,6 +5,10 @@ class Piece {
     this.name = name;
     this.side = name.split("-")[1];
     this.choosenSide = choosenSide;
+    this.minCol = 0;
+    this.maxCol = 8;
+    this.minRow = 0;
+    this.maxRow = 9;
     this.translate = `translate(${width * col}, ${width * row})`;
   }
 
@@ -16,7 +20,11 @@ class Piece {
   checkValidMove(newRow, newCol, board) {
     const [curRow, curCol] = this.position;
     const [moveRow, moveCol] = [newRow - curRow, newCol - curCol];
-    const valid = newCol >= 0 && newCol < 9 && newRow >= 0 && newRow < 10;
+    const valid =
+      newCol >= this.minCol &&
+      newCol <= this.maxCol &&
+      newRow >= this.minRow &&
+      newRow <= this.maxRow;
     const existMove = this.moves.some((move) => {
       return move[0] === moveRow && move[1] === moveCol;
     });
@@ -69,6 +77,16 @@ class Piece {
     return count;
   }
 
+  static isGeneralInDanger(board, side) {
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (board[i][j] && board[i][j].side !== side)
+          if (board[i][j].canCaptureGeneral(board)) return true;
+      }
+    }
+    return false;
+  }
+
   putGeneralInDanger(newRow, newCol, board) {
     const tmpBoard = board.reduce((acc, row) => {
       acc.push([...row]);
@@ -78,8 +96,55 @@ class Piece {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
         if (tmpBoard[i][j] && tmpBoard[i][j].side !== this.side)
-          if (tmpBoard[i][j].canCaptureGeneral(tmpBoard)) return true;
+          if (tmpBoard[i][j].canCaptureGeneral(tmpBoard)) {
+            return true;
+          }
       }
+    }
+    return false;
+  }
+
+  canSaveGeneral(board) {
+    let tmpBoard;
+    const [curRow, curCol] = this.position;
+    for (let move of this.moves) {
+      tmpBoard = board.reduce((acc, row) => {
+        acc.push([...row]);
+        return acc;
+      }, []);
+      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
+      if (
+        newCol >= this.minCol &&
+        newCol <= this.maxCol &&
+        newRow >= this.minRow &&
+        newRow <= this.maxRow
+      ) {
+        if (!tmpBoard[newRow][newCol]) {
+          if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
+          }
+        } else if (tmpBoard[newRow][newCol].side !== this.side) {
+          if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 1) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  static isCheckmated(board, side) {
+    if (Piece.isGeneralInDanger(board, side)) {
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 9; j++) {
+          if (board[i][j] && board[i][j].side === side) {
+            if (board[i][j].canSaveGeneral(board)) return false;
+          }
+        }
+      }
+      return true;
     }
     return false;
   }

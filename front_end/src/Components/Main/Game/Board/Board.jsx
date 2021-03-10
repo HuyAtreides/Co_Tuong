@@ -4,6 +4,7 @@ import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { SocketContext, SetTimerContext } from "../../../App/context.js";
+import PieceClass from "../../../../pieces/piece.js";
 
 function Board() {
   const dispatch = useDispatch();
@@ -169,6 +170,25 @@ function Board() {
       socket.removeAllListeners("move");
     };
   });
+
+  useEffect(() => {
+    if (turnToMove && PieceClass.isCheckmated(board, side[1])) {
+      const listItemRef = React.createRef();
+      dispatch({ type: "setGameResult", value: "Lose" });
+      dispatch({
+        type: "setMessage",
+        value: {
+          type: "game result message",
+          winner: "Opponent Won - ",
+          reason: "Checkmate",
+          className: "game-message",
+          ref: listItemRef,
+        },
+      });
+      setTimer(null, true, dispatch);
+      socket.emit("gameFinish", ["Won", "Checkmate"]);
+    }
+  }, [turnToMove]);
 
   return (
     <svg

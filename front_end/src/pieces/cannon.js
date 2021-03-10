@@ -26,6 +26,36 @@ class Cannon extends Piece {
     }
   }
 
+  canSaveGeneral(piece, board) {
+    const [curRow, curCol] = piece.position;
+    for (let move of piece.moves) {
+      const tmpBoard = board.reduce((acc, row) => {
+        acc.push([...row]);
+        return acc;
+      }, []);
+      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
+      if (
+        newCol >= piece.minCol &&
+        newCol <= piece.maxCol &&
+        newRow >= piece.minRow &&
+        newRow <= piece.maxRow
+      ) {
+        if (!tmpBoard[newRow][newCol]) {
+          if (piece.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard)) return true;
+          }
+        } else if (tmpBoard[newRow][newCol].side !== piece.side) {
+          if (piece.countPiecesBetween(newRow, newCol, tmpBoard) === 2) {
+            this.updateTmpBoard(newRow, newCol, tmpBoard);
+            if (!Piece.isGeneralInDanger(tmpBoard)) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   canCaptureGeneral(board) {
     const [curRow, curCol] = this.position;
     for (let move of this.moves) {

@@ -17,7 +17,7 @@ class General extends Advisor {
           return true;
         return false;
       }
-    } while (curRow !== 0 || curRow !== 9);
+    } while (curRow !== 0 && curRow !== 9);
     return false;
   }
 

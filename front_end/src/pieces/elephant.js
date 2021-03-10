@@ -5,20 +5,8 @@ class Elephant extends Piece {
   constructor(width, row, col, name, choosenSide) {
     super(width, row, col, name, choosenSide);
     this.moves = elephantRules;
-  }
-
-  checkValidMove(newRow, newCol, board) {
-    const [curRow, curCol] = this.position;
-    const [moveRow, moveCol] = [newRow - curRow, newCol - curCol];
-    const maxRow = this.side === this.choosenSide[0] ? 5 : 10;
-    const minRow = this.side === this.choosenSide[0] ? 0 : 5;
-    const valid =
-      newCol >= 0 && newCol < 9 && newRow >= minRow && newRow < maxRow;
-    const existMove = this.moves.some((move) => {
-      return move[0] === moveRow && move[1] === moveCol;
-    });
-    const generalInDanger = this.putGeneralInDanger(newRow, newCol, board);
-    return valid && existMove && !generalInDanger;
+    this.maxRow = this.side === this.choosenSide[0] ? 4 : 9;
+    this.minRow = this.side === this.choosenSide[0] ? 0 : 5;
   }
 
   countPiecesBetween(newRow, newCol, board) {

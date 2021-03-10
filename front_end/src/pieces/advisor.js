@@ -5,21 +5,10 @@ class Advisor extends Piece {
   constructor(width, row, col, name, choosenSide) {
     super(width, row, col, name, choosenSide);
     this.moves = advisorRules;
-  }
-
-  checkValidMove(newRow, newCol, board) {
-    const [curRow, curCol] = this.position;
-    const [moveRow, moveCol] = [newRow - curRow, newCol - curCol];
-    const maxRow = this.side === this.choosenSide[0] ? 3 : 10;
-    const minRow = this.side === this.choosenSide[0] ? 0 : 7;
-    const valid =
-      newCol >= 3 && newCol < 6 && newRow >= minRow && newRow < maxRow;
-    const existMove = this.moves.some((move) => {
-      return move[0] === moveRow && move[1] === moveCol;
-    });
-    return (
-      valid && existMove && !this.putGeneralInDanger(newRow, newCol, board)
-    );
+    this.minCol = 3;
+    this.maxCol = 5;
+    this.minRow = this.side === this.choosenSide[0] ? 0 : 7;
+    this.maxRow = this.side === this.choosenSide[0] ? 2 : 9;
   }
 
   countPiecesBetween(newRow, newCol, board) {

@@ -12,7 +12,6 @@ function registerIOEvents(io) {
     EventHandlers.registerDrawHandlers(io.of("/play"), socket);
     EventHandlers.registerGameFinishHandlers(io.of("/play"), socket);
     EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
-    EventHandlers.registerExitGameHandlers(io.of("/play"), socket);
   };
 
   io.of("/play").on("connection", onConnectionHandler);

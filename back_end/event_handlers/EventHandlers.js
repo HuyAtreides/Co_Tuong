@@ -27,7 +27,6 @@ class EventHandlers {
 
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", (side) => {
-      console.log("foundMatch");
       const start = new Date();
       socket.opponentID = null;
       socket.side = side[1];
@@ -54,12 +53,6 @@ class EventHandlers {
     });
   }
 
-  static registerExitGameHandlers(io, socket) {
-    socket.on("exitGame", () => {
-      socket.opponentID = undefined;
-    });
-  }
-
   static registerSendMessageHandlers(io, socket) {
     socket.on("sendMessage", (message) => {
       io.to(socket.opponentID).emit("incomingMessage", message);
@@ -73,9 +66,13 @@ class EventHandlers {
   }
 
   static registerDisconnectHandlers(io, socket) {
-    socket.on("disconnect", (reason) => {
+    socket.on("disconnect", () => {
       console.log(socket.id + " disconnect");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
+    });
+
+    socket.on("exitGame", () => {
+      socket.opponentID = undefined;
     });
   }
 
@@ -96,7 +93,6 @@ class EventHandlers {
 
   static registerPauseGameHandlers(io, socket) {
     socket.on("pauseGame", () => {
-      console.log(socket.opponentID);
       io.to(socket.opponentID).emit("gamePaused");
     });
 
