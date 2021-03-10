@@ -2,11 +2,12 @@ import React, { useContext, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameController.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { SocketContext } from "../../../App/App.jsx";
+import { SocketContext, SetTimerContext } from "../../../App/context.js";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
+  const setTimer = useContext(SetTimerContext);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const time = useSelector((state) => state.gameState.time);
   const side = useSelector((state) => state.boardState.side);
@@ -36,8 +37,16 @@ const GameController = (props) => {
       dispatch({ type: "setFindingMatch", value: null });
     });
 
+    socket.on("foundMatch", (opponentID, firstMove) => {
+      socket.opponentID = opponentID;
+      dispatch({ type: "setTurnToMove", value: firstMove });
+      dispatch({ type: "setFoundMatch", value: true });
+      setTimer(firstMove, false, dispatch);
+    });
+
     return () => {
       socket.removeAllListeners("timeout");
+      socket.removeAllListeners("foundMatch");
     };
   });
 

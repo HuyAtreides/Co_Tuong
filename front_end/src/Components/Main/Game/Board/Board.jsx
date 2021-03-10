@@ -3,7 +3,7 @@ import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
-import { SocketContext, TimerContext } from "../../../App/App.jsx";
+import { SocketContext, SetTimerContext } from "../../../App/context.js";
 
 function Board() {
   const dispatch = useDispatch();
@@ -13,35 +13,15 @@ function Board() {
   const currentPiece = useSelector((state) => state.boardState.currentPiece);
   const getClicked = useSelector((state) => state.boardState.getClicked);
   const draggable = useSelector((state) => state.boardState.draggable);
-  const turnToMove = useSelector((state) => state.boardState.turnToMove);
+  // const pause = useSelector((state) => state.gameState.pause);
   const side = useSelector((state) => state.boardState.side);
   const svgRef = useRef();
-  const timer = useContext(TimerContext);
   const targetTranslate = useSelector(
     (state) => state.boardState.targetTranslate
   );
-  const sendGameResult = useSelector((state) => state.gameState.sendGameResult);
+  const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const socket = useContext(SocketContext);
-  const gameResult = useSelector((state) => state.gameState.gameResult);
-
-  const setTimer = (playerTurn, gameFinish) => {
-    if (gameFinish) {
-      timer.postMessage(false);
-      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-      dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-      dispatch({ type: "setTurnToMove", value: false });
-      return;
-    }
-    if (playerTurn)
-      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-    else dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-    timer.postMessage(true);
-    timer.onmessage = (_) => {
-      if (playerTurn)
-        dispatch({ type: "setPlayerTimeLeftToMove", value: null });
-      else dispatch({ type: "setOpponentTimeLeftToMove", value: null });
-    };
-  };
+  const setTimer = useContext(SetTimerContext);
 
   const handleMouseDown = (event) => {
     const elementId = event.currentTarget.id;
@@ -75,7 +55,7 @@ function Board() {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      setTimer(true, false);
+      setTimer(true, false, dispatch);
     }
   };
 
@@ -101,7 +81,7 @@ function Board() {
       dispatch({ type: "setBoard", value: [...board] });
       if (newPosition) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
-        setTimer(false, false);
+        setTimer(false, false, dispatch);
         socket.emit("opponentMove", newPosition, [curRow, curCol]);
       }
     }
@@ -125,7 +105,7 @@ function Board() {
     dispatch({ type: "setBoard", value: [...board] });
     if (newPosition) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
-      setTimer(false, false);
+      setTimer(false, false, dispatch);
       socket.emit("opponentMove", newPosition, [curRow, curCol]);
     }
   };
@@ -166,78 +146,26 @@ function Board() {
     });
   };
 
-  const registerEventHandler = () => {
-    socket.on("foundMatch", (opponentID, firstMove) => {
-      socket.opponentID = opponentID;
-      dispatch({ type: "setTurnToMove", value: firstMove });
-      dispatch({ type: "setFoundMatch", value: true });
-      setTimer(firstMove);
-    });
-
-    socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
-      handleOpponentMove([curRow, curCol], [newRow, newCol]);
-    });
-
-    socket.on("gameOver", (result, reason) => {
-      if (gameResult !== null) return;
-      const listItemRef = React.createRef();
-      if (result === "Draw") {
-        dispatch({ type: "setGameResult", value: "Draw" });
-        dispatch({
-          type: "setMessage",
-          value: {
-            type: "game result message",
-            winner: "",
-            reason: "Game Draw By Agreement",
-            className: "game-message",
-            ref: listItemRef,
-          },
-        });
-      } else {
-        dispatch({ type: "setGameResult", value: result });
-        dispatch({
-          type: "setMessage",
-          value: {
-            type: "game result message",
-            winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won - `,
-            reason: reason,
-            className: "game-message",
-            ref: listItemRef,
-          },
-        });
-      }
-      setTimer(null, true);
-    });
-  };
-
   useEffect(() => {
     const width = document.querySelector(".board-container").offsetWidth;
     dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
     dispatch({ type: "setBoard", value: constructNewBoard(width / 9) });
 
     window.ondragstart = () => false;
-
-    // if (currentIntervalID) ref.current = currentIntervalID;
   }, []);
 
   useEffect(() => {
-    if (sendGameResult) {
-      socket.emit("gameFinish", sendGameResult);
-      setTimer(null, true);
-      dispatch({ type: "setSendGameResult", value: false });
-    }
-
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;
-    registerEventHandler();
+    socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
+      handleOpponentMove([curRow, curCol], [newRow, newCol]);
+    });
 
     return () => {
       window.onmouseup = null;
       window.onmousemove = null;
       window.onresize = null;
-      socket.removeAllListeners("foundMatch");
-      socket.removeAllListeners("gameOver");
       socket.removeAllListeners("move");
     };
   });

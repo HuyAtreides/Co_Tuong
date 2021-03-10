@@ -4,12 +4,14 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import Login from "../Login/Login.jsx";
 import Main from "../Main/Main.jsx";
 import Signup from "../Signup/Signup.jsx";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:8080/play");
-const timer = new Worker("/web_worker_timer/webWorkerTimer.js");
-const SocketContext = React.createContext();
-const TimerContext = React.createContext();
+import {
+  SocketContext,
+  TimerContext,
+  SetTimerContext,
+  setTimer,
+  socket,
+  timer,
+} from "./context.js";
 
 function App(props) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,22 +26,24 @@ function App(props) {
   return (
     <SocketContext.Provider value={socket}>
       <TimerContext.Provider value={timer}>
-        <Router>
-          <Switch>
-            <Route path="/login">
-              <Login setIsAuthenticated={setIsAuthenticated} />
-            </Route>
-            <Route path="/signup">
-              <Signup />
-            </Route>
-            <Route path="/">
-              <Main isAuthenticated={isAuthenticated} />
-            </Route>
-          </Switch>
-        </Router>
+        <SetTimerContext.Provider value={setTimer}>
+          <Router>
+            <Switch>
+              <Route path="/login">
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              </Route>
+              <Route path="/signup">
+                <Signup />
+              </Route>
+              <Route path="/">
+                <Main isAuthenticated={isAuthenticated} />
+              </Route>
+            </Switch>
+          </Router>
+        </SetTimerContext.Provider>
       </TimerContext.Provider>
     </SocketContext.Provider>
   );
 }
 
-export { App, SocketContext, TimerContext };
+export { App };

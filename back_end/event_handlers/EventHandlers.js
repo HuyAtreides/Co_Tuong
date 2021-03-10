@@ -27,6 +27,7 @@ class EventHandlers {
 
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", (side) => {
+      console.log("foundMatch");
       const start = new Date();
       socket.opponentID = null;
       socket.side = side[1];
@@ -74,8 +75,7 @@ class EventHandlers {
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", (reason) => {
       console.log(socket.id + " disconnect");
-      if (reason !== "client namespace disconnect" && socket.opponentID)
-        io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
+      io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
     });
   }
 
@@ -90,15 +90,26 @@ class EventHandlers {
       if (gameResult !== "Draw") {
         const [result, reason] = gameResult;
         io.to(socket.opponentID).emit("gameOver", result, reason);
-      } else io.to(socket.opponentID).emit("gameOver", gameResult, null);
+      } else io.to(socket.opponentID).emit("draw", gameResult, null);
     });
   }
 
   static registerPauseGameHandlers(io, socket) {
     socket.on("pauseGame", () => {
-      console.log("?");
       console.log(socket.opponentID);
       io.to(socket.opponentID).emit("gamePaused");
+    });
+
+    socket.on("pauseTimeout", () => {
+      io.to(socket.opponentID).emit("pauseOver");
+    });
+
+    socket.on("resumeGame", () => {
+      io.to(socket.opponentID).emit("gameResumed");
+    });
+
+    socket.on("playerResumeGame", () => {
+      io.to(socket.opponentID).emit("opponentResumeGame");
     });
   }
 }

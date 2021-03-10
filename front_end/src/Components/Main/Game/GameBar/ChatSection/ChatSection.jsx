@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import "./ChatSection.scss";
 import renderMessages from "./renderMessages.js";
 import DrawOffer from "./DrawOffer/DrawOffer.jsx";
-import { SocketContext } from "../../../../App/App.jsx";
+import { SocketContext } from "../../../../App/context.js";
 
 const ChatSection = () => {
   const dispatch = useDispatch();
@@ -52,7 +52,6 @@ const ChatSection = () => {
     socket.on("incomingMessage", (message) => {
       if (message.from && message.className !== "game-message")
         message.from = "Opponent: ";
-      else message.from = "Opponent ";
       dispatch({ type: "setMessage", value: message });
     });
 

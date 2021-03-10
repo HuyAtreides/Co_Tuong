@@ -26,7 +26,7 @@ const NavBar = (props) => {
           <Link to="/login" className="link nav-link">
             Sign In
           </Link>
-          <Link to="/signup" className="link nav-link">
+          <Link to="/signup" className="link nav-link ">
             Sign Up
           </Link>
           <NavDropdown title={lang} id="basic-nav-dropdown">

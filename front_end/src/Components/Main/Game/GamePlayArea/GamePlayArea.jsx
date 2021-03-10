@@ -37,13 +37,13 @@ const GamePlayArea = (props) => {
           <p className="user-name">Opponent</p>
         </div>
         <div className="captured-pieces">
-          {capturedPieces.map((element) => {
+          {capturedPieces.map((element, index) => {
             if (element.side === element.choosenSide[1])
               return (
                 <img
                   src={`/images/Pieces/${element.name}.png`}
                   style={{ width: "27px" }}
-                  key={`c${element.position[0]}${element.position[1]}`}
+                  key={`c${index}`}
                 ></img>
               );
             return null;

@@ -2,11 +2,12 @@ import React, { useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./DrawOffer.scss";
 import { Button } from "react-bootstrap";
-import { SocketContext } from "../../../../../App/App.jsx";
+import { SocketContext, SetTimerContext } from "../../../../../App/context.js";
 
 const DrawOffer = () => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
+  const setTimer = useContext(SetTimerContext);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
@@ -14,7 +15,7 @@ const DrawOffer = () => {
   const handleAcceptOffer = () => {
     const listItemRef = React.createRef();
     dispatch({ type: "setReceiveDrawOffer", value: false });
-    dispatch({ type: "setGameResult", value: "Draw" });
+    socket.emit("gameFinish", "Draw");
     dispatch({ type: "setSendGameResult", value: "Draw" });
     dispatch({
       type: "setMessage",
@@ -53,7 +54,24 @@ const DrawOffer = () => {
       dispatch({ type: "setReceiveDrawOffer", value: true });
     });
 
+    socket.on("draw", () => {
+      const listItemRef = React.createRef();
+      dispatch({ type: "setGameResult", value: "Draw" });
+      dispatch({
+        type: "setMessage",
+        value: {
+          type: "game result message",
+          winner: "",
+          reason: "Game Draw By Agreement",
+          className: "game-message",
+          ref: listItemRef,
+        },
+      });
+      setTimer(null, true, dispatch);
+    });
+
     return () => {
+      socket.removeAllListeners("draw");
       socket.removeAllListeners("receiveDrawOffer");
     };
   });

@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
-import { io } from "socket.io-client";
-import { SocketContext } from "../../../App/App.jsx";
+import { SocketContext, SetTimerContext } from "../../../App/context.js";
 
 const GameBar = () => {
   const dispatch = useDispatch();
@@ -13,9 +12,21 @@ const GameBar = () => {
   );
   const gameResult = useSelector((state) => state.gameState.gameResult);
   const socket = useContext(SocketContext);
+  const setTimer = useContext(SetTimerContext);
   const pause = useSelector((state) => state.gameState.pause);
 
-  const handleResume = () => {};
+  const handleResume = () => {
+    const listItemRef = React.createRef();
+    const message = {
+      from: "Phan Gia Huy",
+      message: "Resumed Game",
+      className: "game-message",
+      ref: listItemRef,
+    };
+    dispatch({ type: "setMessage", value: message });
+    dispatch({ type: "setPause", value: "Phan Gia Huy Resumed Game" });
+    socket.emit("playerResumeGame");
+  };
 
   const handlePause = () => {
     const listItemRef = React.createRef();
@@ -26,7 +37,6 @@ const GameBar = () => {
       ref: listItemRef,
     };
     dispatch({ type: "setMessage", value: message });
-    socket.emit("sendMessage", message);
     dispatch({ type: "setPause", value: "Phan Gia Huy Paused Game" });
     socket.emit("pauseGame");
   };
@@ -50,7 +60,6 @@ const GameBar = () => {
   const handleResign = () => {
     const listItemRef = React.createRef();
     dispatch({ type: "setGameResult", value: "Lose" });
-    dispatch({ type: "setSendGameResult", value: ["Won", "Opponent Resign"] });
     dispatch({
       type: "setMessage",
       value: {
@@ -61,7 +70,31 @@ const GameBar = () => {
         ref: listItemRef,
       },
     });
+    setTimer(null, true, dispatch);
+    socket.emit("gameFinish", ["Won", "Opponent Resign"]);
   };
+
+  useEffect(() => {
+    socket.on("gameOver", (result, reason) => {
+      const listItemRef = React.createRef();
+      dispatch({ type: "setGameResult", value: result });
+      dispatch({
+        type: "setMessage",
+        value: {
+          type: "game result message",
+          winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won - `,
+          reason: reason,
+          className: "game-message",
+          ref: listItemRef,
+        },
+      });
+      setTimer(null, true, dispatch);
+    });
+
+    return () => {
+      socket.removeAllListeners("gameOver");
+    };
+  });
 
   const handleExit = () => {
     const width = document.querySelector(".board-container").offsetWidth;
@@ -98,7 +131,7 @@ const GameBar = () => {
         <div className="time-select-container">
           <Button
             className="select-timer pause-btn"
-            disabled={gameResult !== null}
+            disabled={gameResult !== null || (pause && !/Paused/.test(pause))}
             onClick={!pause ? handlePause : handleResume}
           >
             <i className={`fas fa-${!pause ? "pause" : "play"}`}></i>{" "}
