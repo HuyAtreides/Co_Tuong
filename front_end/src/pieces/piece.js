@@ -28,9 +28,9 @@ class Piece {
     const existMove = this.moves.some((move) => {
       return move[0] === moveRow && move[1] === moveCol;
     });
-    return (
-      valid && existMove && !this.putGeneralInDanger(newRow, newCol, board)
-    );
+    const generalTranslate = this.putGeneralInDanger(newRow, newCol, board);
+    if (generalTranslate) return generalTranslate;
+    return valid && existMove;
   }
 
   setPosition(capture, newRow, newCol) {
@@ -48,14 +48,15 @@ class Piece {
     const [translateX, translateY] = [curCol * this.width, curRow * this.width];
     this.translate = `translate(${translateX}, ${translateY})`;
     if (turnToMove && this.side === this.choosenSide[1]) {
-      if (this.checkValidMove(newRow, newCol, board)) {
+      const isValid = this.checkValidMove(newRow, newCol, board);
+      if (isValid && !/translate/.test(isValid)) {
         if (!board[newRow][newCol].side) {
           if (this.countPiecesBetween(newRow, newCol, board) === 0)
             return this.setPosition(false, newRow, newCol);
         } else if (board[newRow][newCol].side !== board[curRow][curCol].side)
           if (this.countPiecesBetween(newRow, newCol, board) === 1)
             return this.setPosition(true, newRow, newCol);
-      }
+      } else if (isValid) return isValid;
     }
     return null;
   }
@@ -81,7 +82,8 @@ class Piece {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
         if (board[i][j] && board[i][j].side !== side)
-          if (board[i][j].canCaptureGeneral(board)) return true;
+          if (/translate/.test(board[i][j].canCaptureGeneral(board)))
+            return true;
       }
     }
     return false;
@@ -95,10 +97,12 @@ class Piece {
     this.updateTmpBoard(newRow, newCol, tmpBoard);
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
-        if (tmpBoard[i][j] && tmpBoard[i][j].side !== this.side)
-          if (tmpBoard[i][j].canCaptureGeneral(tmpBoard)) {
-            return true;
+        if (tmpBoard[i][j] && tmpBoard[i][j].side !== this.side) {
+          const generalTranslate = tmpBoard[i][j].canCaptureGeneral(tmpBoard);
+          if (generalTranslate) {
+            return generalTranslate;
           }
+        }
       }
     }
     return false;
@@ -119,7 +123,7 @@ class Piece {
         newRow >= this.minRow &&
         newRow <= this.maxRow
       ) {
-        if (!tmpBoard[newRow][newCol]) {
+        if (!tmpBoard[newRow][newCol].side) {
           if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
             this.updateTmpBoard(newRow, newCol, tmpBoard);
             if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
@@ -165,9 +169,10 @@ class Piece {
           if (tmpBoard[newRow][newCol].side !== tmpBoard[curRow][curCol].side)
             if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 1)
               if (tmpBoard[newRow][newCol].name.split("-")[0] === "general")
-                return true;
+                return tmpBoard[newRow][newCol].translate;
       }
     }
+    return false;
   }
 
   animateMove([newRow, newCol], board, dispatch) {

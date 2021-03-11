@@ -19,12 +19,12 @@ const Timer = (props) => {
 
   useEffect(() => {
     if (time === 0) {
-      const listItemRef = React.createRef();
       if (/Paused/.test(props.pause)) {
         timer.postMessage(true);
         dispatch({ type: "setPauseTime", value: "timeout" });
         dispatch({ type: "setPause", value: "Timeout" });
       } else {
+        timer.postMessage(false);
         dispatch({ type: "setPauseTime", value: "restart" });
         dispatch({ type: "setPause", value: null });
         setTimer(turnToMove, false, dispatch);

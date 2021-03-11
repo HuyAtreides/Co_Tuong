@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,7 +14,8 @@ function Board() {
   const currentPiece = useSelector((state) => state.boardState.currentPiece);
   const getClicked = useSelector((state) => state.boardState.getClicked);
   const draggable = useSelector((state) => state.boardState.draggable);
-  // const pause = useSelector((state) => state.gameState.pause);
+  const [warningDisplay, setWarningDisplay] = useState("none");
+  const [warningTranslate, setWarningTranslate] = useState("translate(0, 0)");
   const side = useSelector((state) => state.boardState.side);
   const svgRef = useRef();
   const targetTranslate = useSelector(
@@ -42,14 +43,20 @@ function Board() {
     }
   };
 
-  const updateBoard = (newPostion, [curRow, curCol]) => {
-    if (newPostion) {
-      const [capture, newRow, newCol] = newPostion;
+  const updateBoard = (newPosition, [curRow, curCol]) => {
+    if (newPosition && !/translate/.test(newPosition)) {
+      const [capture, newRow, newCol] = newPosition;
       if (capture) {
         dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
       }
       board[curRow][curCol] = 0;
       board[newRow][newCol] = currentPiece;
+    } else if (newPosition) {
+      setTimeout(() => {
+        setWarningDisplay("none");
+      }, 400);
+      setWarningDisplay("inline");
+      setWarningTranslate(newPosition);
     }
   };
 
@@ -61,7 +68,7 @@ function Board() {
   };
 
   const updateCurrentPiece = (newPosition) => {
-    if (newPosition || getClicked) {
+    if ((newPosition && !/translate/.test(newPosition)) || getClicked) {
       dispatch({ type: "setTargetDisplay", value: "none" });
       dispatch({ type: "setCurrentPiece", value: null });
       dispatch({ type: "setGetClicked", value: false });
@@ -80,7 +87,7 @@ function Board() {
       dispatch({ type: "setDraggable", value: false });
       updateCurrentPiece(newPosition);
       dispatch({ type: "setBoard", value: [...board] });
-      if (newPosition) {
+      if (newPosition && !/translate/.test(newPosition)) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
         setTimer(false, false, dispatch);
         socket.emit("opponentMove", newPosition, [curRow, curCol]);
@@ -104,7 +111,7 @@ function Board() {
     dispatch({ type: "setTargetDisplay", value: "none" });
     dispatch({ type: "setCurrentPiece", value: null });
     dispatch({ type: "setBoard", value: [...board] });
-    if (newPosition) {
+    if (newPosition && !/translate/.test(newPosition)) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
       setTimer(false, false, dispatch);
       socket.emit("opponentMove", newPosition, [curRow, curCol]);
@@ -207,6 +214,13 @@ function Board() {
         style={{ display: targetDisplay }}
         transform={targetTranslate}
       ></image>
+      <rect
+        width={boardSize[0] / 9 - 1}
+        height={boardSize[0] / 9 - 1}
+        style={{ display: warningDisplay }}
+        transform={warningTranslate}
+        fill="brown"
+      ></rect>
       <Piece board={board} handleMouseDown={handleMouseDown} />
     </svg>
   );

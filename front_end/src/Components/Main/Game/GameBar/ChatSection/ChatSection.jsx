@@ -28,17 +28,19 @@ const ChatSection = () => {
   };
 
   const handleSendMessage = (event) => {
-    const listItemRef = React.createRef();
-    const message = {
-      from: "Phan Gia Huy: ",
-      message: input,
-      className: "",
-      ref: listItemRef,
-    };
-    dispatch({ type: "setMessage", value: message });
-    setInput("");
-    socket.emit("sendMessage", message);
-    event.preventDefault();
+    if (input) {
+      const listItemRef = React.createRef();
+      const message = {
+        from: "Phan Gia Huy: ",
+        message: input,
+        className: "",
+        ref: listItemRef,
+      };
+      dispatch({ type: "setMessage", value: message });
+      setInput("");
+      socket.emit("sendMessage", message);
+      event.preventDefault();
+    }
   };
 
   useEffect(() => {
