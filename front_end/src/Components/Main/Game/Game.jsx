@@ -5,12 +5,12 @@ import GameController from "./GameController/GameController.jsx";
 import GamePlayArea from "./GamePlayArea/GamePlayArea.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import GameBar from "./GameBar/GameBar.jsx";
-import { SocketContext, SetTimerContext } from "../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../App/context.js";
 
 const Game = () => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const [timeSelectorDisplay, setTimeSelectorDisplay] = useState("none");
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
   const foundMatchRef = useRef();
@@ -38,7 +38,7 @@ const Game = () => {
             ref: listItemRef,
           },
         });
-        setTimer(null, true, dispatch);
+        setMoveTimer(null, true, dispatch);
         socket.emit("gameFinish", ["Won", "Game Abandoned"]);
       }
     };

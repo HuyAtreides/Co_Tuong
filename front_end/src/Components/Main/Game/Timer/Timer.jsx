@@ -1,14 +1,14 @@
 import React, { useEffect, useContext } from "react";
 import "./Timer.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { SocketContext, SetTimerContext } from "../../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 
 const Timer = (props) => {
   const dispatch = useDispatch();
   const minute = Math.floor(props.timeLeftToMove / 60);
   const second = props.timeLeftToMove % 60;
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const Timer = (props) => {
           ref: listItemRef,
         },
       });
-      setTimer(null, true, dispatch);
+      setMoveTimer(null, true, dispatch);
       socket.emit("gameFinish", ["Won", "Game Abandoned"]);
     }
   }, [props.timeLeftToMove]);

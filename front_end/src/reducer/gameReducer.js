@@ -5,7 +5,7 @@ const defaultState = {
   opponentTimeLeftToMove: 10 * 60,
   playerTimeLeftToMove: 10 * 60,
   pause: false,
-  pauseTime: 25 * 60,
+  pauseTime: 5,
   receiveDrawOffer: false,
   messages: [],
   gameResult: null,

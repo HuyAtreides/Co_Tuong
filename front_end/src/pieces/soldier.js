@@ -18,7 +18,7 @@ class Soldier extends Piece {
     if (this.side === this.choosenSide[0]) {
       if (this.position[0] > 4) this.crossRiver();
     } else if (this.position[0] < 5) this.crossRiver();
-    return [capture, newRow, newCol];
+    return [capture === "capture", newRow, newCol];
   }
 
   crossRiver() {

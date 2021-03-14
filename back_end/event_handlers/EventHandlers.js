@@ -1,4 +1,17 @@
 class EventHandlers {
+  static intervalID;
+
+  static registerTimerHandlers(io, socket) {
+    socket.on("startTimer", (start) => {
+      clearInterval(EventHandlers.intervalID);
+      if (start) {
+        EventHandlers.intervalID = setInterval(() => {
+          io.to(socket.id).to(socket.opponentID).emit("oneSecondPass");
+        }, 1000);
+      }
+    });
+  }
+
   static registerOpponentMoveHandlers(io, socket) {
     socket.on("opponentMove", (newPosition, [curRow, curCol]) => {
       const [_, newRow, newCol] = newPosition;
@@ -12,21 +25,21 @@ class EventHandlers {
     });
   }
 
-  static assignFirstMove(socket, currentSocket, id) {
-    currentSocket.opponentID = socket.id;
+  static assignFirstMove(socket, curSocket, id) {
+    curSocket.opponentID = socket.id;
     socket.opponentID = id;
-    if (socket.side !== currentSocket.side) {
+    if (socket.side !== curSocket.side) {
       socket.firstMove = socket.side === "red";
-      currentSocket.firstMove = currentSocket.side === "red";
+      curSocket.firstMove = curSocket.side === "red";
     } else {
       const firstMove = Math.floor(Math.random() * 2);
       socket.firstMove = firstMove === 1;
-      currentSocket.firstMove = firstMove !== 1;
+      curSocket.firstMove = firstMove !== 1;
     }
   }
 
   static registerFindMatchHandlers(io, socket) {
-    socket.on("findMatch", (side) => {
+    socket.on("findMatch", (side, time) => {
       const start = new Date();
       socket.opponentID = null;
       socket.side = side[1];
@@ -39,11 +52,11 @@ class EventHandlers {
         } else if (socket.opponentID) {
           clearInterval(intervalID);
         } else {
-          for (let [id, currentSocket] of io.sockets) {
-            if (id !== socket.id && currentSocket.opponentID === null) {
-              EventHandlers.assignFirstMove(socket, currentSocket, id);
-              socket.emit("foundMatch", id, socket.firstMove);
-              currentSocket.emit("foundMatch", socket.id, !socket.firstMove);
+          for (let [id, curSocket] of io.sockets) {
+            if (id !== socket.id && curSocket.opponentID === null) {
+              EventHandlers.assignFirstMove(socket, curSocket, id);
+              socket.emit("foundMatch", id, socket.firstMove, time);
+              curSocket.emit("foundMatch", socket.id, !socket.firstMove, time);
               clearInterval(intervalID);
               return;
             }

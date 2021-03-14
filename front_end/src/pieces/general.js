@@ -13,8 +13,9 @@ class General extends Advisor {
     do {
       curRow += tmp;
       if (tmpBoard[curRow][curCol]) {
-        if (tmpBoard[curRow][curCol].name.split("-")[0] === "general")
+        if (tmpBoard[curRow][curCol].name.split("-")[0] === "general") {
           return tmpBoard[curRow][curCol].translate;
+        }
         return false;
       }
     } while (curRow !== 0 && curRow !== 9);

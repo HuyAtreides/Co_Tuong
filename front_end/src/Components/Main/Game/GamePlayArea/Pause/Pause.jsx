@@ -1,17 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import "./Pause.scss";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  SocketContext,
-  SetTimerContext,
-  TimerContext,
-} from "../../../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../../../App/context.js";
 
 const Timer = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
-  const timer = useContext(TimerContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const time = useSelector((state) => state.gameState.pauseTime);
   const minute = Math.floor(time / 60);
   const second = time % 60;
@@ -20,14 +15,14 @@ const Timer = (props) => {
   useEffect(() => {
     if (time === 0) {
       if (/Paused/.test(props.pause)) {
-        timer.postMessage(true);
+        socket.emit("startTimer", true);
         dispatch({ type: "setPauseTime", value: "timeout" });
         dispatch({ type: "setPause", value: "Timeout" });
       } else {
-        timer.postMessage(false);
+        socket.emit("startTimer", false);
         dispatch({ type: "setPauseTime", value: "restart" });
         dispatch({ type: "setPause", value: null });
-        setTimer(turnToMove, false, dispatch);
+        setMoveTimer(turnToMove, false, dispatch);
         socket.emit("resumeGame");
       }
     }
@@ -36,7 +31,7 @@ const Timer = (props) => {
       const listItemRef = React.createRef();
       dispatch({ type: "setPause", value: "Timeout" });
       dispatch({ type: "setPauseTime", value: "timeout" });
-      timer.postMessage(true);
+      socket.emit("starTimer", true);
       dispatch({
         type: "setMessage",
         value: {
@@ -49,10 +44,10 @@ const Timer = (props) => {
     });
 
     socket.on("gameResumed", () => {
-      timer.postMessage(false);
+      socket.emit("startTimer", false);
       dispatch({ type: "setPause", value: null });
       dispatch({ type: "setPauseTime", value: "restart" });
-      setTimer(turnToMove, false, dispatch);
+      setMoveTimer(turnToMove, false, dispatch);
     });
 
     return () => {
@@ -80,17 +75,17 @@ const Pause = () => {
     (state) => state.boardState.boardSize
   );
   const socket = useContext(SocketContext);
-  const timer = useContext(TimerContext);
 
   useEffect(() => {
     if (pause) {
       if (/Paused/.test(pause)) {
-        timer.postMessage(true);
-        timer.onmessage = () => {
+        socket.removeAllListeners("oneSecondPass");
+        socket.emit("startTimer", true);
+        socket.on("oneSecondPass", () => {
           dispatch({ type: "setPauseTime", value: null });
-        };
+        });
       } else if (/Resumed/.test(pause)) {
-        timer.postMessage(true);
+        socket.emit("startTimer", true);
         dispatch({ type: "setPauseTime", value: "timeout" });
       }
     }

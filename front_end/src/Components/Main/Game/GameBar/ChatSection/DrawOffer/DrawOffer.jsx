@@ -2,12 +2,15 @@ import React, { useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./DrawOffer.scss";
 import { Button } from "react-bootstrap";
-import { SocketContext, SetTimerContext } from "../../../../../App/context.js";
+import {
+  SocketContext,
+  SetMoveTimerContext,
+} from "../../../../../App/context.js";
 
 const DrawOffer = () => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
@@ -67,7 +70,7 @@ const DrawOffer = () => {
           ref: listItemRef,
         },
       });
-      setTimer(null, true, dispatch);
+      setMoveTimer(null, true, dispatch);
     });
 
     return () => {

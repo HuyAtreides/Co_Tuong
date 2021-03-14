@@ -7,53 +7,20 @@ class Horse extends Piece {
     this.moves = horseRules;
   }
 
-  setNewPosition(x, y, board, turnToMove) {
-    const newCol = Math.floor(x / this.width);
-    const newRow = Math.floor(y / this.width);
+  canMoveToNewPosition(newRow, newCol, board) {
     const [curRow, curCol] = this.position;
     const [translateX, translateY] = [curCol * this.width, curRow * this.width];
     this.translate = `translate(${translateX}, ${translateY})`;
-    if (turnToMove && this.side === this.choosenSide[1]) {
+    if (this.side === this.choosenSide[1]) {
       const isValid = this.checkValidMove(newRow, newCol, board);
       if (isValid && !/translate/.test(isValid)) {
         if (!this.isBlocked(newRow, newCol, board)) {
-          if (!board[newRow][newCol].side)
-            return this.setPosition(false, newRow, newCol);
-          else if (board[newRow][newCol].side !== board[curRow][curCol].side)
-            return this.setPosition(true, newRow, newCol);
+          if (!board[newRow][newCol].side) {
+            return true;
+          } else if (board[newRow][newCol].side !== board[curRow][curCol].side)
+            return "capture";
         }
       } else if (isValid) return isValid;
-    }
-    return null;
-  }
-
-  canSaveGeneral(board) {
-    const [curRow, curCol] = this.position;
-    for (let move of this.moves) {
-      const tmpBoard = board.reduce((acc, row) => {
-        acc.push([...row]);
-        return acc;
-      }, []);
-      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
-      if (
-        newCol >= this.minCol &&
-        newCol <= this.maxCol &&
-        newRow >= this.minRow &&
-        newRow <= this.maxRow &&
-        !this.isBlocked(newRow, newCol, tmpBoard)
-      ) {
-        if (!tmpBoard[newRow][newCol].side) {
-          if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
-            this.updateTmpBoard(newRow, newCol, tmpBoard);
-            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
-          }
-        } else if (tmpBoard[newRow][newCol].side !== this.side) {
-          if (this.countPiecesBetween(newRow, newCol, tmpBoard) == 1) {
-            this.updateTmpBoard(newRow, newCol, tmpBoard);
-            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
-          }
-        }
-      }
     }
     return false;
   }
@@ -68,16 +35,17 @@ class Horse extends Piece {
     }
   }
 
-  canCaptureGeneral(board) {
+  canCaptureGeneral(tmpBoard) {
     const [curRow, curCol] = this.position;
     for (let move of this.moves) {
       const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
       if (newCol >= 0 && newCol < 9 && newRow >= 0 && newRow < 10) {
-        if (board[newRow][newCol].side)
-          if (board[newRow][newCol].side !== board[curRow][curCol].side)
-            if (!this.isBlocked(newRow, newCol, board))
-              if (board[newRow][newCol].name.split("-")[0] === "general")
-                return board[newRow][newCol].translate;
+        if (tmpBoard[newRow][newCol].side)
+          if (tmpBoard[newRow][newCol].side !== tmpBoard[curRow][curCol].side)
+            if (!this.isBlocked(newRow, newCol, tmpBoard))
+              if (tmpBoard[newRow][newCol].name.split("-")[0] === "general") {
+                return tmpBoard[newRow][newCol].translate;
+              }
       }
     }
     return false;

@@ -3,7 +3,7 @@ import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
-import { SocketContext, SetTimerContext } from "../../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 import PieceClass from "../../../../pieces/piece.js";
 
 function Board() {
@@ -23,7 +23,7 @@ function Board() {
   );
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
 
   const handleMouseDown = (event) => {
     const elementId = event.currentTarget.id;
@@ -43,32 +43,32 @@ function Board() {
     }
   };
 
-  const updateBoard = (newPosition, [curRow, curCol]) => {
-    if (newPosition && !/translate/.test(newPosition)) {
-      const [capture, newRow, newCol] = newPosition;
+  const updateBoard = (moveResult, [curRow, curCol]) => {
+    if (moveResult && !/translate/.test(moveResult)) {
+      const [capture, newRow, newCol] = moveResult;
       if (capture) {
         dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
       }
       board[curRow][curCol] = 0;
       board[newRow][newCol] = currentPiece;
-    } else if (newPosition) {
+    } else if (moveResult) {
       setTimeout(() => {
         setWarningDisplay("none");
       }, 400);
       setWarningDisplay("inline");
-      setWarningTranslate(newPosition);
+      setWarningTranslate(moveResult);
     }
   };
 
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      setTimer(true, false, dispatch);
+      setMoveTimer(true, false, dispatch);
     }
   };
 
-  const updateCurrentPiece = (newPosition) => {
-    if ((newPosition && !/translate/.test(newPosition)) || getClicked) {
+  const updateCurrentPiece = (moveResult) => {
+    if ((moveResult && !/translate/.test(moveResult)) || getClicked) {
       dispatch({ type: "setTargetDisplay", value: "none" });
       dispatch({ type: "setCurrentPiece", value: null });
       dispatch({ type: "setGetClicked", value: false });
@@ -79,18 +79,24 @@ function Board() {
 
   const handleMouseUp = (event) => {
     if (currentPiece) {
+      let moveResult = null;
       const svg = svgRef.current;
       const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
+      const newCol = Math.floor(x / currentPiece.width);
+      const newRow = Math.floor(y / currentPiece.width);
       const [curRow, curCol] = currentPiece.position;
-      const newPosition = currentPiece.setNewPosition(x, y, board, turnToMove);
-      updateBoard(newPosition, [curRow, curCol]);
+      const canMove = currentPiece.canMoveToNewPosition(newRow, newCol, board);
+      if (turnToMove && canMove && !/translate/.test(canMove))
+        moveResult = currentPiece.setPosition(canMove, newRow, newCol);
+      else if (/translate/.test(canMove)) moveResult = canMove;
+      updateBoard(moveResult, [curRow, curCol]);
       dispatch({ type: "setDraggable", value: false });
-      updateCurrentPiece(newPosition);
+      updateCurrentPiece(moveResult);
       dispatch({ type: "setBoard", value: [...board] });
-      if (newPosition && !/translate/.test(newPosition)) {
+      if (moveResult && !/translate/.test(moveResult)) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
-        setTimer(false, false, dispatch);
-        socket.emit("opponentMove", newPosition, [curRow, curCol]);
+        setMoveTimer(false, false, dispatch);
+        socket.emit("opponentMove", moveResult, [curRow, curCol]);
       }
     }
   };
@@ -105,16 +111,21 @@ function Board() {
   };
 
   const moveOnClick = (currentPiece, x, y) => {
+    let moveResult = null;
     const [curRow, curCol] = currentPiece.position;
-    const newPosition = currentPiece.setNewPosition(x, y, board, turnToMove);
-    updateBoard(newPosition, [curRow, curCol]);
+    const newCol = Math.floor(x / currentPiece.width);
+    const newRow = Math.floor(y / currentPiece.width);
+    const canMove = currentPiece.canMoveToNewPosition(newRow, newCol, board);
+    if (turnToMove && canMove && !/translate/.test(canMove))
+      moveResult = currentPiece.setPosition(canMove, newRow, newCol);
+    updateBoard(moveResult, [curRow, curCol]);
     dispatch({ type: "setTargetDisplay", value: "none" });
     dispatch({ type: "setCurrentPiece", value: null });
     dispatch({ type: "setBoard", value: [...board] });
-    if (newPosition && !/translate/.test(newPosition)) {
+    if (moveResult && !/translate/.test(moveResult)) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
-      setTimer(false, false, dispatch);
-      socket.emit("opponentMove", newPosition, [curRow, curCol]);
+      setMoveTimer(false, false, dispatch);
+      socket.emit("opponentMove", moveResult, [curRow, curCol]);
     }
   };
 
@@ -179,21 +190,24 @@ function Board() {
   });
 
   useEffect(() => {
-    if (turnToMove && PieceClass.isCheckmated(board, side[1])) {
-      const listItemRef = React.createRef();
-      dispatch({ type: "setGameResult", value: "Lose" });
-      dispatch({
-        type: "setMessage",
-        value: {
-          type: "game result message",
-          winner: "Opponent Won - ",
-          reason: "Checkmate",
-          className: "game-message",
-          ref: listItemRef,
-        },
-      });
-      setTimer(null, true, dispatch);
-      socket.emit("gameFinish", ["Won", "Checkmate"]);
+    if (turnToMove) {
+      const lostReason = PieceClass.isLost(board, side[1]);
+      if (lostReason) {
+        const listItemRef = React.createRef();
+        dispatch({ type: "setGameResult", value: "Lose" });
+        dispatch({
+          type: "setMessage",
+          value: {
+            type: "game result message",
+            winner: "Opponent Won - ",
+            reason: lostReason,
+            className: "game-message",
+            ref: listItemRef,
+          },
+        });
+        setMoveTimer(null, true, dispatch);
+        socket.emit("gameFinish", ["Won", lostReason]);
+      }
     }
   }, [turnToMove]);
 
@@ -215,8 +229,8 @@ function Board() {
         transform={targetTranslate}
       ></image>
       <rect
-        width={boardSize[0] / 9 - 1}
-        height={boardSize[0] / 9 - 1}
+        width={boardSize[0] / 9 - 3}
+        height={boardSize[0] / 9 - 3}
         style={{ display: warningDisplay }}
         transform={warningTranslate}
         fill="brown"

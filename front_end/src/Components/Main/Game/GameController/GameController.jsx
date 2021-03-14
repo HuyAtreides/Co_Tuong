@@ -2,19 +2,19 @@ import React, { useContext, useEffect } from "react";
 import { Col, Button } from "react-bootstrap";
 import "./GameController.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { SocketContext, SetTimerContext } from "../../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const findingMatch = useSelector((state) => state.gameState.findingMatch);
   const time = useSelector((state) => state.gameState.time);
   const side = useSelector((state) => state.boardState.side);
 
   const handlePlay = () => {
     if (!findingMatch) {
-      socket.emit("findMatch", side);
+      socket.emit("findMatch", side, time);
       dispatch({ type: "setFindingMatch", value: true });
     }
   };
@@ -37,11 +37,12 @@ const GameController = (props) => {
       dispatch({ type: "setFindingMatch", value: null });
     });
 
-    socket.on("foundMatch", (opponentID, firstMove) => {
+    socket.on("foundMatch", (opponentID, firstMove, time) => {
       socket.opponentID = opponentID;
+      dispatch({ type: "setTime", value: time });
       dispatch({ type: "setTurnToMove", value: firstMove });
       dispatch({ type: "setFoundMatch", value: true });
-      setTimer(firstMove, false, dispatch);
+      setMoveTimer(firstMove, false, dispatch);
     });
 
     return () => {

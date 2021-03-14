@@ -28,9 +28,12 @@ class Piece {
     const existMove = this.moves.some((move) => {
       return move[0] === moveRow && move[1] === moveCol;
     });
-    const generalTranslate = this.putGeneralInDanger(newRow, newCol, board);
-    if (generalTranslate) return generalTranslate;
-    return valid && existMove;
+    if (valid && existMove) {
+      const generalTranslate = this.putGeneralInDanger(newRow, newCol, board);
+      if (generalTranslate) return generalTranslate;
+      return true;
+    }
+    return false;
   }
 
   setPosition(capture, newRow, newCol) {
@@ -38,27 +41,24 @@ class Piece {
     const translate = `translate(${translateX}, ${translateY})`;
     this.position = [newRow, newCol];
     this.translate = translate;
-    return [capture, newRow, newCol];
+    return [capture === "capture", newRow, newCol];
   }
 
-  setNewPosition(x, y, board, turnToMove) {
-    const newCol = Math.floor(x / this.width);
-    const newRow = Math.floor(y / this.width);
+  canMoveToNewPosition(newRow, newCol, board) {
     const [curRow, curCol] = this.position;
     const [translateX, translateY] = [curCol * this.width, curRow * this.width];
     this.translate = `translate(${translateX}, ${translateY})`;
-    if (turnToMove && this.side === this.choosenSide[1]) {
+    if (this.side === this.choosenSide[1]) {
       const isValid = this.checkValidMove(newRow, newCol, board);
       if (isValid && !/translate/.test(isValid)) {
         if (!board[newRow][newCol].side) {
-          if (this.countPiecesBetween(newRow, newCol, board) === 0)
-            return this.setPosition(false, newRow, newCol);
+          if (this.countPiecesBetween(newRow, newCol, board) === 0) return true;
         } else if (board[newRow][newCol].side !== board[curRow][curCol].side)
           if (this.countPiecesBetween(newRow, newCol, board) === 1)
-            return this.setPosition(true, newRow, newCol);
+            return "capture";
       } else if (isValid) return isValid;
     }
-    return null;
+    return false;
   }
 
   countPiecesBetween(newRow, newCol, board) {
@@ -81,9 +81,10 @@ class Piece {
   static isGeneralInDanger(board, side) {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
-        if (board[i][j] && board[i][j].side !== side)
-          if (/translate/.test(board[i][j].canCaptureGeneral(board)))
-            return true;
+        if (board[i][j] && board[i][j].side !== side) {
+          const canCapture = board[i][j].canCaptureGeneral(board);
+          if (/translate/.test(canCapture)) return canCapture;
+        }
       }
     }
     return false;
@@ -95,62 +96,26 @@ class Piece {
       return acc;
     }, []);
     this.updateTmpBoard(newRow, newCol, tmpBoard);
+    return Piece.isGeneralInDanger(tmpBoard, this.side);
+  }
+
+  static isLost(board, side) {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
-        if (tmpBoard[i][j] && tmpBoard[i][j].side !== this.side) {
-          const generalTranslate = tmpBoard[i][j].canCaptureGeneral(tmpBoard);
-          if (generalTranslate) {
-            return generalTranslate;
+        if (board[i][j] && board[i][j].side === side) {
+          const [curRow, curCol] = board[i][j].position;
+          for (let move of board[i][j].moves) {
+            const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
+            const tmp = board[i][j].canMoveToNewPosition(newRow, newCol, board);
+            if (tmp && !/translate/.test(tmp)) return null;
           }
         }
       }
     }
-    return false;
-  }
-
-  canSaveGeneral(board) {
-    let tmpBoard;
-    const [curRow, curCol] = this.position;
-    for (let move of this.moves) {
-      tmpBoard = board.reduce((acc, row) => {
-        acc.push([...row]);
-        return acc;
-      }, []);
-      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
-      if (
-        newCol >= this.minCol &&
-        newCol <= this.maxCol &&
-        newRow >= this.minRow &&
-        newRow <= this.maxRow
-      ) {
-        if (!tmpBoard[newRow][newCol].side) {
-          if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 0) {
-            this.updateTmpBoard(newRow, newCol, tmpBoard);
-            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
-          }
-        } else if (tmpBoard[newRow][newCol].side !== this.side) {
-          if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 1) {
-            this.updateTmpBoard(newRow, newCol, tmpBoard);
-            if (!Piece.isGeneralInDanger(tmpBoard, this.side)) return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  static isCheckmated(board, side) {
     if (Piece.isGeneralInDanger(board, side)) {
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 9; j++) {
-          if (board[i][j] && board[i][j].side === side) {
-            if (board[i][j].canSaveGeneral(board)) return false;
-          }
-        }
-      }
-      return true;
+      return "Checkmate";
     }
-    return false;
+    return "Stalemate";
   }
 
   updateTmpBoard(newRow, newCol, tmpBoard) {
@@ -168,8 +133,9 @@ class Piece {
         if (tmpBoard[newRow][newCol].side)
           if (tmpBoard[newRow][newCol].side !== tmpBoard[curRow][curCol].side)
             if (this.countPiecesBetween(newRow, newCol, tmpBoard) === 1)
-              if (tmpBoard[newRow][newCol].name.split("-")[0] === "general")
+              if (tmpBoard[newRow][newCol].name.split("-")[0] === "general") {
                 return tmpBoard[newRow][newCol].translate;
+              }
       }
     }
     return false;

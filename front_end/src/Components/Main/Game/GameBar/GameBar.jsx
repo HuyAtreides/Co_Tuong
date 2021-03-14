@@ -3,7 +3,7 @@ import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
-import { SocketContext, SetTimerContext } from "../../../App/context.js";
+import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 
 const GameBar = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const GameBar = () => {
   );
   const gameResult = useSelector((state) => state.gameState.gameResult);
   const socket = useContext(SocketContext);
-  const setTimer = useContext(SetTimerContext);
+  const setMoveTimer = useContext(SetMoveTimerContext);
   const pause = useSelector((state) => state.gameState.pause);
 
   const handleResume = () => {
@@ -70,7 +70,7 @@ const GameBar = () => {
         ref: listItemRef,
       },
     });
-    setTimer(null, true, dispatch);
+    setMoveTimer(null, true, dispatch);
     socket.emit("gameFinish", ["Won", "Opponent Resign"]);
   };
 
@@ -89,7 +89,7 @@ const GameBar = () => {
           ref: listItemRef,
         },
       });
-      setTimer(null, true, dispatch);
+      setMoveTimer(null, true, dispatch);
     });
 
     return () => {
