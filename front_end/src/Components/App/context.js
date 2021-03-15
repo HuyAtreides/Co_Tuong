@@ -1,7 +1,7 @@
 import React from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8080/play");
+const socket = io("http://localhost:8080/play", { autoConnect: false });
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
 

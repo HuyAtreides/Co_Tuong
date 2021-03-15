@@ -12,8 +12,6 @@ import {
 } from "./context.js";
 
 function App(props) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   useEffect(() => {
     return () => {
       socket.disconnect();
@@ -26,13 +24,13 @@ function App(props) {
         <Router>
           <Switch>
             <Route path="/login">
-              <Login setIsAuthenticated={setIsAuthenticated} />
+              <Login />
             </Route>
             <Route path="/signup">
               <Signup />
             </Route>
             <Route path="/">
-              <Main isAuthenticated={isAuthenticated} />
+              <Main />
             </Route>
           </Switch>
         </Router>

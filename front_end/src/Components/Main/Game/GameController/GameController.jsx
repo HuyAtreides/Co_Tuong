@@ -37,8 +37,8 @@ const GameController = (props) => {
       dispatch({ type: "setFindingMatch", value: null });
     });
 
-    socket.on("foundMatch", (opponentID, firstMove, time) => {
-      socket.opponentID = opponentID;
+    socket.on("foundMatch", (opponent, firstMove, time) => {
+      socket.opponent = opponent;
       dispatch({ type: "setTime", value: time });
       dispatch({ type: "setTurnToMove", value: firstMove });
       dispatch({ type: "setFoundMatch", value: true });

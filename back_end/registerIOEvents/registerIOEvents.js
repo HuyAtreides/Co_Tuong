@@ -15,6 +15,11 @@ function registerIOEvents(io) {
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
   };
 
+  io.of("/play").use((socket, next) => {
+    socket.player = socket.handshake.auth.player;
+    next();
+  });
+
   io.of("/play").on("connection", onConnectionHandler);
 }
 

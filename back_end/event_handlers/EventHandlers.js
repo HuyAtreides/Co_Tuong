@@ -55,8 +55,9 @@ class EventHandlers {
           for (let [id, curSocket] of io.sockets) {
             if (id !== socket.id && curSocket.opponentID === null) {
               EventHandlers.assignFirstMove(socket, curSocket, id);
-              socket.emit("foundMatch", id, socket.firstMove, time);
-              curSocket.emit("foundMatch", socket.id, !socket.firstMove, time);
+              const [player1, player2] = [socket.player, curSocket.player];
+              socket.emit("foundMatch", player2, socket.firstMove, time);
+              curSocket.emit("foundMatch", player1, !socket.firstMove, time);
               clearInterval(intervalID);
               return;
             }
