@@ -4,6 +4,7 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import Login from "../Login/Login.jsx";
 import Main from "../Main/Main.jsx";
 import Signup from "../Signup/Signup.jsx";
+import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
 import {
   SocketContext,
   SetMoveTimerContext,
@@ -28,6 +29,9 @@ function App(props) {
             </Route>
             <Route path="/signup">
               <Signup />
+            </Route>
+            <Route path="/verify-email">
+              <VerifyEmail />
             </Route>
             <Route path="/">
               <Main />

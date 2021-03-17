@@ -1,5 +1,13 @@
 .container-fluid {
+  position: relative;
   padding: 0px !important;
   margin: 0px !important;
   height: 70%;
+  position: relative;
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

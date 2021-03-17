@@ -5,52 +5,75 @@ const passport = require("passport");
 const USERDAO = require("../DAO/USERDAO.js");
 const bcrypt = require("bcrypt");
 
-function handleFailedLoginCount(req, res, next) {
-  if (req.session.failedLoginCount === 5) {
-    const start = new Date();
-    const intervalID = setInterval(() => {
-      const timeElapse = (new Date() - start) / 1000;
-      if (timeElapse > 25 * 60) {
-        clearInterval(intervalID);
-        req.session.failedLoginCount = 0;
-      }
-    }, 1000);
-    return res.json({
-      user: null,
-      message: "Too many failed login attempts. Please try again in 25 minutes",
-    });
+const handleIncorrectPassword = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const failedLoginAttempt = await USERDAO.updateFailedLoginAttempt(username);
+    if (failedLoginAttempt === 5) {
+      const start = new Date();
+      const intervalID = setInterval(async () => {
+        const timeElapsed = Math.floor((new Date() - start) / 1000);
+        if (timeElapsed > 15 * 60) {
+          clearInterval(intervalID);
+          await USERDAO.resetFailedLoginAttempt(username);
+        }
+      }, 1000);
+      return res.json({
+        message:
+          "Too many failed login attempt. Please try again in 15 minutes",
+      });
+    }
+    return res.json({ user: null, message: "Incorrect Password" });
+  } catch (err) {
+    return res.status(500).json({ message: err.toString() });
   }
-  next();
-}
+};
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
-    const [err, user] = await USERDAO.findUser(username);
-    if (err) return done(err, false);
-    if (user === null)
-      return done(null, false, { message: "Incorrect Username" });
-    bcrypt.compare(password, user.password, (err, result) => {
-      if (err) return done(err, false);
-      if (result) return done(null, user, null);
-      return done(null, false, { message: "Incorrect Password" });
-    });
+    try {
+      const user = await USERDAO.findUser(username);
+      if (user === null)
+        return done(null, false, { message: "Incorrect Username" });
+      if (user.failedLoginAttempt === 5)
+        return done(null, false, {
+          message:
+            "Too many failed login attempt. Please try again in 15 minutes",
+        });
+      bcrypt.compare(password, user.password, async (err, result) => {
+        if (err) return done(err, null);
+        if (result) {
+          await USERDAO.resetFailedLoginAttempt(username);
+          return done(null, user, null);
+        }
+        return done(null, false, { message: "Incorrect Password" });
+      });
+    } catch (err) {
+      return done(err.toString(), null, null);
+    }
   })
 );
 
-router.post("/", handleFailedLoginCount, (req, res) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err)
-      return res.status(500).json({ user: null, message: err.toString() });
-    if (!user) {
-      req.session.failedLoginCount += 1;
-      return res.json({ user: null, message: info.message });
-    }
-    req.login(user, (err) => {
-      if (err)
-        return res.status(500).json({ user: user, message: err.toString() });
-      return res.json({ user: user, message: null });
-    });
-  })(req, res);
-});
+router.post(
+  "/",
+  (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        return res.status(500).json({ user: null, message: err.toString() });
+      }
+      if (!user) {
+        if (info.message !== "Incorrect Password")
+          return res.json({ user: null, message: info.message });
+        else return next();
+      }
+      req.login(user, (err) => {
+        if (err)
+          return res.status(500).json({ user: user, message: err.toString() });
+        return res.json({ user: user, message: null });
+      });
+    })(req, res, next);
+  },
+  handleIncorrectPassword
+);
 
 module.exports = router;

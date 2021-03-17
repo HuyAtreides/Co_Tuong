@@ -1,4 +1,4 @@
-const callAPI = async (method, data, endPoint) => {
+const callAPI = async (method, endPoint, data) => {
   let response;
   if (method === "POST") {
     const init = {
@@ -9,9 +9,13 @@ const callAPI = async (method, data, endPoint) => {
       },
       body: JSON.stringify(data),
     };
-    response = await fetch(`http://localhost:8080/${endPoint}`, init);
-  } else response = await fetch(`http://localhost:8080/${endPoint}`);
+    response = await fetch(`http://localhost:8080${endPoint}`, init);
+  } else
+    response = await fetch(`http://localhost:8080${endPoint}`, {
+      credentials: "include",
+    });
   const responseData = await response.json();
+  responseData.ok = response.ok;
   return responseData;
 };
 

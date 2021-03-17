@@ -182,6 +182,7 @@ function Board() {
     });
 
     return () => {
+      console.log("remove window event");
       window.onmouseup = null;
       window.onmousemove = null;
       window.onresize = null;

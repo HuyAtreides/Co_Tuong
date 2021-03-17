@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useContext } from "react";
 import {
   Container,
   Form,
@@ -9,38 +9,133 @@ import {
   Col,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
+import { SocketContext } from "../App/context.js";
 import callAPI from "../App/callAPI.js";
 
-const Signup = (props) => {
+const Signup = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
-  const [verify, setVerify] = useState(false);
+  const socket = useContext(SocketContext);
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidEmailMess, setInvalidEmailMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [error, setError] = useState(null);
-  const [verificationCode, setVerficationCode] = useState("");
-  const [invalidCodeMess, setInvalidCodeMess] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
+  const [invalidFirstname, setInvalidFirstname] = useState("");
+  const [invalidLastname, setInvalidLastname] = useState("");
   const [lastname, setLastname] = useState("");
 
-  const handleVerificationCodeChange = (event) => {};
-  const handleUsernameChange = (event) => {};
+  const handleUsernameChange = (event) => {
+    const value = event.target.value;
+    if (/[^ _a-z0-9]/i.test(value) || value.length < 3 || value.length > 20) {
+      setInvalidUsernameMess(
+        "Username must be between 3-20 characters long and use only Latin letters and numbers"
+      );
+    } else setInvalidUsernameMess("");
+    setUsername(value);
+  };
 
-  const handlePasswordChange = (event) => {};
+  const handlePasswordChange = (event) => {
+    const value = event.target.value;
+    if (value.length < 6) {
+      setInvalidPasswordMess("Password must be atlest 6 characters");
+    } else setInvalidPasswordMess("");
+    setPassword(value);
+  };
 
-  const handleEmailChange = (event) => {};
+  const handleEmailChange = (event) => {
+    const value = event.target.value;
+    if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.\-]+$/.test(value) || /\.\./.test(value))
+      setInvalidEmailMess("Invalid email address");
+    else setInvalidEmailMess("");
+    setEmail(value);
+  };
 
-  const handleFirstnameChange = (event) => {};
+  const handleFirstnameChange = (event) => {
+    const value = event.target.value;
+    setInvalidFirstname("");
+    setFirstname(value);
+  };
+  const handleLastnameChange = (event) => {
+    const value = event.target.value;
+    setInvalidLastname("");
+    setLastname(value);
+  };
 
-  const handleLastnameChange = (event) => {};
+  const handleMissingField = () => {
+    let count = 0;
+    if (!username) {
+      count += 1;
+      setInvalidUsernameMess("Please fill out this field");
+    }
+    if (!password) {
+      count += 1;
+      setInvalidPasswordMess("Please fill out this field");
+    }
+    if (!firstname) {
+      count += 1;
+      setInvalidFirstname("Please fill out this field");
+    }
+    if (!lastname) {
+      count += 1;
+      setInvalidLastname("Please fill out this field");
+    }
+    if (!email) {
+      count += 1;
+      setInvalidEmailMess("Please fill out this field");
+    }
+    return count !== 0;
+  };
+
+  const handleError = (ok, message) => {
+    if (!ok) {
+      setError(message);
+    } else if (/Email/.test(message)) {
+      setInvalidEmailMess(message);
+    } else if (/User/.test(message)) {
+      setInvalidUsernameMess(message);
+    } else setError(message);
+  };
+
+  const handleSignUp = async (event) => {
+    event.preventDefault();
+    const missingField = handleMissingField();
+    if (
+      !missingField &&
+      !invalidEmailMess &&
+      !invalidPasswordMess &&
+      !invalidUsernameMess &&
+      !invalidFirstname &&
+      !invalidLastname
+    ) {
+      setWaitForResponse(true);
+      setError(null);
+      const { message, user, ok } = await callAPI("POST", "/signup", {
+        email: email,
+        firstname: firstname,
+        username: username,
+        password: password,
+        lastname: lastname,
+      });
+      setWaitForResponse(false);
+      if (user) {
+        dispatch({ type: "setIsAuthenticated", value: true });
+        dispatch({ type: "setPlayerInfo", value: user });
+        socket.auth = {
+          playername: user.username,
+          photo: user.photo,
+        };
+        socket.connect();
+      } else handleError(ok, message);
+    }
+  };
 
   if (isAuthenticated) return <Redirect to="/" />;
 
@@ -49,71 +144,72 @@ const Signup = (props) => {
       <h1>Xiangqi</h1>
       <Row className="justify-content-center">
         <Col
-          md={{ span: 3 }}
+          md={{ span: 4 }}
+          sm={{ span: 6 }}
           xs={{ span: 10 }}
           className="login-component d-flex flex-column  align-items-center"
         >
           {error ? <p className="error-message">{error}</p> : null}
-          <Form>
-            <Form.Group
-              controlId="username"
-              style={{ display: verify ? "none" : "block" }}
-            >
+          <Form onSubmit={handleSignUp} method="POST">
+            <Form.Group controlId="username">
               <Form.Label style={{ float: "left" }}>Username</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
-                  required
                   isInvalid={invalidUsernameMess !== ""}
                   onChange={handleUsernameChange}
                   value={username}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
                   {invalidUsernameMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
-            <Form.Group
-              controlId="firstname"
-              style={{ display: verify ? "none" : "block" }}
-            >
+            <Form.Group controlId="firstname">
               <Form.Label style={{ float: "left" }}>Firstname</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
-                  required
+                  isInvalid={invalidFirstname !== ""}
                   onChange={handleFirstnameChange}
                   value={firstname}
                 />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidFirstname}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
-            <Form.Group
-              controlId="lastname"
-              style={{ display: verify ? "none" : "block" }}
-            >
+            <Form.Group controlId="lastname">
               <Form.Label style={{ float: "left" }}>Lastname</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
-                  required
+                  isInvalid={invalidLastname !== ""}
                   onChange={handleLastnameChange}
                   value={lastname}
                 />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidLastname}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
-            <Form.Group
-              controlId="email"
-              style={{ display: verify ? "none" : "block" }}
-            >
+            <Form.Group controlId="email">
               <Form.Label style={{ float: "left" }}>Email</Form.Label>
-
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
-                  required
                   isInvalid={invalidEmailMess !== ""}
                   onChange={handleEmailChange}
                   value={email}
@@ -126,15 +222,11 @@ const Signup = (props) => {
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
-            <Form.Group
-              controlId="password"
-              style={{ display: verify ? "none" : "block" }}
-            >
+            <Form.Group controlId="password">
               <Form.Label style={{ float: "left" }}>Password</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="password"
-                  required
                   isInvalid={invalidPasswordMess !== ""}
                   onChange={handlePasswordChange}
                   value={password}
@@ -148,58 +240,20 @@ const Signup = (props) => {
               </InputGroup>
             </Form.Group>
 
-            <Form.Group
-              controlId="verificationCode"
-              style={{ display: !verify ? "none" : "block" }}
-            >
-              <Form.Label style={{ float: "left" }}>
-                Enter your verification code
-              </Form.Label>
-              <InputGroup hasValidation>
-                <Form.Control
-                  type="text"
-                  required
-                  isInvalid={invalidCodeMess !== ""}
-                  onChange={handleVerificationCodeChange}
-                  value={verificationCode}
-                  placeholder="Verification Code"
-                />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
-                  {invalidCodeMess}
-                </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
-
             <Button type="submit">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
-              ) : !verify ? (
-                "Create Account"
               ) : (
                 "Submit"
               )}
             </Button>
-            <Button
-              style={{ display: !verify ? "none" : "inline", marginTop: "7px" }}
-            >
-              Resend
-            </Button>
           </Form>
-          <p
-            className="seperator"
-            style={{ display: verify ? "none" : "flex" }}
-          >
+          <p className="seperator">
             <span></span>
             <span className="seperator-text">or connect with</span>
             <span></span>
           </p>
-          <div
-            className="social-login"
-            style={{ display: verify ? "none" : "flex" }}
-          >
+          <div className="social-login">
             <a className="google" href="http://localhost:8080/auth/google">
               <i className="fab fa-google"></i> Google
             </a>

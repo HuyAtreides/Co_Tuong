@@ -29,7 +29,7 @@ const Login = () => {
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
-    if (/[^ _a-z0-9]/i.test(value) || value.length < 3) {
+    if (/[^ _a-z0-9]/i.test(value) || value.length < 3 || value.length > 20) {
       setInvalidUsernameMess(
         "Username must be between 3-20 characters long and use only Latin letters and numbers"
       );
@@ -44,31 +44,49 @@ const Login = () => {
     } else setInvalidPasswordMess("");
     setPassword(value);
   };
+  const handleMissingField = () => {
+    let count = 0;
+    if (!username) {
+      count += 1;
+      setInvalidUsernameMess("Please fill out this field");
+    }
+    if (!password) {
+      count += 1;
+      setInvalidPasswordMess("Please fill out this field");
+    }
+    return count !== 0;
+  };
+
+  const handleError = (ok, message) => {
+    if (!ok) {
+      setError(message);
+    } else if (/Password/.test(message)) {
+      setInvalidPasswordMess(message);
+    } else if (/Username/.test(message)) {
+      setInvalidUsernameMess(message);
+    } else setError(message);
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    if (!invalidPasswordMess && !invalidUsernameMess) {
-      setInvalidPasswordMess("");
-      setInvalidUsernameMess("");
-      setError(false);
+    const missingField = handleMissingField();
+    if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
+      setError(null);
       setWaitForResponse(true);
-      const { message, user } = await callAPI(
-        "POST",
-        { username: username, password: password },
-        "login"
-      );
+      const { message, user, ok } = await callAPI("POST", "/login", {
+        username: username,
+        password: password,
+      });
+      setWaitForResponse(false);
       if (user) {
         dispatch({ type: "setIsAuthenticated", value: true });
         dispatch({ type: "setPlayerInfo", value: user });
-        socket.auth.player = {
-          username: user.username,
+        socket.auth = {
+          playername: user.username,
           photo: user.photo,
         };
         socket.connect();
-      } else {
-        setError(message);
-      }
-      setWaitForResponse(false);
+      } else handleError(ok, message);
     }
   };
 
@@ -79,7 +97,8 @@ const Login = () => {
       <h1>Xiangqi</h1>
       <Row className="justify-content-center">
         <Col
-          md={{ span: 3 }}
+          md={{ span: 4 }}
+          sm={{ span: 6 }}
           xs={{ span: 10 }}
           className="login-component d-flex flex-column  align-items-center"
         >
@@ -95,7 +114,10 @@ const Login = () => {
                   onChange={handleUsernameChange}
                   value={username}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
                   {invalidUsernameMess}
                 </Form.Control.Feedback>
               </InputGroup>

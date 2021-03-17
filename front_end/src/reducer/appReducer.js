@@ -1,9 +1,6 @@
-import { io } from "socket.io-client";
-
 const gameReducer = (
   state = {
     lang: "English",
-    currentIntervalID: null,
     isAuthenticated: false,
     playerInfo: null,
   },
@@ -17,9 +14,6 @@ const gameReducer = (
       return newState;
     case "setLang":
       newState.lang = value;
-      return newState;
-    case "setCurrentIntervalID":
-      newState.currentIntervalID = value;
       return newState;
     case "setIsAuthenticated":
       newState.isAuthenticated = value;

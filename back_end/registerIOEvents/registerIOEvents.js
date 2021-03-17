@@ -16,7 +16,7 @@ function registerIOEvents(io) {
   };
 
   io.of("/play").use((socket, next) => {
-    socket.player = socket.handshake.auth.player;
+    socket.player = socket.handshake.auth;
     next();
   });
 
