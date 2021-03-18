@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { SocketContext } from "../App/context.js";
+import React, { useState, useContext, useEffect } from "react";
+import { AuthenticateUserContext } from "../App/context.js";
 import callAPI from "../App/callAPI.js";
 import {
   Container,
@@ -16,7 +16,8 @@ import "./Login.scss";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const socket = useContext(SocketContext);
+  const authenticateUser = useContext(AuthenticateUserContext);
+  const [checkingSession, setCheckingSession] = useState(false);
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
   const [error, setError] = useState(false);
@@ -29,11 +30,7 @@ const Login = () => {
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
-    if (/[^ _a-z0-9]/i.test(value) || value.length < 3 || value.length > 20) {
-      setInvalidUsernameMess(
-        "Username must be between 3-20 characters long and use only Latin letters and numbers"
-      );
-    } else setInvalidUsernameMess("");
+    setInvalidUsernameMess("");
     setUsername(value);
   };
 
@@ -44,6 +41,7 @@ const Login = () => {
     } else setInvalidPasswordMess("");
     setPassword(value);
   };
+
   const handleMissingField = () => {
     let count = 0;
     if (!username) {
@@ -73,104 +71,120 @@ const Login = () => {
     if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
       setError(null);
       setWaitForResponse(true);
-      const { message, user, ok } = await callAPI("POST", "/login", {
+      const { message, user, ok, sessionID } = await callAPI("POST", "/login", {
         username: username,
         password: password,
       });
       setWaitForResponse(false);
       if (user) {
-        dispatch({ type: "setIsAuthenticated", value: true });
-        dispatch({ type: "setPlayerInfo", value: user });
-        socket.auth = {
-          playername: user.username,
-          photo: user.photo,
-        };
-        socket.connect();
+        authenticateUser(dispatch, user, sessionID);
       } else handleError(ok, message);
     }
   };
+
+  useEffect(async () => {
+    setCheckingSession(true);
+    const { user } = await callAPI("GET", "/", null);
+    setCheckingSession(false);
+    if (user) {
+      authenticateUser(dispatch, user);
+    }
+  }, [isAuthenticated]);
 
   if (isAuthenticated) return <Redirect to="/" />;
 
   return (
     <Container fluid>
       <h1>Xiangqi</h1>
-      <Row className="justify-content-center">
-        <Col
-          md={{ span: 4 }}
-          sm={{ span: 6 }}
-          xs={{ span: 10 }}
-          className="login-component d-flex flex-column  align-items-center"
-        >
-          {error ? <p className="error-message">{error}</p> : null}
-          <Form onSubmit={handleLogin} method="POST">
-            <Form.Group controlId="username-or-email">
-              <InputGroup hasValidation>
-                <Form.Control
-                  type="text"
-                  required
-                  isInvalid={invalidUsernameMess !== ""}
-                  placeholder="Username or Email"
-                  onChange={handleUsernameChange}
-                  value={username}
-                />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
-                  {invalidUsernameMess}
-                </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
+      {checkingSession ? (
+        <Spinner
+          animation="border"
+          variant="secondary"
+          style={{
+            width: `${window.innerWidth / 5}px`,
+            height: `${window.innerWidth / 5}px`,
+            borderWidth: "9px",
+          }}
+        />
+      ) : (
+        <Row className="justify-content-center">
+          <Col
+            md={{ span: 4 }}
+            sm={{ span: 6 }}
+            xs={{ span: 10 }}
+            className="login-component d-flex flex-column  align-items-center"
+          >
+            {error ? <p className="error-message">{error}</p> : null}
+            <Form onSubmit={handleLogin} method="POST">
+              <Form.Group controlId="username-or-email">
+                <InputGroup hasValidation>
+                  <Form.Control
+                    type="text"
+                    isInvalid={invalidUsernameMess !== ""}
+                    placeholder="Username or Email"
+                    onChange={handleUsernameChange}
+                    value={username}
+                  />
+                  <Form.Control.Feedback
+                    type="invalid"
+                    style={{ textAlign: "left" }}
+                  >
+                    {invalidUsernameMess}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
 
-            <Form.Group controlId="password">
-              <InputGroup hasValidation>
-                <Form.Control
-                  type="password"
-                  required
-                  isInvalid={invalidPasswordMess !== ""}
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                  value={password}
-                />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
-                  {invalidPasswordMess}
-                </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
-            <Button type="submit">
-              {waitForResponse ? (
-                <Spinner animation="border" variant="dark" />
-              ) : (
-                "Log In"
-              )}
-            </Button>
-            <Button className="log-in-as-guest">Log In As Guest</Button>
-          </Form>
-          <p className="seperator">
-            <span></span>
-            <span className="seperator-text">or connect with</span>
-            <span></span>
-          </p>
-          <div className="social-login">
-            <a className="google" href="http://localhost:8080/auth/google">
-              <i className="fab fa-google"></i> Google
-            </a>
-            <a className="facebook" href="http://localhost:8080/auth/facebook">
-              <i className="fab fa-facebook "></i> Facebook
-            </a>
-            <a className="github" href="http://localhost:8080/auth/github">
-              <i className="fab fa-github "></i> Github
-            </a>
-          </div>
-          <div className="sign-up-area">
-            <Link to="/signup">Sign Up</Link>
-          </div>
-        </Col>
-      </Row>
+              <Form.Group controlId="password">
+                <InputGroup hasValidation>
+                  <Form.Control
+                    type="password"
+                    isInvalid={invalidPasswordMess !== ""}
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
+                    value={password}
+                  />
+                  <Form.Control.Feedback
+                    type="invalid"
+                    style={{ textAlign: "left" }}
+                  >
+                    {invalidPasswordMess}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
+              <Button type="submit">
+                {waitForResponse ? (
+                  <Spinner animation="border" variant="dark" />
+                ) : (
+                  "Log In"
+                )}
+              </Button>
+              <Button className="log-in-as-guest">Log In As Guest</Button>
+            </Form>
+            <p className="seperator">
+              <span></span>
+              <span className="seperator-text">or connect with</span>
+              <span></span>
+            </p>
+            <div className="social-login">
+              <a className="google" href="http://localhost:8080/auth/google">
+                <i className="fab fa-google"></i> Google
+              </a>
+              <a
+                className="facebook"
+                href="http://localhost:8080/auth/facebook"
+              >
+                <i className="fab fa-facebook "></i> Facebook
+              </a>
+              <a className="github" href="http://localhost:8080/auth/github">
+                <i className="fab fa-github "></i> Github
+              </a>
+            </div>
+            <div className="sign-up-area">
+              <Link to="/signup">Sign Up</Link>
+            </div>
+          </Col>
+        </Row>
+      )}
     </Container>
   );
 };

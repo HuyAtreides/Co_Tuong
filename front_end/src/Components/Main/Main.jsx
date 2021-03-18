@@ -7,31 +7,33 @@ import { useSelector, useDispatch } from "react-redux";
 import Game from "./Game/Game.jsx";
 import { Spinner } from "react-bootstrap";
 import callAPI from "../App/callAPI.js";
-import { SocketContext } from "../App/context";
+import { AuthenticateUserContext } from "../App/context";
 import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
 
 const Main = () => {
   const dispatch = useDispatch();
   const [waitForResponse, setWaitForResponse] = useState(false);
-  const socket = useContext(SocketContext);
+  const authenticateUser = useContext(AuthenticateUserContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
 
   useEffect(async () => {
+    if (window.location.hash == "#_=_") {
+      if (window.history.replaceState) {
+        var cleanHref = window.location.href.split("#")[0];
+        window.history.replaceState(null, null, cleanHref);
+      } else {
+        window.location.hash = "";
+      }
+    }
     if (!isAuthenticated) {
       setWaitForResponse(true);
-      const { user } = await callAPI("GET", "/", null);
+      const { user, sessionID } = await callAPI("GET", "/", null);
       setWaitForResponse(false);
       if (user) {
-        dispatch({ type: "setIsAuthenticated", value: true });
-        dispatch({ type: "setPlayerInfo", value: user });
-        socket.auth = {
-          playername: user.username,
-          photo: user.photo,
-        };
-        socket.connect();
+        authenticateUser(dispatch, user, sessionID);
       }
     }
   }, [isAuthenticated]);

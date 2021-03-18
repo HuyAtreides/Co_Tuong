@@ -20,6 +20,15 @@ const GamePlayArea = (props) => {
   const capturedPieces = useSelector(
     (state) => state.boardState.capturedPieces
   );
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+
+  const playerPhoto = playerInfo.photo
+    ? playerInfo.photo
+    : `/user_profile_pic/${
+        playerInfo.name.lastname
+          ? playerInfo.name.lastname[0]
+          : playerInfo.username[0]
+      }.svg`;
 
   return (
     <Col
@@ -58,8 +67,8 @@ const GamePlayArea = (props) => {
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
-            <img src="/user_profile_pic/P.svg" alt="" />
-            <p className="user-name">Phan Gia Huy</p>
+            <img src={playerPhoto} alt="" />
+            <p className="user-name">{playerInfo.username}</p>
           </div>
         </div>
         <div className="captured-pieces">

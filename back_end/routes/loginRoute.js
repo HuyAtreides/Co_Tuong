@@ -35,6 +35,11 @@ passport.use(
       const user = await USERDAO.findUser(username);
       if (user === null)
         return done(null, false, { message: "Incorrect Username" });
+      if (user.inGame)
+        return done(null, false, {
+          message:
+            "Your account is currently in a game. Please try again after the game was finished",
+        });
       if (user.failedLoginAttempt === 5)
         return done(null, false, {
           message:
@@ -57,6 +62,7 @@ passport.use(
 router.post(
   "/",
   (req, res, next) => {
+    const sessionID = req.cookies["connect.sid"];
     passport.authenticate("local", (err, user, info) => {
       if (err) {
         return res.status(500).json({ user: null, message: err.toString() });
@@ -69,7 +75,7 @@ router.post(
       req.login(user, (err) => {
         if (err)
           return res.status(500).json({ user: user, message: err.toString() });
-        return res.json({ user: user, message: null });
+        return res.json({ user: user, message: null, sessionID: sessionID });
       });
     })(req, res, next);
   },

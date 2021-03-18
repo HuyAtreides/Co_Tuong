@@ -9,6 +9,8 @@ import {
   SocketContext,
   SetMoveTimerContext,
   setMoveTimer,
+  AuthenticateUserContext,
+  authenticateUser,
   socket,
 } from "./context.js";
 
@@ -22,22 +24,24 @@ function App(props) {
   return (
     <SocketContext.Provider value={socket}>
       <SetMoveTimerContext.Provider value={setMoveTimer}>
-        <Router>
-          <Switch>
-            <Route path="/login">
-              <Login />
-            </Route>
-            <Route path="/signup">
-              <Signup />
-            </Route>
-            <Route path="/verify-email">
-              <VerifyEmail />
-            </Route>
-            <Route path="/">
-              <Main />
-            </Route>
-          </Switch>
-        </Router>
+        <AuthenticateUserContext.Provider value={authenticateUser}>
+          <Router>
+            <Switch>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/signup">
+                <Signup />
+              </Route>
+              <Route path="/verify-email">
+                <VerifyEmail />
+              </Route>
+              <Route path="/">
+                <Main />
+              </Route>
+            </Switch>
+          </Router>
+        </AuthenticateUserContext.Provider>
       </SetMoveTimerContext.Provider>
     </SocketContext.Provider>
   );

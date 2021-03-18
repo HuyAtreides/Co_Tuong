@@ -31,9 +31,10 @@ const checkUsername = async (req, res, next) => {
 
 router.post("/", checkEmail, checkUsername, async (req, res) => {
   try {
+    const sessionID = req.cookies["connect.sid"];
     const formData = req.body;
     const user = await USERDAO.insertUser(formData);
-    return res.json({ user: user });
+    return res.json({ user: user, sessionID: sessionID });
   } catch (err) {
     res.status(500).json({ message: err.toString() });
   }

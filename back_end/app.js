@@ -11,11 +11,13 @@ const signupRoute = require("./routes/signupRoute.js");
 const verifyEmailRoute = require("./routes/verifyEmailRoute.js");
 const entryRoute = require("./routes/entryRoute.js");
 const logoutRoute = require("./routes/logoutRoute.js");
+const facebookLoginRoute = require("./routes/facebookLoginRoute.js");
 const USERDAO = require("./DAO/USERDAO.js");
+const cookieParser = require("cookie-parser");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
-    maxAge: 10000,
+    maxAge: 60000,
   },
   resave: false,
   saveUninitialized: false,
@@ -31,6 +33,8 @@ const io = require("socket.io")(httpServer, {
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -49,6 +53,7 @@ app.use("/signup", signupRoute);
 app.use("/verify-email", verifyEmailRoute);
 app.use("/logout", logoutRoute);
 app.use("/", entryRoute);
+app.use("/auth/facebook", facebookLoginRoute);
 
 registerIOEvents(io, sessionMiddleware);
 

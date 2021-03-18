@@ -5,7 +5,7 @@ class USERDAO {
   static async injectDB(connection) {
     try {
       users = await connection.db().collection("users");
-      await users.createIndex({ username: 1 });
+      await users.createIndex({ username: "text" });
     } catch (err) {
       console.log(err.toString());
     }
@@ -36,9 +36,56 @@ class USERDAO {
   static async findUser(username) {
     try {
       const user = await users.findOne({
-        $or: [{ username: username }, { email: username }],
+        $or: [{ username: username }, { "email.value": username }],
       });
       return user;
+    } catch (err) {
+      throw new Error(err.toString());
+    }
+  }
+
+  static async updateUserInGame(username, inGame) {
+    try {
+      await users.findOneAndUpdate(
+        { username: username },
+        { $set: { inGame: inGame } }
+      );
+    } catch (err) {
+      throw new Error(err.toString());
+    }
+  }
+
+  static async createNewUser(profile) {
+    try {
+      const { id, provider, email, name } = profile;
+      const user = await users.findOne({ userID: id, provider: provider });
+      if (user) return user;
+      else {
+        const count = await users.countDocuments({
+          $text: { $search: profile.displayName },
+        });
+        const username = count
+          ? profile.displayName + count
+          : profile.displayName;
+        const result = await users.insertOne({
+          username: username,
+          provider: provider,
+          userID: id,
+          email: {
+            value: email && email.value ? email.value : null,
+            verify: true,
+          },
+          photo: profile.photos ? profile.photos[0] : null,
+          name: {
+            firstname: name.familyName ? name.familyName : null,
+            lastname: name.givenName ? name.givenName : null,
+          },
+          lang: "English",
+          matches: [],
+          inGame: false,
+        });
+        return result.ops[0];
+      }
     } catch (err) {
       throw new Error(err.toString());
     }
@@ -50,6 +97,8 @@ class USERDAO {
       const hashedPassoword = await bcrypt.hash(password, 10);
       const result = await users.insertOne({
         username: username,
+        provider: "",
+        userID: null,
         password: hashedPassoword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verify: false },

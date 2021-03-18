@@ -4,6 +4,21 @@ import { io } from "socket.io-client";
 const socket = io("http://localhost:8080/play", { autoConnect: false });
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
+const AuthenticateUserContext = React.createContext();
+
+const authenticateUser = (dispatch, user, sessionID) => {
+  dispatch({ type: "setPlayerInfo", value: user });
+  dispatch({ type: "setIsAuthenticated", value: true });
+  socket.auth = {
+    player: {
+      playername: user.username,
+      photo: user.photo,
+      lastname: user.name.lastname,
+    },
+    sessionID: sessionID,
+  };
+  socket.connect();
+};
 
 const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
   socket.removeAllListeners("oneSecondPass");
@@ -26,4 +41,11 @@ const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
   });
 };
 
-export { SocketContext, SetMoveTimerContext, setMoveTimer, socket };
+export {
+  SocketContext,
+  SetMoveTimerContext,
+  setMoveTimer,
+  socket,
+  AuthenticateUserContext,
+  authenticateUser,
+};

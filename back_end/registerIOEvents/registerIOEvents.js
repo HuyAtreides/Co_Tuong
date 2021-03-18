@@ -1,8 +1,9 @@
 const EventHandlers = require("../event_handlers/EventHandlers.js");
 
-function registerIOEvents(io) {
+function registerIOEvents(io, sessionMiddleware) {
   const onConnectionHandler = (socket) => {
     console.log(`${socket.id} connect`);
+    socket.join(socket.sessionID);
 
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);
@@ -13,10 +14,12 @@ function registerIOEvents(io) {
     EventHandlers.registerGameFinishHandlers(io.of("/play"), socket);
     EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
+    EventHandlers.registerLogout(io.of("/play"), socket);
   };
 
   io.of("/play").use((socket, next) => {
-    socket.player = socket.handshake.auth;
+    socket.player = socket.handshake.auth.player;
+    socket.sessionID = socket.handshake.auth.sessionID;
     next();
   });
 

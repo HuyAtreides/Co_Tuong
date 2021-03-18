@@ -1,3 +1,5 @@
+const USERDAO = require("../DAO/USERDAO.js");
+
 class EventHandlers {
   static intervalID;
 
@@ -87,6 +89,12 @@ class EventHandlers {
 
     socket.on("exitGame", () => {
       socket.opponentID = undefined;
+    });
+  }
+
+  static registerLogout(io, socket) {
+    socket.on("logout", () => {
+      socket.to(socket.sessionID).emit("accountLogout");
     });
   }
 

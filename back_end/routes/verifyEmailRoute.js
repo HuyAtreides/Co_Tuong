@@ -41,6 +41,7 @@ router.post(
             "Too many failed verify attempt. Please try again in 15 minutes",
         });
       if (!correct) return next();
+      await USERDAO.resetFailedVerifyAttempt(username);
       const updatedUser = await USERDAO.updateUserEmail(username);
       return res.json({ user: updatedUser });
     } catch (err) {
