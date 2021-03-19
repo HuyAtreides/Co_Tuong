@@ -48,7 +48,7 @@ const GameBar = () => {
       type: "setMessage",
       value: {
         type: "game result message",
-        winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won - `,
+        winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won  `,
         reason: reason,
         className: "game-message",
         ref: listItemRef,

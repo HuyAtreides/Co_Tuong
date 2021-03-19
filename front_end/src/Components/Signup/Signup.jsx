@@ -138,20 +138,20 @@ const Signup = () => {
       );
       setWaitForResponse(false);
       if (user) {
-        authenticateUser(dispatch, user, sessionID);
         setSuccessfullyLogin(true);
+        authenticateUser(dispatch, user, sessionID);
       } else handleError(ok, message);
     }
   };
 
   useEffect(async () => {
     setCheckingSession(true);
-    const { user, sessionID } = await callAPI("GET", "/", null);
+    const { user, sessionID, message, ok } = await callAPI("GET", "/", null);
     setCheckingSession(false);
     if (user) {
-      authenticateUser(dispatch, user, sessionID);
       setSuccessfullyLogin(true);
-    }
+      authenticateUser(dispatch, user, sessionID);
+    } else handleError(ok, message);
   }, [isAuthenticated]);
 
   if (successfullyLogin) return <Redirect to="/" />;

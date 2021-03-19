@@ -4,12 +4,6 @@ const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const passport = require("passport");
 const USERDAO = require("../DAO/USERDAO.js");
 
-const checkisAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated() && !req.user.guest && !req.user.inGame)
-    res.redirect("/");
-  next();
-};
-
 passport.use(
   new GoogleStrategy(
     {
@@ -20,9 +14,9 @@ passport.use(
     async (accessToken, _, profile, done) => {
       try {
         const user = await USERDAO.createNewUser(profile);
-        done(null, user, null);
+        return done(null, user, null);
       } catch (err) {
-        done(err.toString(), null, null);
+        return done(err.toString(), null, null);
       }
     }
   )
@@ -30,7 +24,6 @@ passport.use(
 
 router.get(
   "/",
-  checkisAuthenticated,
   passport.authenticate("google", {
     scope: [
       "https://www.googleapis.com/auth/userinfo.profile",

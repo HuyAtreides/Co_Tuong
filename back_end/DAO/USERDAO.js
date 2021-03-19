@@ -5,7 +5,7 @@ class USERDAO {
   static async injectDB(connection) {
     try {
       users = await connection.db().collection("users");
-      await users.createIndex({ username: "text" });
+      await users.createIndex({ username: 1 });
     } catch (err) {
       console.log(err.toString());
     }
@@ -87,8 +87,9 @@ class USERDAO {
         if (!user.inGame) return user;
         return false;
       } else {
+        const regex = new RegExp(`^${profile.displayName}`, "i");
         const count = await users.countDocuments({
-          $text: { $search: profile.displayName, $caseSensitive: true },
+          username: regex,
         });
         const username = count
           ? profile.displayName + count

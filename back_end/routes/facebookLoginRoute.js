@@ -4,12 +4,6 @@ const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const USERDAO = require("../DAO/USERDAO.js");
 
-const checkisAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated() && !req.user.guest && !req.user.inGame)
-    res.redirect("/");
-  next();
-};
-
 passport.use(
   new FacebookStrategy(
     {
@@ -20,15 +14,15 @@ passport.use(
     async (accessToken, _, profile, done) => {
       try {
         const user = await USERDAO.createNewUser(profile);
-        done(null, user, null);
+        return done(null, user, null);
       } catch (err) {
-        done(err.toString(), null, null);
+        return done(err.toString(), null, null);
       }
     }
   )
 );
 
-router.get("/", checkisAuthenticated, passport.authenticate("facebook"));
+router.get("/", passport.authenticate("facebook"));
 
 router.get(
   "/callback",

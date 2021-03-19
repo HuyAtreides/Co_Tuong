@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const USERDAO = require("../DAO/USERDAO.js");
 
 router.get("/", async (req, res) => {
   const sessionID = req.cookies["connect.sid"];
   if (req.isAuthenticated()) {
-    if (!req.user.inGame)
-      return res.json({ user: req.user, sessionID: sessionID });
+    const user = await USERDAO.findUser(req.user.username);
+    if (!user.inGame) return res.json({ user: req.user, sessionID: sessionID });
     return res.json({
       user: null,
       message:

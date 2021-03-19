@@ -21,7 +21,7 @@ const GamePlayArea = (props) => {
     (state) => state.boardState.capturedPieces
   );
   const playerInfo = useSelector((state) => state.appState.playerInfo);
-
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
   const playerPhoto = playerInfo.photo
     ? playerInfo.photo
     : `/user_profile_pic/${playerInfo.username[0]}.svg`;
@@ -35,11 +35,8 @@ const GamePlayArea = (props) => {
     >
       <div className="player-area">
         <div className="avatar-and-name">
-          <img
-            src="https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png"
-            alt=""
-          />
-          <p className="user-name">Opponent</p>
+          <img src={opponentInfo.opponentPhoto} alt="" />
+          <p className="user-name">{opponentInfo.opponentName}</p>
         </div>
         <div className="captured-pieces">
           {capturedPieces.map((element, index) => {

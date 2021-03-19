@@ -43,11 +43,13 @@ class EventHandlers {
   }
 
   static registerFindMatchHandlers(io, socket) {
-    socket.on("findMatch", (side, time) => {
+    socket.on("findMatch", async (side, time) => {
       const start = new Date();
+      const user = await USERDAO.findUser(socket.player.playername);
+      if (user.inGame) socket.emit("isInGame");
       socket.opponentID = null;
       socket.side = side[1];
-      const intervalID = setInterval(() => {
+      const intervalID = setInterval(async () => {
         const timeElapse = (new Date() - start) / 1000;
         if (timeElapse > 10) {
           socket.emit("timeout");
@@ -62,8 +64,10 @@ class EventHandlers {
               curSocket.opponentID === null &&
               curSocket.player.playername !== socket.player.playername
             ) {
-              EventHandlers.assignFirstMove(socket, curSocket, id);
               const [player1, player2] = [socket.player, curSocket.player];
+              await USERDAO.updateUserInGame(player1.playername, true);
+              await USERDAO.updateUserInGame(player2.playername, true);
+              EventHandlers.assignFirstMove(socket, curSocket, id);
               socket.emit("foundMatch", player2, socket.firstMove, time);
               curSocket.emit("foundMatch", player1, !socket.firstMove, time);
               clearInterval(intervalID);
@@ -88,14 +92,16 @@ class EventHandlers {
   }
 
   static registerDisconnectHandlers(io, socket) {
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log(socket.id + " disconnect");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
       if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
+      await USERDAO.updateUserInGame(socket.player.playername, false);
     });
 
-    socket.on("exitGame", () => {
+    socket.on("exitGame", async () => {
       socket.opponentID = undefined;
+      await USERDAO.updateUserInGame(socket.player.playername, false);
     });
   }
 

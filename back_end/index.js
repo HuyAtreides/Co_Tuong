@@ -14,10 +14,10 @@ MongoClient.connect(uri, {
       await USERDAO.injectDB(client);
       console.log("connected to mongodb");
       server.listen(PORT, () => {
-        console.log(`listening at port ${PORT}`);
+        console.log(`listening on port ${PORT}`);
       });
-    } catch (e) {
-      console.log(e.toString());
+    } catch (err) {
+      console.log(err.toString());
       process.exit(1);
     }
   })

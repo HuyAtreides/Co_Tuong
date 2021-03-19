@@ -13,7 +13,7 @@ const GameController = (props) => {
   const side = useSelector((state) => state.boardState.side);
 
   const handlePlay = () => {
-    if (!findingMatch) {
+    if (findingMatch !== true) {
       socket.emit("findMatch", side, time);
       dispatch({ type: "setFindingMatch", value: true });
     }
@@ -34,15 +34,32 @@ const GameController = (props) => {
 
   useEffect(() => {
     socket.on("timeout", () => {
-      dispatch({ type: "setFindingMatch", value: null });
+      dispatch({
+        type: "setFindingMatch",
+        value: "No Players are currently online :(",
+      });
     });
 
     socket.on("foundMatch", (opponent, firstMove, time) => {
-      socket.opponent = opponent;
       dispatch({ type: "setTime", value: time });
       dispatch({ type: "setTurnToMove", value: firstMove });
       dispatch({ type: "setFoundMatch", value: true });
+      dispatch({
+        type: "setOpponentInfo",
+        value: {
+          opponentName: opponent.playername,
+          opponentPhoto: opponent.photo,
+        },
+      });
       setMoveTimer(firstMove, false, dispatch);
+    });
+
+    socket.on("isInGame", () => {
+      dispatch({
+        type: "setFindingMatch",
+        value:
+          "Your account is currenlt in a game. Please try again after the game was finished",
+      });
     });
 
     return () => {
@@ -59,7 +76,7 @@ const GameController = (props) => {
             className="red-side"
             value="red"
             onClick={handleSwitchSide}
-            disabled={findingMatch}
+            disabled={findingMatch === true}
           >
             Red
           </Button>
@@ -67,7 +84,7 @@ const GameController = (props) => {
             className="black-side"
             value="black"
             onClick={handleSwitchSide}
-            disabled={findingMatch}
+            disabled={findingMatch === true}
           >
             Black
           </Button>
@@ -76,7 +93,7 @@ const GameController = (props) => {
           <Button
             className="select-timer"
             onClick={props.handleToggle}
-            disabled={findingMatch}
+            disabled={findingMatch === true}
           >
             <i className="fas fa-clock"></i> {time + ":00"}{" "}
             <i className="fas fa-angle-down"></i>
@@ -106,16 +123,12 @@ const GameController = (props) => {
           </div>
         </div>
         <Button
-          className={`play ${findingMatch ? "finding-opponent" : ""}`}
+          className={`play ${findingMatch === true ? "finding-opponent" : ""}`}
           onClick={handlePlay}
         >
-          {findingMatch
-            ? "Finding Opponent..."
-            : findingMatch === null
-            ? "No Players Are Currently Online :("
-            : "Play"}
+          {findingMatch === true ? "Finding Opponent..." : findingMatch}
         </Button>
-        <Button className="play-with-friend" disabled={findingMatch}>
+        <Button className="play-with-friend" disabled={findingMatch === true}>
           Play With Friend
         </Button>
       </div>

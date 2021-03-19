@@ -79,28 +79,28 @@ const Login = () => {
       });
       setWaitForResponse(false);
       if (user) {
-        authenticateUser(dispatch, user, sessionID);
         setSuccessfullyLogin(true);
+        authenticateUser(dispatch, user, sessionID);
       } else handleError(ok, message);
     }
   };
 
   const handleLoginAsGuest = async () => {
     setWaitForServer(true);
-    const { user } = await callAPI("GET", "/login-as-guest");
+    const { user } = await callAPI("GET", "/login-as-guest", null);
     setWaitForServer(false);
-    authenticateUser(dispatch, user, null);
     setSuccessfullyLogin(true);
+    authenticateUser(dispatch, user, null);
   };
 
   useEffect(async () => {
     setCheckingSession(true);
-    const { user, sessionID } = await callAPI("GET", "/", null);
+    const { message, user, ok, sessionID } = await callAPI("GET", "/", null);
     setCheckingSession(false);
     if (user) {
-      authenticateUser(dispatch, user, sessionID);
       setSuccessfullyLogin(true);
-    }
+      authenticateUser(dispatch, user, sessionID);
+    } else handleError(ok, message);
   }, [isAuthenticated]);
 
   if (successfullyLogin) return <Redirect to="/" />;

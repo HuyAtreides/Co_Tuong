@@ -17,7 +17,7 @@ const DrawOffer = () => {
 
   const handleDrawResult = () => {
     const listItemRef = React.createRef();
-    dispatch({ type: "setSendGameResult", value: "Draw" });
+    dispatch({ type: "setGameResult", value: "Draw" });
     dispatch({
       type: "setMessage",
       value: {
@@ -33,8 +33,8 @@ const DrawOffer = () => {
 
   const handleAcceptOffer = () => {
     dispatch({ type: "setReceiveDrawOffer", value: false });
-    socket.emit("gameFinish", "Draw");
     handleDrawResult();
+    socket.emit("gameFinish", "Draw");
   };
 
   const handleDeclineOffer = () => {

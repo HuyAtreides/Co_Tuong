@@ -1,5 +1,5 @@
 const defaultState = {
-  findingMatch: false,
+  findingMatch: "Play",
   foundMatch: false,
   time: 10,
   opponentTimeLeftToMove: 10 * 60,
@@ -8,8 +8,12 @@ const defaultState = {
   pauseTime: 5,
   receiveDrawOffer: false,
   messages: [],
+  opponentInfo: {
+    opponentName: "Opponent",
+    opponentPhoto:
+      "https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png",
+  },
   gameResult: null,
-  sendGameResult: false,
   gameResultDisplay: "flex",
 };
 
@@ -17,13 +21,13 @@ const gameReducer = (state = defaultState, action) => {
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
+    case "setOpponentInfo":
+      newState.opponentInfo = value;
+      return newState;
     case "setPauseTime":
       if (value === "restart") newState.pauseTime = 25 * 60;
       else if (value === "timeout") newState.pauseTime = 5;
       else newState.pauseTime -= 1;
-      return newState;
-    case "setSendGameResult":
-      newState.sendGameResult = value;
       return newState;
     case "setGameResult":
       newState.gameResult = value;
