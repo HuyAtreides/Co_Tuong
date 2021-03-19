@@ -32,6 +32,7 @@ const Signup = () => {
   const [invalidLastname, setInvalidLastname] = useState("");
   const [checkingSession, setCheckingSession] = useState(false);
   const [lastname, setLastname] = useState("");
+  const [successfullyLogin, setSuccessfullyLogin] = useState(false);
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
@@ -138,20 +139,22 @@ const Signup = () => {
       setWaitForResponse(false);
       if (user) {
         authenticateUser(dispatch, user, sessionID);
+        setSuccessfullyLogin(true);
       } else handleError(ok, message);
     }
   };
 
   useEffect(async () => {
     setCheckingSession(true);
-    const { user } = await callAPI("GET", "/", null);
+    const { user, sessionID } = await callAPI("GET", "/", null);
     setCheckingSession(false);
     if (user) {
-      authenticateUser(dispatch, user);
+      authenticateUser(dispatch, user, sessionID);
+      setSuccessfullyLogin(true);
     }
   }, [isAuthenticated]);
 
-  if (isAuthenticated) return <Redirect to="/" />;
+  if (successfullyLogin) return <Redirect to="/" />;
 
   return (
     <Container fluid>

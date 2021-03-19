@@ -1,9 +1,9 @@
 const EventHandlers = require("../event_handlers/EventHandlers.js");
 
-function registerIOEvents(io, sessionMiddleware) {
+function registerIOEvents(io) {
   const onConnectionHandler = (socket) => {
     console.log(`${socket.id} connect`);
-    socket.join(socket.sessionID);
+    if (socket.sessionID) socket.join(socket.sessionID);
 
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);

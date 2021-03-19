@@ -23,7 +23,7 @@ const Timer = (props) => {
         dispatch({ type: "setPauseTime", value: "restart" });
         dispatch({ type: "setPause", value: null });
         setMoveTimer(turnToMove, false, dispatch);
-        socket.emit("resumeGame");
+        socket.emit("startGame");
       }
     }
 
@@ -43,7 +43,7 @@ const Timer = (props) => {
       });
     });
 
-    socket.on("gameResumed", () => {
+    socket.on("gameStarted", () => {
       socket.emit("startTimer", false);
       dispatch({ type: "setPause", value: null });
       dispatch({ type: "setPauseTime", value: "restart" });
@@ -52,7 +52,7 @@ const Timer = (props) => {
 
     return () => {
       socket.removeAllListeners("pauseOver");
-      socket.removeAllListeners("gameResumed");
+      socket.removeAllListeners("gameStarted");
     };
   }, [time]);
 
@@ -90,32 +90,31 @@ const Pause = () => {
       }
     }
 
-    socket.on("gamePaused", () => {
+    const handleOpponentPauseOrResumeGame = (pause) => {
       const listItemRef = React.createRef();
       const message = {
         from: "Opponent",
-        message: "Paused Game",
+        message: `${pause ? "Paused" : "Resumed"} Game`,
         className: "game-message",
         ref: listItemRef,
       };
       dispatch({ type: "setMessage", value: message });
-      dispatch({ type: "setPause", value: "Opponent Paused Game" });
+      dispatch({
+        type: "setPause",
+        value: `Opponent ${pause ? "Paused" : "Resumed"} Game`,
+      });
+    };
+
+    socket.on("opponentPauseGame", () => {
+      handleOpponentPauseOrResumeGame(true);
     });
 
     socket.on("opponentResumeGame", () => {
-      const listItemRef = React.createRef();
-      const message = {
-        from: "Opponent",
-        message: "Resumed Game",
-        className: "game-message",
-        ref: listItemRef,
-      };
-      dispatch({ type: "setMessage", value: message });
-      dispatch({ type: "setPause", value: "Opponent Resumed Game" });
+      handleOpponentPauseOrResumeGame(false);
     });
 
     return () => {
-      socket.removeAllListeners("gamePaused");
+      socket.removeAllListeners("opponentPauseGame");
       socket.removeAllListeners("opponentResumeGame");
     };
   }, [pause]);

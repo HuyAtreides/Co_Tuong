@@ -12,6 +12,7 @@ const authenticateUser = (dispatch, user, sessionID) => {
   socket.auth = {
     player: {
       playername: user.username,
+      guest: user.guest,
       photo: user.photo,
       lastname: user.name.lastname,
     },

@@ -1,0 +1,50 @@
+const express = require("express");
+const router = express.Router();
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
+const passport = require("passport");
+const USERDAO = require("../DAO/USERDAO.js");
+
+const checkisAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated() && !req.user.guest && !req.user.inGame)
+    res.redirect("/");
+  next();
+};
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:8080/auth/google/callback",
+    },
+    async (accessToken, _, profile, done) => {
+      try {
+        const user = await USERDAO.createNewUser(profile);
+        done(null, user, null);
+      } catch (err) {
+        done(err.toString(), null, null);
+      }
+    }
+  )
+);
+
+router.get(
+  "/",
+  checkisAuthenticated,
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+  })
+);
+
+router.get(
+  "/callback",
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:3000/",
+    failureRedirect: "http://localhost:3000/login",
+  })
+);
+
+module.exports = router;

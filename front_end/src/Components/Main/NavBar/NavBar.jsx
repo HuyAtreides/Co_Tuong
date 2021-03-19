@@ -14,6 +14,7 @@ const NavBar = (props) => {
     const selectedLang = event.currentTarget.text;
     dispatch({ type: "setLang", value: selectedLang });
   };
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
@@ -48,22 +49,26 @@ const NavBar = (props) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="nav">
           <Link
-            to={`/${!isAuthenticated ? "login" : "home"}`}
+            to={`/${!isAuthenticated || playerInfo.guest ? "login" : "home"}`}
             className="link nav-link"
           >
-            {isAuthenticated ? "Home" : "Sign In"}
+            {isAuthenticated && !playerInfo.guest ? "Home" : "Sign In"}
           </Link>
           <button
             className="link nav-link logout"
             onClick={handleLogout}
-            style={{ display: isAuthenticated ? "inline" : "none" }}
+            style={{
+              display: isAuthenticated && !playerInfo.guest ? "inline" : "none",
+            }}
           >
             Log Out
           </button>
           <Link
             to="/signup"
             className="link nav-link "
-            style={{ display: !isAuthenticated ? "inline" : "none" }}
+            style={{
+              display: !isAuthenticated || playerInfo.guest ? "inline" : "none",
+            }}
           >
             Sign Up
           </Link>

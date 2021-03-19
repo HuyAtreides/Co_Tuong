@@ -12,6 +12,8 @@ const verifyEmailRoute = require("./routes/verifyEmailRoute.js");
 const entryRoute = require("./routes/entryRoute.js");
 const logoutRoute = require("./routes/logoutRoute.js");
 const facebookLoginRoute = require("./routes/facebookLoginRoute.js");
+const googleLoginRoute = require("./routes/googleLoginRoute.js");
+const loginAsGuestRoute = require("./routes/loginAsGuestRoute.js");
 const USERDAO = require("./DAO/USERDAO.js");
 const cookieParser = require("cookie-parser");
 const sessionMiddleware = session({
@@ -52,9 +54,11 @@ app.use("/login", loginRoute);
 app.use("/signup", signupRoute);
 app.use("/verify-email", verifyEmailRoute);
 app.use("/logout", logoutRoute);
-app.use("/", entryRoute);
 app.use("/auth/facebook", facebookLoginRoute);
+app.use("/auth/google", googleLoginRoute);
+app.use("/login-as-guest", loginAsGuestRoute);
+app.use("/", entryRoute);
 
-registerIOEvents(io, sessionMiddleware);
+registerIOEvents(io);
 
 module.exports = httpServer;

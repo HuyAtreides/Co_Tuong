@@ -56,7 +56,9 @@ const Main = () => {
           {isAuthenticated ? <Game /> : <EntryComponent />}
         </div>
       )}
-      {playerInfo && !playerInfo.email.verify ? <VerifyEmailNote /> : null}
+      {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
+        <VerifyEmailNote />
+      ) : null}
     </Container>
   );
 };

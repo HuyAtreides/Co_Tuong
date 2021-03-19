@@ -35,10 +35,12 @@ passport.use(
       const user = await USERDAO.findUser(username);
       if (user === null)
         return done(null, false, { message: "Incorrect Username" });
+      if (user.password === undefined)
+        return done(null, false, { message: "Incorrect Password" });
       if (user.inGame)
         return done(null, false, {
           message:
-            "Your account is currently in a game. Please try again after the game was finished",
+            "This account is currently in a game. Please try again after the game was finished",
         });
       if (user.failedLoginAttempt === 5)
         return done(null, false, {

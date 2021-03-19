@@ -4,6 +4,12 @@ const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const USERDAO = require("../DAO/USERDAO.js");
 
+const checkisAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated() && !req.user.guest && !req.user.inGame)
+    res.redirect("/");
+  next();
+};
+
 passport.use(
   new FacebookStrategy(
     {
@@ -22,7 +28,7 @@ passport.use(
   )
 );
 
-router.get("/", passport.authenticate("facebook"));
+router.get("/", checkisAuthenticated, passport.authenticate("facebook"));
 
 router.get(
   "/callback",

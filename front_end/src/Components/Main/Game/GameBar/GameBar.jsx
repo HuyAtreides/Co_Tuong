@@ -38,7 +38,23 @@ const GameBar = () => {
     };
     dispatch({ type: "setMessage", value: message });
     dispatch({ type: "setPause", value: "Phan Gia Huy Paused Game" });
-    socket.emit("pauseGame");
+    socket.emit("playerPauseGame");
+  };
+
+  const handleGameOver = (result, reason) => {
+    const listItemRef = React.createRef();
+    dispatch({ type: "setGameResult", value: result });
+    dispatch({
+      type: "setMessage",
+      value: {
+        type: "game result message",
+        winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won - `,
+        reason: reason,
+        className: "game-message",
+        ref: listItemRef,
+      },
+    });
+    setMoveTimer(null, true, dispatch);
   };
 
   const handleOfferDraw = () => {
@@ -58,38 +74,14 @@ const GameBar = () => {
   };
 
   const handleResign = () => {
-    const listItemRef = React.createRef();
-    dispatch({ type: "setGameResult", value: "Lose" });
-    dispatch({
-      type: "setMessage",
-      value: {
-        type: "game result message",
-        winner: "Opponent Won - ",
-        reason: "Opponent Resign",
-        className: "game-message",
-        ref: listItemRef,
-      },
-    });
-    setMoveTimer(null, true, dispatch);
+    handleGameOver("Lose", "Phan Gia Huy Resign");
     socket.emit("gameFinish", ["Won", "Opponent Resign"]);
   };
 
   useEffect(() => {
     socket.on("gameOver", (result, reason) => {
       if (gameResult !== null) return;
-      const listItemRef = React.createRef();
-      dispatch({ type: "setGameResult", value: result });
-      dispatch({
-        type: "setMessage",
-        value: {
-          type: "game result message",
-          winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won - `,
-          reason: reason,
-          className: "game-message",
-          ref: listItemRef,
-        },
-      });
-      setMoveTimer(null, true, dispatch);
+      handleGameOver(result, reason);
     });
 
     return () => {

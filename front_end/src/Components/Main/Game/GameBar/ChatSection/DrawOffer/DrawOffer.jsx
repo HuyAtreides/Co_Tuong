@@ -15,10 +15,8 @@ const DrawOffer = () => {
     (state) => state.gameState.receiveDrawOffer
   );
 
-  const handleAcceptOffer = () => {
+  const handleDrawResult = () => {
     const listItemRef = React.createRef();
-    dispatch({ type: "setReceiveDrawOffer", value: false });
-    socket.emit("gameFinish", "Draw");
     dispatch({ type: "setSendGameResult", value: "Draw" });
     dispatch({
       type: "setMessage",
@@ -30,6 +28,13 @@ const DrawOffer = () => {
         ref: listItemRef,
       },
     });
+    setMoveTimer(null, true, dispatch);
+  };
+
+  const handleAcceptOffer = () => {
+    dispatch({ type: "setReceiveDrawOffer", value: false });
+    socket.emit("gameFinish", "Draw");
+    handleDrawResult();
   };
 
   const handleDeclineOffer = () => {
@@ -58,19 +63,7 @@ const DrawOffer = () => {
     });
 
     socket.on("draw", () => {
-      const listItemRef = React.createRef();
-      dispatch({ type: "setGameResult", value: "Draw" });
-      dispatch({
-        type: "setMessage",
-        value: {
-          type: "game result message",
-          winner: "",
-          reason: "Game Draw By Agreement",
-          className: "game-message",
-          ref: listItemRef,
-        },
-      });
-      setMoveTimer(null, true, dispatch);
+      handleDrawResult();
     });
 
     return () => {

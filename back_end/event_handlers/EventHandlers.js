@@ -29,6 +29,8 @@ class EventHandlers {
 
   static assignFirstMove(socket, curSocket, id) {
     curSocket.opponentID = socket.id;
+    socket.opponent = curSocket.player;
+    curSocket.opponent = socket.player;
     socket.opponentID = id;
     if (socket.side !== curSocket.side) {
       socket.firstMove = socket.side === "red";
@@ -55,7 +57,11 @@ class EventHandlers {
           clearInterval(intervalID);
         } else {
           for (let [id, curSocket] of io.sockets) {
-            if (id !== socket.id && curSocket.opponentID === null) {
+            if (
+              id !== socket.id &&
+              curSocket.opponentID === null &&
+              curSocket.player.playername !== socket.player.playername
+            ) {
               EventHandlers.assignFirstMove(socket, curSocket, id);
               const [player1, player2] = [socket.player, curSocket.player];
               socket.emit("foundMatch", player2, socket.firstMove, time);
@@ -85,6 +91,7 @@ class EventHandlers {
     socket.on("disconnect", () => {
       console.log(socket.id + " disconnect");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
+      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
     });
 
     socket.on("exitGame", () => {
@@ -114,16 +121,16 @@ class EventHandlers {
   }
 
   static registerPauseGameHandlers(io, socket) {
-    socket.on("pauseGame", () => {
-      io.to(socket.opponentID).emit("gamePaused");
+    socket.on("playerPauseGame", () => {
+      io.to(socket.opponentID).emit("opponentPauseGame");
     });
 
     socket.on("pauseTimeout", () => {
       io.to(socket.opponentID).emit("pauseOver");
     });
 
-    socket.on("resumeGame", () => {
-      io.to(socket.opponentID).emit("gameResumed");
+    socket.on("startGame", () => {
+      io.to(socket.opponentID).emit("gameStarted");
     });
 
     socket.on("playerResumeGame", () => {

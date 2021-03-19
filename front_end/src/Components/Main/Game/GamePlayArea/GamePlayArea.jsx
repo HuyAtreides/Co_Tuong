@@ -24,11 +24,7 @@ const GamePlayArea = (props) => {
 
   const playerPhoto = playerInfo.photo
     ? playerInfo.photo
-    : `/user_profile_pic/${
-        playerInfo.name.lastname
-          ? playerInfo.name.lastname[0]
-          : playerInfo.username[0]
-      }.svg`;
+    : `/user_profile_pic/${playerInfo.username[0]}.svg`;
 
   return (
     <Col

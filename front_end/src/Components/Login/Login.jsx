@@ -17,6 +17,7 @@ import "./Login.scss";
 const Login = () => {
   const dispatch = useDispatch();
   const authenticateUser = useContext(AuthenticateUserContext);
+  const [successfullyLogin, setSuccessfullyLogin] = useState(false);
   const [checkingSession, setCheckingSession] = useState(false);
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
@@ -24,6 +25,7 @@ const Login = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [waitForServer, setWaitForServer] = useState(false);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
@@ -78,20 +80,30 @@ const Login = () => {
       setWaitForResponse(false);
       if (user) {
         authenticateUser(dispatch, user, sessionID);
+        setSuccessfullyLogin(true);
       } else handleError(ok, message);
     }
   };
 
+  const handleLoginAsGuest = async () => {
+    setWaitForServer(true);
+    const { user } = await callAPI("GET", "/login-as-guest");
+    setWaitForServer(false);
+    authenticateUser(dispatch, user, null);
+    setSuccessfullyLogin(true);
+  };
+
   useEffect(async () => {
     setCheckingSession(true);
-    const { user } = await callAPI("GET", "/", null);
+    const { user, sessionID } = await callAPI("GET", "/", null);
     setCheckingSession(false);
     if (user) {
-      authenticateUser(dispatch, user);
+      authenticateUser(dispatch, user, sessionID);
+      setSuccessfullyLogin(true);
     }
   }, [isAuthenticated]);
 
-  if (isAuthenticated) return <Redirect to="/" />;
+  if (successfullyLogin) return <Redirect to="/" />;
 
   return (
     <Container fluid>
@@ -158,7 +170,13 @@ const Login = () => {
                   "Log In"
                 )}
               </Button>
-              <Button className="log-in-as-guest">Log In As Guest</Button>
+              <Button className="log-in-as-guest" onClick={handleLoginAsGuest}>
+                {waitForServer ? (
+                  <Spinner animation="border" variant="dark" />
+                ) : (
+                  "Log In As Guest"
+                )}
+              </Button>
             </Form>
             <p className="seperator">
               <span></span>

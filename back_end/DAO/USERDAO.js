@@ -55,27 +55,53 @@ class USERDAO {
     }
   }
 
+  static async removeGuest(guestName) {
+    try {
+      await users.deleteOne({ username: guestName });
+    } catch (err) {
+      console.log(err.toString());
+    }
+  }
+
+  static async insertGuest() {
+    try {
+      const count = await users.countDocuments({ guest: true });
+      const guestName = "Guest" + (count ? count : "");
+      const result = await users.insertOne({
+        username: guestName,
+        name: { lastname: null, firstname: null },
+        guest: true,
+        photo: "images/Pieces/general-red.png",
+      });
+      return result.ops[0];
+    } catch (err) {
+      throw new Error(err.toString());
+    }
+  }
+
   static async createNewUser(profile) {
     try {
-      const { id, provider, email, name } = profile;
+      const { id, provider, emails, name } = profile;
       const user = await users.findOne({ userID: id, provider: provider });
-      if (user) return user;
-      else {
+      if (user) {
+        if (!user.inGame) return user;
+        return false;
+      } else {
         const count = await users.countDocuments({
-          $text: { $search: profile.displayName },
+          $text: { $search: profile.displayName, $caseSensitive: true },
         });
         const username = count
           ? profile.displayName + count
           : profile.displayName;
         const result = await users.insertOne({
-          username: username,
+          username: username.replace(/\s+/g, ""),
           provider: provider,
           userID: id,
           email: {
-            value: email && email.value ? email.value : null,
-            verify: true,
+            value: emails && emails.value ? emails.value : null,
+            verified: true,
           },
-          photo: profile.photos ? profile.photos[0] : null,
+          photo: profile.photos ? profile.photos[0].value : null,
           name: {
             firstname: name.familyName ? name.familyName : null,
             lastname: name.givenName ? name.givenName : null,
@@ -101,7 +127,7 @@ class USERDAO {
         userID: null,
         password: hashedPassoword,
         name: { firstname: firstname, lastname: lastname },
-        email: { value: email, verify: false },
+        email: { value: email, verified: false },
         photo: null,
         matches: [],
         lang: "English",
@@ -137,7 +163,7 @@ class USERDAO {
         {
           username: username,
         },
-        { $set: { "email.verify": true } },
+        { $set: { "email.verified": true } },
         { returnOriginal: false }
       );
       return result.value;
