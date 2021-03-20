@@ -96,6 +96,7 @@ const Login = () => {
   useEffect(async () => {
     setCheckingSession(true);
     const { message, user, ok, sessionID } = await callAPI("GET", "/", null);
+
     setCheckingSession(false);
     if (user) {
       setSuccessfullyLogin(true);

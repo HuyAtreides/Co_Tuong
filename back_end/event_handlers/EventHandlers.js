@@ -46,7 +46,7 @@ class EventHandlers {
     socket.on("findMatch", async (side, time) => {
       const start = new Date();
       const user = await USERDAO.findUser(socket.player.playername);
-      if (user.inGame) socket.emit("isInGame");
+      if (user.inGame) return socket.emit("isInGame");
       socket.opponentID = null;
       socket.side = side[1];
       const intervalID = setInterval(async () => {
@@ -65,9 +65,9 @@ class EventHandlers {
               curSocket.player.playername !== socket.player.playername
             ) {
               const [player1, player2] = [socket.player, curSocket.player];
+              EventHandlers.assignFirstMove(socket, curSocket, id);
               await USERDAO.updateUserInGame(player1.playername, true);
               await USERDAO.updateUserInGame(player2.playername, true);
-              EventHandlers.assignFirstMove(socket, curSocket, id);
               socket.emit("foundMatch", player2, socket.firstMove, time);
               curSocket.emit("foundMatch", player1, !socket.firstMove, time);
               clearInterval(intervalID);

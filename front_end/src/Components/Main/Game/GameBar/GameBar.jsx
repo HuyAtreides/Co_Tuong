@@ -14,31 +14,24 @@ const GameBar = () => {
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
   const pause = useSelector((state) => state.gameState.pause);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
-  const handleResume = () => {
+  const handlePauseOrResume = (event) => {
     const listItemRef = React.createRef();
+    const action = event.currentTarget.id;
     const message = {
-      from: "Phan Gia Huy",
-      message: "Resumed Game",
+      from: `${playerInfo.username}`,
+      message: `${action}ed Game`,
       className: "game-message",
       ref: listItemRef,
     };
     dispatch({ type: "setMessage", value: message });
-    dispatch({ type: "setPause", value: "Phan Gia Huy Resumed Game" });
-    socket.emit("playerResumeGame");
-  };
-
-  const handlePause = () => {
-    const listItemRef = React.createRef();
-    const message = {
-      from: "Phan Gia Huy",
-      message: "Paused Game",
-      className: "game-message",
-      ref: listItemRef,
-    };
-    dispatch({ type: "setMessage", value: message });
-    dispatch({ type: "setPause", value: "Phan Gia Huy Paused Game" });
-    socket.emit("playerPauseGame");
+    dispatch({
+      type: "setPause",
+      value: `${playerInfo.username} ${action}ed Game`,
+    });
+    socket.emit(`player${action}Game`);
   };
 
   const handleGameOver = (result, reason) => {
@@ -48,7 +41,11 @@ const GameBar = () => {
       type: "setMessage",
       value: {
         type: "game result message",
-        winner: `${result === "Won" ? "Phan Gia Huy" : "Opponent"} Won  `,
+        winner: `${
+          result === "Won"
+            ? `${playerInfo.username}`
+            : `${opponentInfo.playername}`
+        } Won - `,
         reason: reason,
         className: "game-message",
         ref: listItemRef,
@@ -63,7 +60,7 @@ const GameBar = () => {
       dispatch({
         type: "setMessage",
         value: {
-          from: "You",
+          from: `${playerInfo.username}`,
           message: "Offered A Draw",
           className: "game-message",
           ref: listItemRef,
@@ -74,8 +71,8 @@ const GameBar = () => {
   };
 
   const handleResign = () => {
-    handleGameOver("Lose", "Phan Gia Huy Resign");
-    socket.emit("gameFinish", ["Won", "Opponent Resign"]);
+    handleGameOver("Lose", `${playerInfo.username} Resign`);
+    socket.emit("gameFinish", ["Won", `${playerInfo.username} Resign`]);
   };
 
   useEffect(() => {
@@ -125,7 +122,8 @@ const GameBar = () => {
           <Button
             className="select-timer pause-btn"
             disabled={gameResult !== null || (pause && !/Paused/.test(pause))}
-            onClick={!pause ? handlePause : handleResume}
+            id={!pause ? "Pause" : "Resume"}
+            onClick={handlePauseOrResume}
           >
             <i className={`fas fa-${!pause ? "pause" : "play"}`}></i>{" "}
             {!pause ? "Pause" : "Resume"}

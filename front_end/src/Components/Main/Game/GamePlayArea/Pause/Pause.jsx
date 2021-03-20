@@ -71,6 +71,8 @@ const Timer = (props) => {
 const Pause = () => {
   const dispatch = useDispatch();
   const pause = useSelector((state) => state.gameState.pause);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
   const [boardWidth, boardHeight] = useSelector(
     (state) => state.boardState.boardSize
   );
@@ -93,7 +95,7 @@ const Pause = () => {
     const handleOpponentPauseOrResumeGame = (pause) => {
       const listItemRef = React.createRef();
       const message = {
-        from: "Opponent",
+        from: `${opponentInfo.playername}`,
         message: `${pause ? "Paused" : "Resumed"} Game`,
         className: "game-message",
         ref: listItemRef,
@@ -101,7 +103,9 @@ const Pause = () => {
       dispatch({ type: "setMessage", value: message });
       dispatch({
         type: "setPause",
-        value: `Opponent ${pause ? "Paused" : "Resumed"} Game`,
+        value: `${opponentInfo.playername} ${
+          pause ? "Paused" : "Resumed"
+        } Game`,
       });
     };
 

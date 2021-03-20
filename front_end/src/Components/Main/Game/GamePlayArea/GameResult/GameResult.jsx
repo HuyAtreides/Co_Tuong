@@ -12,6 +12,8 @@ const GameResult = () => {
     (state) => state.gameState.gameResultDisplay
   );
   const side = useSelector((state) => state.boardState.side);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
   let displayGameResult = "Draw";
 
   if (gameResult === "Won") {
@@ -52,23 +54,20 @@ const GameResult = () => {
               gameResult === "Won" || gameResult === "Draw" ? "" : "winner"
             }`}
           >
-            <img
-              src="https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png"
-              alt=""
-            />
+            <img src={opponentInfo.photo} alt="" />
           </div>
 
-          <p>Opponent</p>
+          <p>{opponentInfo.playername}</p>
         </div>
         <span>VS</span>
         <div className="player-info">
           <div
             className={`img-container ${gameResult === "Won" ? "winner" : ""}`}
           >
-            <img src="/user_profile_pic/P.svg" alt="" />
+            <img src={playerInfo.photo} alt="" />
           </div>
 
-          <p>Phan Gia Huy</p>
+          <p>{playerInfo.username}</p>
         </div>
       </div>
     </div>

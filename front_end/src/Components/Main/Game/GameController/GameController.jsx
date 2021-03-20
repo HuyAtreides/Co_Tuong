@@ -47,8 +47,8 @@ const GameController = (props) => {
       dispatch({
         type: "setOpponentInfo",
         value: {
-          opponentName: opponent.playername,
-          opponentPhoto: opponent.photo,
+          playername: opponent.playername,
+          photo: opponent.photo,
         },
       });
       setMoveTimer(firstMove, false, dispatch);
@@ -58,7 +58,7 @@ const GameController = (props) => {
       dispatch({
         type: "setFindingMatch",
         value:
-          "Your account is currenlt in a game. Please try again after the game was finished",
+          "Your account is currently in a game. Please try again after the game was finished",
       });
     });
 

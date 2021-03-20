@@ -14,6 +14,8 @@ const ChatSection = () => {
   const messages = useSelector((state) => state.gameState.messages);
   const [hideChat, setHideChat] = useState(false);
   const displayMessages = renderMessages(messages);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
   const handleOnChange = (event) => {
     setInput(event.currentTarget.value);
@@ -31,7 +33,7 @@ const ChatSection = () => {
     if (input) {
       const listItemRef = React.createRef();
       const message = {
-        from: "Phan Gia Huy: ",
+        from: `${playerInfo.username}: `,
         message: input,
         className: "",
         ref: listItemRef,
@@ -53,7 +55,7 @@ const ChatSection = () => {
     }
     socket.on("incomingMessage", (message) => {
       if (message.from && message.className !== "game-message")
-        message.from = "Opponent: ";
+        message.from = `${opponentInfo.playername}: `;
       dispatch({ type: "setMessage", value: message });
     });
 
@@ -72,7 +74,8 @@ const ChatSection = () => {
       <ul className="message-container" ref={messagesContainerRef}>
         <li className="announce-new-game">
           <p className="versus game-message">
-            <span>Opponent</span> vs <span>Phan Gia Huy</span>
+            <span>{opponentInfo.playername}</span> vs{" "}
+            <span>{playerInfo.username}</span>
           </p>
         </li>
         {displayMessages}

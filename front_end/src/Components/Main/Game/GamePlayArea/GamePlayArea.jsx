@@ -22,9 +22,6 @@ const GamePlayArea = (props) => {
   );
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
-  const playerPhoto = playerInfo.photo
-    ? playerInfo.photo
-    : `/user_profile_pic/${playerInfo.username[0]}.svg`;
 
   return (
     <Col
@@ -35,8 +32,8 @@ const GamePlayArea = (props) => {
     >
       <div className="player-area">
         <div className="avatar-and-name">
-          <img src={opponentInfo.opponentPhoto} alt="" />
-          <p className="user-name">{opponentInfo.opponentName}</p>
+          <img src={opponentInfo.photo} alt="" />
+          <p className="user-name">{opponentInfo.playername}</p>
         </div>
         <div className="captured-pieces">
           {capturedPieces.map((element, index) => {
@@ -60,7 +57,7 @@ const GamePlayArea = (props) => {
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
-            <img src={playerPhoto} alt="" />
+            <img src={playerInfo.photo} alt="" />
             <p className="user-name">{playerInfo.username}</p>
           </div>
         </div>

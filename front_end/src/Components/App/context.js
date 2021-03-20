@@ -14,7 +14,6 @@ const authenticateUser = (dispatch, user, sessionID) => {
       playername: user.username,
       guest: user.guest,
       photo: user.photo,
-      lastname: user.name.lastname,
     },
     sessionID: sessionID,
   };

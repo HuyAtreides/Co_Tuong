@@ -11,6 +11,8 @@ const DrawOffer = () => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
@@ -43,14 +45,14 @@ const DrawOffer = () => {
     dispatch({
       type: "setMessage",
       value: {
-        from: "You",
+        from: `${playerInfo.username}`,
         message: "Declined A Draw",
         className: "game-message",
         ref: listItemRef,
       },
     });
     socket.emit("sendMessage", {
-      from: "Opponent",
+      from: `${playerInfo.username}`,
       message: "Declined A Draw",
       className: "game-message",
       ref: listItemRef,
@@ -76,7 +78,7 @@ const DrawOffer = () => {
   return (
     <li className="draw-offer">
       <p>
-        <span>Opponent</span> Offer A Draw
+        <span>{opponentInfo.playername}</span> Offer A Draw
       </p>
       <div className="answer">
         <Button className="accept-offer" onClick={handleAcceptOffer}>

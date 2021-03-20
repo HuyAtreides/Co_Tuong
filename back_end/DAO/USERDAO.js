@@ -102,7 +102,9 @@ class USERDAO {
             value: emails && emails.value ? emails.value : null,
             verified: true,
           },
-          photo: profile.photos ? profile.photos[0].value : null,
+          photo: profile.photos
+            ? profile.photos[0].value
+            : `/user_profile_pic/${username[0].toUpperCase()}.svg`,
           name: {
             firstname: name.familyName ? name.familyName : null,
             lastname: name.givenName ? name.givenName : null,
@@ -129,7 +131,7 @@ class USERDAO {
         password: hashedPassoword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: null,
+        photo: `/user_profile_pic/${username[0].toUpperCase()}.svg`,
         matches: [],
         lang: "English",
         failedLoginAttempt: 0,

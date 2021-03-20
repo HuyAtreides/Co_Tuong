@@ -9,8 +9,8 @@ const defaultState = {
   receiveDrawOffer: false,
   messages: [],
   opponentInfo: {
-    opponentName: "Opponent",
-    opponentPhoto:
+    playername: "Opponent",
+    photo:
       "https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png",
   },
   gameResult: null,
