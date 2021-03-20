@@ -14,7 +14,7 @@ passport.use(
     async (accessToken, _, profile, done) => {
       try {
         const user = await USERDAO.createNewUser(profile);
-        return done(null, user, null);
+        return done(null, user);
       } catch (err) {
         return done(err.toString(), null, null);
       }
@@ -35,7 +35,7 @@ router.get(
 router.get(
   "/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/",
+    successRedirect: "http://localhost:3000/login",
     failureRedirect: "http://localhost:3000/login",
   })
 );

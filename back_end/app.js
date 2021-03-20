@@ -14,6 +14,7 @@ const logoutRoute = require("./routes/logoutRoute.js");
 const facebookLoginRoute = require("./routes/facebookLoginRoute.js");
 const googleLoginRoute = require("./routes/googleLoginRoute.js");
 const loginAsGuestRoute = require("./routes/loginAsGuestRoute.js");
+const githubLoginRoute = require("./routes/githubLoginRoute.js");
 const USERDAO = require("./DAO/USERDAO.js");
 const cookieParser = require("cookie-parser");
 const sessionMiddleware = session({
@@ -36,7 +37,6 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -56,6 +56,7 @@ app.use("/verify-email", verifyEmailRoute);
 app.use("/logout", logoutRoute);
 app.use("/auth/facebook", facebookLoginRoute);
 app.use("/auth/google", googleLoginRoute);
+app.use("/auth/github", githubLoginRoute);
 app.use("/login-as-guest", loginAsGuestRoute);
 app.use("/", entryRoute);
 

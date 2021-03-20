@@ -84,8 +84,7 @@ class USERDAO {
       const { id, provider, emails, name } = profile;
       const user = await users.findOne({ userID: id, provider: provider });
       if (user) {
-        if (!user.inGame) return user;
-        return false;
+        return user;
       } else {
         const regex = new RegExp(`^${profile.displayName}`, "i");
         const count = await users.countDocuments({
@@ -106,10 +105,12 @@ class USERDAO {
             ? profile.photos[0].value
             : `/user_profile_pic/${username[0].toUpperCase()}.svg`,
           name: {
-            firstname: name.familyName ? name.familyName : null,
-            lastname: name.givenName ? name.givenName : null,
+            firstname: name && name.familyName ? name.familyName : null,
+            lastname: name && name.givenName ? name.givenName : null,
           },
           lang: "English",
+          lastOnline: new Date(),
+          join: new Date(),
           matches: [],
           inGame: false,
         });
@@ -133,6 +134,8 @@ class USERDAO {
         email: { value: email, verified: false },
         photo: `/user_profile_pic/${username[0].toUpperCase()}.svg`,
         matches: [],
+        lastOnline: new Date(),
+        join: new Date(),
         lang: "English",
         failedLoginAttempt: 0,
         failedVerifyAttempt: 0,

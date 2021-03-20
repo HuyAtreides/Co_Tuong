@@ -138,7 +138,6 @@ const Signup = () => {
       );
       setWaitForResponse(false);
       if (user) {
-        setSuccessfullyLogin(true);
         authenticateUser(dispatch, user, sessionID);
       } else handleError(ok, message);
     }
@@ -149,12 +148,14 @@ const Signup = () => {
     const { user, sessionID, message, ok } = await callAPI("GET", "/", null);
     setCheckingSession(false);
     if (user) {
-      setSuccessfullyLogin(true);
       authenticateUser(dispatch, user, sessionID);
     } else handleError(ok, message);
   }, [isAuthenticated]);
 
-  if (successfullyLogin) return <Redirect to="/" />;
+  if (isAuthenticated) {
+    if (isAuthenticated !== "guest") return <Redirect to="/" />;
+    else if (successfullyLogin) return <Redirect to="/" />;
+  }
 
   return (
     <Container fluid>

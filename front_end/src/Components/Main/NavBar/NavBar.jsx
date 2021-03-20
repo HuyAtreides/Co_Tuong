@@ -14,15 +14,14 @@ const NavBar = (props) => {
     const selectedLang = event.currentTarget.text;
     dispatch({ type: "setLang", value: selectedLang });
   };
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
 
-  const handleLogout = async (manualLogout = true) => {
+  const handleLogout = async (event) => {
     props.setWaitForResponse(true);
     await callAPI("GET", "/logout", null);
-    if (manualLogout) socket.emit("logout");
+    if (event) socket.emit("logout");
     dispatch({ type: "setIsAuthenticated", value: false });
     dispatch({ type: "setPlayerInfo", value: null });
     socket.disconnect();
@@ -49,16 +48,23 @@ const NavBar = (props) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="nav">
           <Link
-            to={`/${!isAuthenticated || playerInfo.guest ? "login" : "home"}`}
+            to={`/${
+              isAuthenticated && isAuthenticated !== "guest" ? "home" : "login"
+            }`}
             className="link nav-link"
           >
-            {isAuthenticated && !playerInfo.guest ? "Home" : "Sign In"}
+            {isAuthenticated && isAuthenticated !== "guest"
+              ? "Home"
+              : "Sign In"}
           </Link>
           <button
             className="link nav-link logout"
             onClick={handleLogout}
             style={{
-              display: isAuthenticated && !playerInfo.guest ? "inline" : "none",
+              display:
+                isAuthenticated && isAuthenticated !== "guest"
+                  ? "inline"
+                  : "none",
             }}
           >
             Log Out
@@ -67,7 +73,10 @@ const NavBar = (props) => {
             to="/signup"
             className="link nav-link "
             style={{
-              display: !isAuthenticated || playerInfo.guest ? "inline" : "none",
+              display:
+                isAuthenticated && isAuthenticated !== "guest"
+                  ? "none"
+                  : "inline",
             }}
           >
             Sign Up

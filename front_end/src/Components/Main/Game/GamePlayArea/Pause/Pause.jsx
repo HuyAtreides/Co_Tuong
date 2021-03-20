@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import "./Pause.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import { SocketContext, SetMoveTimerContext } from "../../../../App/context.js";
 
 const Timer = (props) => {
@@ -11,7 +11,6 @@ const Timer = (props) => {
   const minute = Math.floor(time / 60);
   const second = time % 60;
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
-
   useEffect(() => {
     if (time === 0) {
       if (/Paused/.test(props.pause)) {
@@ -71,11 +70,10 @@ const Timer = (props) => {
 const Pause = () => {
   const dispatch = useDispatch();
   const pause = useSelector((state) => state.gameState.pause);
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
-  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
   const [boardWidth, boardHeight] = useSelector(
     (state) => state.boardState.boardSize
   );
+  const store = useStore();
   const socket = useContext(SocketContext);
 
   useEffect(() => {
@@ -93,6 +91,7 @@ const Pause = () => {
     }
 
     const handleOpponentPauseOrResumeGame = (pause) => {
+      const opponentInfo = store.getState().gameState.opponentInfo;
       const listItemRef = React.createRef();
       const message = {
         from: `${opponentInfo.playername}`,
@@ -140,4 +139,4 @@ const Pause = () => {
   );
 };
 
-export default Pause;
+export default React.memo(Pause);

@@ -22,14 +22,14 @@ const GameBar = () => {
     const action = event.currentTarget.id;
     const message = {
       from: `${playerInfo.username}`,
-      message: `${action}ed Game`,
+      message: `${action}d Game`,
       className: "game-message",
       ref: listItemRef,
     };
     dispatch({ type: "setMessage", value: message });
     dispatch({
       type: "setPause",
-      value: `${playerInfo.username} ${action}ed Game`,
+      value: `${playerInfo.username} ${action}d Game`,
     });
     socket.emit(`player${action}Game`);
   };

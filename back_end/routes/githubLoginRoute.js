@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
+const GithubStrategy = require("passport-github2").Strategy;
 const passport = require("passport");
-const FacebookStrategy = require("passport-facebook").Strategy;
 const USERDAO = require("../DAO/USERDAO.js");
 
 passport.use(
-  new FacebookStrategy(
+  new GithubStrategy(
     {
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:8080/auth/facebook/callback",
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:8080/auth/github/callback",
     },
     async (accessToken, _, profile, done) => {
       try {
+        console.log(profile);
         const user = await USERDAO.createNewUser(profile);
         return done(null, user);
       } catch (err) {
@@ -22,11 +23,11 @@ passport.use(
   )
 );
 
-router.get("/", passport.authenticate("facebook"));
+router.get("/", passport.authenticate("github", { scope: ["user"] }));
 
 router.get(
   "/callback",
-  passport.authenticate("facebook", {
+  passport.authenticate("github", {
     successRedirect: "http://localhost:3000/login",
     failureRedirect: "http://localhost:3000/login",
   })

@@ -53,7 +53,7 @@ const GamePlayArea = (props) => {
           turnToMove={foundMatch && !gameResult ? !turnToMove : turnToMove}
         />
       </div>
-      <Board setTimer={props.setTimer} />
+      <Board />
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
