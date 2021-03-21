@@ -41,9 +41,6 @@ const GameController = (props) => {
     });
 
     socket.on("foundMatch", (opponent, firstMove, time) => {
-      dispatch({ type: "setTime", value: time });
-      dispatch({ type: "setTurnToMove", value: firstMove });
-      dispatch({ type: "setFoundMatch", value: true });
       dispatch({
         type: "setOpponentInfo",
         value: {
@@ -51,6 +48,9 @@ const GameController = (props) => {
           photo: opponent.photo,
         },
       });
+      dispatch({ type: "setTime", value: time });
+      dispatch({ type: "setTurnToMove", value: firstMove });
+      dispatch({ type: "setFoundMatch", value: true });
       setMoveTimer(firstMove, false, dispatch);
     });
 

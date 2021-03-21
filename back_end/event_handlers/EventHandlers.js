@@ -94,12 +94,14 @@ class EventHandlers {
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", async () => {
       console.log(socket.id + " disconnect");
+      io.to(socket.opponentID).emit("opponentLeftGame");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
       if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
       await USERDAO.updateUserInGame(socket.player.playername, false);
     });
 
     socket.on("exitGame", async () => {
+      io.to(socket.opponentID).emit("opponentLeftGame");
       socket.opponentID = undefined;
       await USERDAO.updateUserInGame(socket.player.playername, false);
     });

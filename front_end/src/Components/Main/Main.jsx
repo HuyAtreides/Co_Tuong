@@ -8,6 +8,7 @@ import Game from "./Game/Game.jsx";
 import { Spinner } from "react-bootstrap";
 import callAPI from "../App/callAPI.js";
 import { AuthenticateUserContext } from "../App/context";
+import { Redirect } from "react-router-dom";
 import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
 
 const Main = () => {
@@ -15,28 +16,23 @@ const Main = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const authenticateUser = useContext(AuthenticateUserContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const loginError = useSelector((state) => state.appState.loginError);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
 
   useEffect(async () => {
-    if (window.location.hash == "#_=_") {
-      if (window.history.replaceState) {
-        var cleanHref = window.location.href.split("#")[0];
-        window.history.replaceState(null, null, cleanHref);
-      } else {
-        window.location.hash = "";
-      }
-    }
     if (!isAuthenticated) {
       setWaitForResponse(true);
-      const { user, sessionID } = await callAPI("GET", "/", null);
+      const { user, sessionID, message } = await callAPI("GET", "/entry", null);
       setWaitForResponse(false);
       if (user) {
         authenticateUser(dispatch, user, sessionID);
-      }
+      } else if (message) dispatch({ type: "setLoginError", value: message });
     }
   }, [isAuthenticated]);
+
+  if (loginError) return <Redirect to="/signin" />;
 
   return (
     <Container fluid className={waitForResponse ? "loading" : ""}>

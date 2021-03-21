@@ -3,12 +3,16 @@ const gameReducer = (
     lang: "English",
     isAuthenticated: false,
     playerInfo: null,
+    loginError: null,
   },
   action
 ) => {
   const newState = Object.assign({}, state);
   const { type, value } = action;
   switch (type) {
+    case "setLoginError":
+      newState.loginError = value;
+      return newState;
     case "setPlayerInfo":
       newState.playerInfo = value;
       return newState;

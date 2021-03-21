@@ -81,7 +81,21 @@ const GameBar = () => {
       handleGameOver(result, reason);
     });
 
+    socket.on("opponentLeftGame", () => {
+      const listItemRef = React.createRef();
+      dispatch({
+        type: "setMessage",
+        value: {
+          from: `${opponentInfo.playername}`,
+          message: "Left The Game",
+          className: "game-message",
+          ref: listItemRef,
+        },
+      });
+    });
+
     return () => {
+      socket.removeAllListeners("opponentLeftGame");
       socket.removeAllListeners("gameOver");
     };
   });

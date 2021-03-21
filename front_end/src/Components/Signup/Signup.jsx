@@ -127,7 +127,7 @@ const Signup = () => {
       setError(null);
       const { message, user, ok, sessionID } = await callAPI(
         "POST",
-        "/signup",
+        "/signup-route",
         {
           email: email,
           firstname: firstname,
@@ -145,7 +145,11 @@ const Signup = () => {
 
   useEffect(async () => {
     setCheckingSession(true);
-    const { user, sessionID, message, ok } = await callAPI("GET", "/", null);
+    const { user, sessionID, message, ok } = await callAPI(
+      "GET",
+      "/entry",
+      null
+    );
     setCheckingSession(false);
     if (user) {
       authenticateUser(dispatch, user, sessionID);

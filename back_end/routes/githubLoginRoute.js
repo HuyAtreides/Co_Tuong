@@ -11,9 +11,8 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: "http://localhost:8080/auth/github/callback",
     },
-    async (accessToken, _, profile, done) => {
+    async (__, _, profile, done) => {
       try {
-        console.log(profile);
         const user = await USERDAO.createNewUser(profile);
         return done(null, user);
       } catch (err) {
@@ -28,8 +27,8 @@ router.get("/", passport.authenticate("github", { scope: ["user"] }));
 router.get(
   "/callback",
   passport.authenticate("github", {
-    successRedirect: "http://localhost:3000/login",
-    failureRedirect: "http://localhost:3000/login",
+    successRedirect: "http://localhost:8080/",
+    failureRedirect: "http://localhost:8080/",
   })
 );
 

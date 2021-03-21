@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import "./App.scss";
+import React, { useEffect } from "react";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
-import Login from "../Login/Login.jsx";
+import SignIn from "../SignIn/SignIn.jsx";
 import Main from "../Main/Main.jsx";
 import Signup from "../Signup/Signup.jsx";
 import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
@@ -27,8 +26,8 @@ function App(props) {
         <AuthenticateUserContext.Provider value={authenticateUser}>
           <Router>
             <Switch>
-              <Route path="/login">
-                <Login />
+              <Route path="/signin">
+                <SignIn />
               </Route>
               <Route path="/signup">
                 <Signup />

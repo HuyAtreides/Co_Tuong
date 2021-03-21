@@ -35,10 +35,14 @@ class USERDAO {
 
   static async findUser(username) {
     try {
-      const user = await users.findOne({
-        $or: [{ username: username }, { "email.value": username }],
-      });
-      return user;
+      const result = await users.findOneAndUpdate(
+        {
+          $or: [{ username: username }, { "email.value": username }],
+        },
+        { $set: { lastOnline: new Date() } },
+        { returnOriginal: false }
+      );
+      return result.value;
     } catch (err) {
       throw new Error(err.toString());
     }
@@ -71,7 +75,7 @@ class USERDAO {
         username: guestName,
         name: { lastname: null, firstname: null },
         guest: true,
-        photo: "images/Pieces/general-red.png",
+        photo: "images/Pieces/general-black.png",
       });
       return result.ops[0];
     } catch (err) {
@@ -82,9 +86,15 @@ class USERDAO {
   static async createNewUser(profile) {
     try {
       const { id, provider, emails, name } = profile;
-      const user = await users.findOne({ userID: id, provider: provider });
-      if (user) {
-        return user;
+      const result = await users.findOneAndUpdate(
+        { userID: id, provider: provider },
+        {
+          $set: { lastOnline: new Date() },
+        },
+        { returnOriginal: false }
+      );
+      if (result.value) {
+        return result.value;
       } else {
         const regex = new RegExp(`^${profile.displayName}`, "i");
         const count = await users.countDocuments({

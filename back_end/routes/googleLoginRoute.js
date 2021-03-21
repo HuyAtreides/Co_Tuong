@@ -35,8 +35,8 @@ router.get(
 router.get(
   "/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/login",
-    failureRedirect: "http://localhost:3000/login",
+    successRedirect: "http://localhost:8080/",
+    failureRedirect: "http://localhost:8080/",
   })
 );
 

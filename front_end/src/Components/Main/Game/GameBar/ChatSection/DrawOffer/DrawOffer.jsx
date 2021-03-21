@@ -7,7 +7,7 @@ import {
   SetMoveTimerContext,
 } from "../../../../../App/context.js";
 
-const DrawOffer = () => {
+const DrawOffer = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
@@ -76,7 +76,7 @@ const DrawOffer = () => {
 
   if (!receiveDrawOffer) return null;
   return (
-    <li className="draw-offer">
+    <li className="draw-offer" style={{ display: props.display }}>
       <p>
         <span>{opponentInfo.playername}</span> Offer A Draw
       </p>

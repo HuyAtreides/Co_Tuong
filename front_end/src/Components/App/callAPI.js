@@ -14,6 +14,7 @@ const callAPI = async (method, endPoint, data) => {
     response = await fetch(`http://localhost:8080${endPoint}`, {
       credentials: "include",
     });
+  console.log(response);
   const responseData = await response.json();
   responseData.ok = response.ok;
   return responseData;

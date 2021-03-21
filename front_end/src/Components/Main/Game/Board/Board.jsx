@@ -25,6 +25,8 @@ function Board() {
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
 
+  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
+
   const handleMouseDown = (event) => {
     const elementId = event.currentTarget.id;
     const [row, col] = [+elementId[1], +elementId[2]];
@@ -199,7 +201,7 @@ function Board() {
           type: "setMessage",
           value: {
             type: "game result message",
-            winner: "Opponent Won - ",
+            winner: `${opponentInfo.playername} Won - `,
             reason: lostReason,
             className: "game-message",
             ref: listItemRef,

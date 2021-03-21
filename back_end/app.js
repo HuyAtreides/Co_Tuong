@@ -40,6 +40,7 @@ app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static("./build/"));
 
 passport.serializeUser((user, done) => {
   return done(null, user.username);
@@ -51,14 +52,14 @@ passport.deserializeUser(async (username, done) => {
 });
 
 app.use("/login", loginRoute);
-app.use("/signup", signupRoute);
+app.use("/signup-route", signupRoute);
 app.use("/verify-email", verifyEmailRoute);
 app.use("/logout", logoutRoute);
 app.use("/auth/facebook", facebookLoginRoute);
 app.use("/auth/google", googleLoginRoute);
 app.use("/auth/github", githubLoginRoute);
 app.use("/login-as-guest", loginAsGuestRoute);
-app.use("/", entryRoute);
+app.use("/entry", entryRoute);
 
 registerIOEvents(io);
 

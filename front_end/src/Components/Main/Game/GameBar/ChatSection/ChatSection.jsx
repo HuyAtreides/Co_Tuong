@@ -67,6 +67,7 @@ const ChatSection = () => {
   return hideChat ? (
     <Button className="show-chat" onClick={handleShowChat}>
       Show Chat
+      <DrawOffer display="none" />
     </Button>
   ) : (
     <div className="chat-section">
@@ -80,7 +81,7 @@ const ChatSection = () => {
         </li>
         {displayMessages}
       </ul>
-      <DrawOffer />
+      <DrawOffer display="flex" />
       <form className="chat-input" onSubmit={handleSendMessage}>
         <input
           type="text"

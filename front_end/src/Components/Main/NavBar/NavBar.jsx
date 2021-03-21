@@ -29,7 +29,7 @@ const NavBar = (props) => {
 
   useEffect(() => {
     socket.on("accountLogout", () => {
-      handleLogout(false);
+      handleLogout(null);
     });
 
     return () => {
@@ -49,7 +49,7 @@ const NavBar = (props) => {
         <Nav className="nav">
           <Link
             to={`/${
-              isAuthenticated && isAuthenticated !== "guest" ? "home" : "login"
+              isAuthenticated && isAuthenticated !== "guest" ? "home" : "signin"
             }`}
             className="link nav-link"
           >
