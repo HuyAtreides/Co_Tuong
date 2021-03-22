@@ -125,17 +125,13 @@ const Signup = () => {
     ) {
       setWaitForResponse(true);
       setError(null);
-      const { message, user, ok, sessionID } = await callAPI(
-        "POST",
-        "/signup-route",
-        {
-          email: email,
-          firstname: firstname,
-          username: username,
-          password: password,
-          lastname: lastname,
-        }
-      );
+      const { message, user, ok, sessionID } = await callAPI("POST", "signup", {
+        email: email,
+        firstname: firstname,
+        username: username,
+        password: password,
+        lastname: lastname,
+      });
       setWaitForResponse(false);
       if (user) {
         authenticateUser(dispatch, user, sessionID);
@@ -144,12 +140,9 @@ const Signup = () => {
   };
 
   useEffect(async () => {
+    if (isAuthenticated) return;
     setCheckingSession(true);
-    const { user, sessionID, message, ok } = await callAPI(
-      "GET",
-      "/entry",
-      null
-    );
+    const { user, sessionID, message, ok } = await callAPI("GET", "user", null);
     setCheckingSession(false);
     if (user) {
       authenticateUser(dispatch, user, sessionID);
@@ -287,16 +280,22 @@ const Signup = () => {
               <span></span>
             </p>
             <div className="social-login">
-              <a className="google" href="http://localhost:8080/auth/google">
+              <a
+                className="google"
+                href="http://localhost:8080/api/auth/google"
+              >
                 <i className="fab fa-google"></i> Google
               </a>
               <a
                 className="facebook"
-                href="http://localhost:8080/auth/facebook"
+                href="http://localhost:8080/api/auth/facebook"
               >
                 <i className="fab fa-facebook "></i> Facebook
               </a>
-              <a className="github" href="http://localhost:8080/auth/github">
+              <a
+                className="github"
+                href="http://localhost:8080/api/auth/github"
+              >
                 <i className="fab fa-github "></i> Github
               </a>
             </div>

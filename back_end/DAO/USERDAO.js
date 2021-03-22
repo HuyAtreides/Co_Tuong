@@ -48,11 +48,11 @@ class USERDAO {
     }
   }
 
-  static async updateUserInGame(username, inGame) {
+  static async updateUserInGame(username, isInGame) {
     try {
       await users.findOneAndUpdate(
         { username: username },
-        { $set: { inGame: inGame } }
+        { $set: { inGame: isInGame } }
       );
     } catch (err) {
       throw new Error(err.toString());
@@ -86,6 +86,7 @@ class USERDAO {
   static async createNewUser(profile) {
     try {
       const { id, provider, emails, name } = profile;
+      const email = emails ? emails[0] : null;
       const result = await users.findOneAndUpdate(
         { userID: id, provider: provider },
         {
@@ -108,7 +109,7 @@ class USERDAO {
           provider: provider,
           userID: id,
           email: {
-            value: emails && emails.value ? emails.value : null,
+            value: email && email.value ? email.value : null,
             verified: true,
           },
           photo: profile.photos
@@ -134,12 +135,12 @@ class USERDAO {
   static async insertUser(formData) {
     try {
       const { username, password, email, firstname, lastname } = formData;
-      const hashedPassoword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
       const result = await users.insertOne({
         username: username,
-        provider: "",
+        provider: null,
         userID: null,
-        password: hashedPassoword,
+        password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
         photo: `/user_profile_pic/${username[0].toUpperCase()}.svg`,
@@ -162,7 +163,7 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { email: username }],
+          $or: [{ username: username }, { "email.value": username }],
         },
         { $inc: { failedLoginAttempt: 1 } },
         { returnOriginal: false }
@@ -192,7 +193,7 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          username: username,
+          $or: [{ username: username }, { "email.value": username }],
         },
         { $inc: { failedVerifyAttempt: 1 } },
         { returnOriginal: false }
@@ -207,7 +208,7 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { email: username }],
+          $or: [{ username: username }, { "email.value": username }],
         },
         { $set: { failedVerifyAttempt: 0 } }
       );
@@ -220,7 +221,7 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { email: username }],
+          $or: [{ username: username }, { "email.value": username }],
         },
         { $set: { failedLoginAttempt: 0 } }
       );

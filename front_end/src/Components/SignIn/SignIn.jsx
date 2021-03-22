@@ -75,7 +75,7 @@ const Login = () => {
     if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
       setError(null);
       setWaitForResponse(true);
-      const { message, user, ok, sessionID } = await callAPI("POST", "/login", {
+      const { message, user, ok, sessionID } = await callAPI("POST", "login", {
         username: username,
         password: password,
       });
@@ -88,18 +88,19 @@ const Login = () => {
 
   const handleLoginAsGuest = async () => {
     setWaitForServer(true);
-    const { user } = await callAPI("GET", "/login-as-guest", null);
+    const { user } = await callAPI("GET", "login-as-guest", null);
     setWaitForServer(false);
     setSuccessfullyLogin(true);
     authenticateUser(dispatch, user, null);
   };
 
   useEffect(async () => {
+    if (isAuthenticated) return;
     if (!loginError) {
       setCheckingSession(true);
       const { message, user, ok, sessionID } = await callAPI(
         "GET",
-        "/entry",
+        "user",
         null
       );
       setCheckingSession(false);
@@ -193,16 +194,22 @@ const Login = () => {
               <span></span>
             </p>
             <div className="social-login">
-              <a className="google" href="http://localhost:8080/auth/google">
+              <a
+                className="google"
+                href="http://localhost:8080/api/auth/google"
+              >
                 <i className="fab fa-google"></i> Google
               </a>
               <a
                 className="facebook"
-                href="http://localhost:8080/auth/facebook"
+                href="http://localhost:8080/api/auth/facebook"
               >
                 <i className="fab fa-facebook "></i> Facebook
               </a>
-              <a className="github" href="http://localhost:8080/auth/github">
+              <a
+                className="github"
+                href="http://localhost:8080/api/auth/github"
+              >
                 <i className="fab fa-github "></i> Github
               </a>
             </div>

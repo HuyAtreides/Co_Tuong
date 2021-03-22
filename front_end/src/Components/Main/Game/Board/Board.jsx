@@ -219,7 +219,7 @@ function Board() {
       height={boardSize[1]}
       onClick={handleClick}
       style={{
-        backgroundImage: "url(/images/Board/board.jpg)",
+        backgroundImage: 'url("/images/Board/board.jpg")',
       }}
       ref={svgRef}
     >

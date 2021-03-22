@@ -9,12 +9,11 @@ const callAPI = async (method, endPoint, data) => {
       },
       body: JSON.stringify(data),
     };
-    response = await fetch(`http://localhost:8080${endPoint}`, init);
+    response = await fetch(`http://localhost:8080/api/${endPoint}`, init);
   } else
-    response = await fetch(`http://localhost:8080${endPoint}`, {
+    response = await fetch(`http://localhost:8080/api/${endPoint}`, {
       credentials: "include",
     });
-  console.log(response);
   const responseData = await response.json();
   responseData.ok = response.ok;
   return responseData;

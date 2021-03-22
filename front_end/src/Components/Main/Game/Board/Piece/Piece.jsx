@@ -1,4 +1,4 @@
-import React, { createRef, useRef } from "react";
+import React from "react";
 
 function Piece(props) {
   const pieces = [];

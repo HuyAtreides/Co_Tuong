@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:8080/auth/google/callback",
+      callbackURL: "http://localhost:8080/api/auth/google/callback",
     },
     async (accessToken, _, profile, done) => {
       try {
@@ -35,7 +35,7 @@ router.get(
 router.get(
   "/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:8080/",
+    successRedirect: "http://localhost:3000/",
     failureRedirect: "http://localhost:8080/",
   })
 );

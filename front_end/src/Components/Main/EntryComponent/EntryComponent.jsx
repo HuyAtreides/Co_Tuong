@@ -20,7 +20,7 @@ const EntryComponent = (props) => {
         xs={{ span: 10, order: 1 }}
       >
         <h1>Play Xiangqi Online for Free</h1>
-        <Link className="play-button" to="/login">
+        <Link className="play-button" to="/signin">
           Play
         </Link>
       </Col>

@@ -55,10 +55,11 @@ router.post("/", async (req, res) => {
   try {
     const { email, lastname } = req.body;
     const verifyCode = Math.floor(Math.random() * 89999) + 10000;
+    const capitalLastname = lastname[0].toUpperCase() + lastname.split(1);
     await verifyEmail({
       from: process.env.EMAIL,
       to: email,
-      html: `<p style="font-size: 22px">Hi ${lastname}, <br> This is your verification code <strong>${verifyCode}</strong>.<br> Happy playing!</p>`,
+      html: `<p style="font-size: 22px">Hi ${capitalLastname}, <br> This is your verification code <strong>${verifyCode}</strong>.<br> Happy playing!</p>`,
       subject: "Verification",
     });
     return res.json({ code: verifyCode });

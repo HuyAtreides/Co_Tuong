@@ -26,6 +26,9 @@
   a {
     font-family: "Montserrat-Bold";
     color: #e6912c;
+    &:hover {
+      color: #0056b3;
+    }
   }
   p {
     margin-bottom: 1.5rem;

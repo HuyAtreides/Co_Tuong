@@ -10,7 +10,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:8080/auth/facebook/callback",
+      callbackURL: "http://localhost:8080/api/auth/facebook/callback",
       profileFields: ["id", "displayName", "photos", "email", "name"],
     },
     async (__, _, profile, done) => {

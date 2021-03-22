@@ -20,7 +20,7 @@ const NavBar = (props) => {
 
   const handleLogout = async (event) => {
     props.setWaitForResponse(true);
-    await callAPI("GET", "/logout", null);
+    await callAPI("GET", "logout", null);
     if (event) socket.emit("logout");
     dispatch({ type: "setIsAuthenticated", value: false });
     dispatch({ type: "setPlayerInfo", value: null });

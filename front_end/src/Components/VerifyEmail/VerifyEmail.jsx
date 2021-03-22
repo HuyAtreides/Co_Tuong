@@ -40,14 +40,10 @@ const VerifyEmail = () => {
     if (!verificationCode) setInvalidCodeMess("Please fill in this field");
     else if (!invalidCodeMess) {
       setWaitForResponse(true);
-      const { message, ok, user } = await callAPI(
-        "POST",
-        "/verify-email/code",
-        {
-          username: playerInfo.username,
-          correct: +codeRef.current === +verificationCode,
-        }
-      );
+      const { message, ok, user } = await callAPI("POST", "verify-email/code", {
+        username: playerInfo.username,
+        correct: +codeRef.current === +verificationCode,
+      });
       setWaitForResponse(false);
       if (!ok) setError(message);
       else if (user) {
@@ -63,7 +59,7 @@ const VerifyEmail = () => {
     if (!resend) setResend(true);
     setWaitForSendingCode(true);
     setError("");
-    const { message, code, ok } = await callAPI("POST", "/verify-email", {
+    const { message, code, ok } = await callAPI("POST", "verify-email", {
       email: playerInfo.email.value,
       lastname: playerInfo.name.lastname,
     });

@@ -17,6 +17,7 @@ const Main = () => {
   const authenticateUser = useContext(AuthenticateUserContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
+  const lang = useSelector((state) => state.appState.lang);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
@@ -24,13 +25,18 @@ const Main = () => {
   useEffect(async () => {
     if (!isAuthenticated) {
       setWaitForResponse(true);
-      const { user, sessionID, message } = await callAPI("GET", "/entry", null);
+      const { user, sessionID, message } = await callAPI("GET", "user", null);
       setWaitForResponse(false);
       if (user) {
         authenticateUser(dispatch, user, sessionID);
       } else if (message) dispatch({ type: "setLoginError", value: message });
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    document.querySelector("title").innerText =
+      lang === "English" ? "Xiangqi" : "Cờ Tướng";
+  }, [lang]);
 
   if (loginError) return <Redirect to="/signin" />;
 

@@ -6,17 +6,10 @@ const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const httpServer = require("http").createServer(app);
 const registerIOEvents = require("./registerIOEvents/registerIOEvents.js");
-const loginRoute = require("./routes/loginRoute.js");
-const signupRoute = require("./routes/signupRoute.js");
-const verifyEmailRoute = require("./routes/verifyEmailRoute.js");
-const entryRoute = require("./routes/entryRoute.js");
-const logoutRoute = require("./routes/logoutRoute.js");
-const facebookLoginRoute = require("./routes/facebookLoginRoute.js");
-const googleLoginRoute = require("./routes/googleLoginRoute.js");
-const loginAsGuestRoute = require("./routes/loginAsGuestRoute.js");
-const githubLoginRoute = require("./routes/githubLoginRoute.js");
+const api = require("./routes/api/api.js");
 const USERDAO = require("./DAO/USERDAO.js");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
@@ -40,7 +33,6 @@ app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static("./build/"));
 
 passport.serializeUser((user, done) => {
   return done(null, user.username);
@@ -51,15 +43,11 @@ passport.deserializeUser(async (username, done) => {
   return done(null, user);
 });
 
-app.use("/login", loginRoute);
-app.use("/signup-route", signupRoute);
-app.use("/verify-email", verifyEmailRoute);
-app.use("/logout", logoutRoute);
-app.use("/auth/facebook", facebookLoginRoute);
-app.use("/auth/google", googleLoginRoute);
-app.use("/auth/github", githubLoginRoute);
-app.use("/login-as-guest", loginAsGuestRoute);
-app.use("/entry", entryRoute);
+app.use(express.static("./build/"));
+app.use("/api", api);
+app.use((req, res) => {
+  return res.sendFile(path.join(__dirname + "/build/index.html"));
+});
 
 registerIOEvents(io);
 
