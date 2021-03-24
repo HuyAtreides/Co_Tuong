@@ -14,22 +14,30 @@
   flex-direction: column;
   justify-content: center;
   min-width: 350px;
+  min-height: 505px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   @media screen and (max-width: 768px) {
     margin-top: 10px;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 17px;
+    padding-bottom: 17px;
   }
   .button-container {
     display: flex;
+    border: solid;
     font-family: "Montserrat-Bold";
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 70%;
+    height: 90%;
     min-height: 397px;
+    @media screen and (max-width: 1200px) {
+      height: 100%;
+    }
     .select-side-container {
       width: 100%;
       display: flex;
+
       justify-content: space-between;
       .red-side {
         color: hsla(0, 0%, 100%, 0.65);
@@ -51,6 +59,7 @@
       font-size: 1.5rem;
       background-color: #7fa650;
       width: 100%;
+
       &:hover:enabled {
         background-color: #95bb4a !important;
       }
@@ -74,6 +83,7 @@
       @extend .play;
       color: hsla(0, 0%, 100%, 0.65);
       background-color: rgba(2, 1, 1, 0.18);
+
       &:hover:enabled {
         background-color: rgba(2, 1, 1, 0.1) !important;
         color: white;
@@ -82,9 +92,11 @@
 
     .time-select-container {
       width: 100%;
+
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+
       .select-timer {
         @extend .red-side;
         position: relative;
@@ -124,5 +136,16 @@
         }
       }
     }
+  }
+}
+
+.center-board {
+  background-color: hsla(0, 0%, 100%, 0.1) !important;
+  color: hsla(0, 0%, 100%, 0.65) !important;
+  font-size: 1.5rem !important;
+  width: 100%;
+  &:hover {
+    background-color: hsla(0, 0%, 100%, 0.2) !important;
+    color: #ffffff !important;
   }
 }

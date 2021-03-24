@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
 import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 
-const GameBar = () => {
+const GameBar = (props) => {
   const dispatch = useDispatch();
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
@@ -151,6 +151,13 @@ const GameBar = () => {
         onClick={handleExit}
       >
         Exit Game
+      </Button>
+      <Button
+        className="center-board"
+        onClick={props.handleCenterBoard}
+        style={{ marginTop: "17px" }}
+      >
+        {`Center Board: ${props.centerBoard ? "On" : "Off"}`}
       </Button>
     </Col>
   );

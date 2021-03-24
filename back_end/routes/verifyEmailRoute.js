@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
   try {
     const { email, lastname } = req.body;
     const verifyCode = Math.floor(Math.random() * 89999) + 10000;
-    const capitalLastname = lastname[0].toUpperCase() + lastname.split(1);
+    const capitalLastname = lastname[0].toUpperCase() + lastname.slice(1);
     await verifyEmail({
       from: process.env.EMAIL,
       to: email,

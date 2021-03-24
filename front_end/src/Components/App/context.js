@@ -9,7 +9,7 @@ const AuthenticateUserContext = React.createContext();
 const authenticateUser = (dispatch, user, sessionID) => {
   if (socket.connected) socket.disconnect();
   dispatch({ type: "setPlayerInfo", value: user });
-  dispatch({ type: "setIsAuthenticated", value: sessionID ? true : "guest" });
+  dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
   socket.auth = {
     player: {
       playername: user.username,

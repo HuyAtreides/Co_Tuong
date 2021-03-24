@@ -27,8 +27,8 @@ router.get("/", passport.authenticate("github", { scope: ["user"] }));
 router.get(
   "/callback",
   passport.authenticate("github", {
-    successRedirect: "http://localhost:8080/",
-    failureRedirect: "http://localhost:8080/",
+    successRedirect: "http://localhost:3000/",
+    failureRedirect: "http://localhost:3000/",
   })
 );
 

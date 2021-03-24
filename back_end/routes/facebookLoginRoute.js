@@ -29,8 +29,8 @@ router.get("/", passport.authenticate("facebook", { scope: "email" }));
 router.get(
   "/callback",
   passport.authenticate("facebook", {
-    successRedirect: "http://localhost:8080/",
-    failureRedirect: "http://localhost:8080/",
+    successRedirect: "http://localhost:3000/",
+    failureRedirect: "http://localhost:3000/",
   })
 );
 

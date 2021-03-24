@@ -6,7 +6,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 390px;
   min-width: 350px;
   padding-top: 0px !important;
@@ -14,7 +13,7 @@
   padding-right: 0px !important;
   .player-area {
     display: flex;
-
+    width: 100%;
     align-items: center;
     ::-webkit-scrollbar {
       width: 5px;

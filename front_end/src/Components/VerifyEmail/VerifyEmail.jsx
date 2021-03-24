@@ -23,9 +23,6 @@ const VerifyEmail = () => {
   const [waitForSendingCode, setWaitForSendingCode] = useState(false);
   const codeRef = useRef();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
-  const isAuthenticated = useSelector(
-    (state) => state.appState.isAuthenticated
-  );
 
   const handleVerificationCodeChange = (event) => {
     const value = event.target.value;
@@ -49,7 +46,7 @@ const VerifyEmail = () => {
       else if (user) {
         setVerified(true);
         dispatch({ type: "setPlayerInfo", value: user });
-      } else if (+codeRef.current === +verificationCode)
+      } else if (+codeRef.current !== +verificationCode)
         setInvalidCodeMess("Incorrect Code");
       else setError(message);
     }
