@@ -96,8 +96,12 @@ class EventHandlers {
       console.log(socket.id + " disconnect");
       io.to(socket.opponentID).emit("opponentLeftGame");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
-      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
-      await USERDAO.updateUserInGame(socket.player.playername, false);
+      if (socket.player.guest)
+        await USERDAO.removeGuest(socket.player.playername);
+      else {
+        await USERDAO.updateUserInGame(socket.player.playername, false);
+        await USERDAO.setSocketID(socket.player.playername, null, false);
+      }
     });
 
     socket.on("exitGame", async () => {

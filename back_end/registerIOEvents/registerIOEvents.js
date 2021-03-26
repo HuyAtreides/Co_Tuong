@@ -1,4 +1,5 @@
 const EventHandlers = require("../event_handlers/EventHandlers.js");
+const USERDAO = require("../DAO/USERDAO");
 
 function registerIOEvents(io) {
   const onConnectionHandler = (socket) => {
@@ -15,6 +16,7 @@ function registerIOEvents(io) {
     EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
     EventHandlers.registerLogout(io.of("/play"), socket);
+    USERDAO.setSocketID(socket.player.playername, socket.id, true);
   };
 
   io.of("/play").use((socket, next) => {

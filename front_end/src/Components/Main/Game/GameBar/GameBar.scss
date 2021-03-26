@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  min-height: 530px;
 }
 .game-controller {
   .game-bar {
@@ -43,7 +44,7 @@
     font-size: 1.2rem;
     font-family: "Montserrat-Bold";
     color: #db4437;
-    margin-top: 17px;
+
     background-color: hsla(0, 0%, 100%, 0.2);
     &:hover:enabled {
       color: #26211b;
@@ -56,7 +57,6 @@
     }
   }
   .show-chat {
-    margin-top: 17px;
     width: 100%;
     font-size: 1.2rem;
     font-family: "Montserrat-Bold";

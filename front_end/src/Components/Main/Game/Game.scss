@@ -2,6 +2,9 @@
 .row {
   justify-content: space-evenly !important;
   height: 100%;
+  @media screen and (max-width: 1200px) {
+    align-items: center;
+  }
   // max-height: 485px !important;
 }
 button {

@@ -67,12 +67,7 @@ const GameController = (props) => {
           "Your account is currently in a game. Please try again after the game was finished",
       });
     });
-
-    return () => {
-      socket.removeAllListeners("timeout");
-      socket.removeAllListeners("foundMatch");
-    };
-  });
+  }, []);
 
   return (
     <Col md={{ span: 4 }} xs={{ span: 10 }} className="game-controller mb-3">

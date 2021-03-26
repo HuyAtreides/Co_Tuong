@@ -152,11 +152,7 @@ const GameBar = (props) => {
       >
         Exit Game
       </Button>
-      <Button
-        className="center-board"
-        onClick={props.handleCenterBoard}
-        style={{ marginTop: "17px" }}
-      >
+      <Button className="center-board" onClick={props.handleCenterBoard}>
         {`Center Board: ${props.centerBoard ? "On" : "Off"}`}
       </Button>
     </Col>

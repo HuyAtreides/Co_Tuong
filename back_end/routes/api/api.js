@@ -9,6 +9,7 @@ const facebookLoginRoute = require("../facebookLoginRoute.js");
 const googleLoginRoute = require("../googleLoginRoute.js");
 const loginAsGuestRoute = require("../loginAsGuestRoute.js");
 const githubLoginRoute = require("../githubLoginRoute.js");
+const playersRoute = require("../playersRoute.js");
 
 router.use("/user", userRoute);
 router.use("/login", loginRoute);
@@ -19,5 +20,6 @@ router.use("/auth/facebook", facebookLoginRoute);
 router.use("/auth/google", googleLoginRoute);
 router.use("/auth/github", githubLoginRoute);
 router.use("/login-as-guest", loginAsGuestRoute);
+router.use("/players", playersRoute);
 
 module.exports = router;

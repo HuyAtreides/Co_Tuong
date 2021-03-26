@@ -33,6 +33,24 @@ class USERDAO {
     }
   }
 
+  static async findPlayers(playername) {
+    try {
+      const regex = new RegExp(`${playername}`, "i");
+      const result = await users.find({ username: regex });
+      const players = await result.toArray();
+      return players;
+    } catch (err) {
+      throw new Error(err.toString());
+    }
+  }
+
+  static async setSocketID(username, id, set) {
+    await users.findOneAndUpdate(
+      { username: username },
+      set ? { $set: { socketID: id } } : { $unset: { socketID: "" } }
+    );
+  }
+
   static async findUser(username) {
     try {
       const result = await users.findOneAndUpdate(
@@ -69,8 +87,10 @@ class USERDAO {
 
   static async insertGuest() {
     try {
-      const count = await users.countDocuments({ guest: true });
-      const guestName = "Guest" + (count ? count : "");
+      const cursor = await users.find({ guest: true });
+      const guests = await cursor.sort("username", -1).toArray();
+      const num = guests[0] ? guests[0].username.slice(5) : "";
+      const guestName = "Guest" + (+num + 1);
       const result = await users.insertOne({
         username: guestName,
         name: { lastname: null, firstname: null },
@@ -97,7 +117,7 @@ class USERDAO {
       if (result.value) {
         return result.value;
       } else {
-        const regex = new RegExp(`^${profile.displayName}`, "i");
+        const regex = new RegExp(`^${profile.displayName}`);
         const count = await users.countDocuments({
           username: regex,
         });

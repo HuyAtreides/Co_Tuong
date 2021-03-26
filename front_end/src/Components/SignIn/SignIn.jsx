@@ -87,11 +87,14 @@ const Login = () => {
   };
 
   const handleLoginAsGuest = async () => {
-    setWaitForServer(true);
-    const { user } = await callAPI("GET", "login-as-guest", null);
-    setWaitForServer(false);
-    setSuccessfullyLogin(true);
-    authenticateUser(dispatch, user, null);
+    if (isAuthenticated === "guest") setSuccessfullyLogin(true);
+    else {
+      setWaitForServer(true);
+      const { user } = await callAPI("GET", "login-as-guest", null);
+      setWaitForServer(false);
+      setSuccessfullyLogin(true);
+      authenticateUser(dispatch, user, null);
+    }
   };
 
   useEffect(async () => {

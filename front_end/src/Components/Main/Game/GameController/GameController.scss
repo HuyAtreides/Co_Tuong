@@ -11,29 +11,24 @@
 .game-controller {
   background-color: rgba(2, 1, 1, 0.18);
   display: flex;
+  position: relative;
   flex-direction: column;
   justify-content: center;
   min-width: 350px;
-  min-height: 505px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  min-height: 530px;
+  padding-top: 17px;
+  padding-bottom: 17px;
   @media screen and (max-width: 768px) {
     margin-top: 10px;
-    padding-top: 17px;
-    padding-bottom: 17px;
   }
   .button-container {
     display: flex;
-    border: solid;
     font-family: "Montserrat-Bold";
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     height: 90%;
-    min-height: 397px;
-    @media screen and (max-width: 1200px) {
-      height: 100%;
-    }
+    min-height: 450px;
     .select-side-container {
       width: 100%;
       display: flex;

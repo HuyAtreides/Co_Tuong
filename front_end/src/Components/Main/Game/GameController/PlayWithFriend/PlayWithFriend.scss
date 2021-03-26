@@ -1,15 +1,50 @@
 .play-with-friend-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  width: 338px;
+  align-self: center;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  .players-pending {
+    position: static;
+    max-height: 13rem;
+    background-color: #312e2b;
+    li {
+      div {
+        width: 25px;
+        img {
+          width: 100%;
+        }
+      }
+      p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.65);
+      }
+      .pending {
+        animation: finding 1s linear 0s infinite;
+        animation-fill-mode: both;
+        text-align: right;
+      }
+      @keyframes finding {
+        0% {
+          color: rgba(255, 255, 255, 0.65);
+        }
+        50% {
+          color: #312e2b;
+        }
+        100% {
+          color: rgba(255, 255, 255, 0.65);
+        }
+      }
+    }
+  }
+
   .fa-arrow-left {
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 3%;
+    left: 3%;
     cursor: pointer;
     color: hsla(0, 0%, 100%, 0.2);
     &:hover {
@@ -17,23 +52,28 @@
     }
   }
   .btn-container {
-    min-width: 327px;
-    width: 80%;
+    width: 100%;
+    flex-basis: 130px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     .username-input {
-      border: 0.7px solid #dbd9d7;
+      position: relative;
+      border: 0.5px solid #dbd9d7;
       border-radius: 0.2rem;
       padding: 5px;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+
       input {
         border: none;
         font-family: "Montserrat-Regular";
-        border: none;
         font-size: 1rem;
         color: hsla(0, 0%, 100%, 0.65);
         background-color: transparent;
+
         &:focus {
           outline: none;
         }
@@ -49,10 +89,60 @@
           background-color: white !important;
         }
       }
-
+      .fa-times {
+        color: #8c8a88;
+        cursor: pointer;
+      }
       .fa-search {
         color: #8c8a88;
       }
+    }
+    .invite-link {
+      background-color: rgba(2, 1, 1, 0.18);
+      width: 100%;
+      font-size: 1.3rem;
+      color: hsla(0, 0%, 100%, 0.7);
+      &:hover {
+        background-color: rgba(2, 1, 1, 0.1) !important;
+        color: white;
+      }
+    }
+  }
+}
+
+.players-list {
+  position: absolute;
+  top: 100%;
+  padding: 0px;
+  overflow: auto;
+  max-height: 23rem;
+  width: 100%;
+  background-color: white;
+  scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
+  scrollbar-width: thin;
+  li {
+    list-style: none;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #6c757d;
+    padding: 10px;
+    cursor: pointer;
+    .img-container {
+      width: 33px;
+      img {
+        width: 100%;
+      }
+    }
+    p {
+      flex-grow: 1;
+      text-align: left;
+      font-family: "Montserrat-Regular";
+      font-size: 1rem;
+      color: black;
+      padding-left: 5px;
+      margin: 0px;
     }
   }
 }
