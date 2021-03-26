@@ -139,7 +139,7 @@ function Board() {
     }
   };
 
-  const constructNewBoard = (width) => {
+  const constructNewPiecesWidth = (width) => {
     const newBoard = board.map((row) => {
       const newRow = row.map((piece) => {
         if (piece) {
@@ -163,14 +163,14 @@ function Board() {
     });
     dispatch({
       type: "setBoard",
-      value: constructNewBoard(width / 9),
+      value: constructNewPiecesWidth(width / 9),
     });
   };
 
   useEffect(() => {
     const width = document.querySelector(".board-container").offsetWidth;
     dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
-    dispatch({ type: "setBoard", value: constructNewBoard(width / 9) });
+    dispatch({ type: "setBoard", value: constructNewPiecesWidth(width / 9) });
 
     window.ondragstart = () => false;
   }, []);

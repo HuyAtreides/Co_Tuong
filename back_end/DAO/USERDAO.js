@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const nonAccentVietnamese = require("./nonAccentVietnamese.js");
 let users;
 
 class USERDAO {
@@ -37,7 +38,9 @@ class USERDAO {
     try {
       const regex = new RegExp(`${playername}`, "i");
       const result = await users.find({ username: regex });
-      const players = await result.toArray();
+      const players = await result
+        .project({ username: 1, photo: 1, socketID: 1 })
+        .toArray();
       return players;
     } catch (err) {
       throw new Error(err.toString());
@@ -125,7 +128,7 @@ class USERDAO {
           ? profile.displayName + count
           : profile.displayName;
         const result = await users.insertOne({
-          username: username.replace(/\s+/g, ""),
+          username: username,
           provider: provider,
           userID: id,
           email: {
@@ -134,7 +137,9 @@ class USERDAO {
           },
           photo: profile.photos
             ? profile.photos[0].value
-            : `/user_profile_pic/${username[0].toUpperCase()}.svg`,
+            : `/user_profile_pic/${nonAccentVietnamese(
+                username[0]
+              ).toUpperCase()}.svg`,
           name: {
             firstname: name && name.familyName ? name.familyName : null,
             lastname: name && name.givenName ? name.givenName : null,
@@ -163,7 +168,9 @@ class USERDAO {
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: `/user_profile_pic/${username[0].toUpperCase()}.svg`,
+        photo: `/user_profile_pic/${nonAccentVietnamese(
+          username[0]
+        ).toUpperCase()}.svg`,
         matches: [],
         lastOnline: new Date(),
         join: new Date(),

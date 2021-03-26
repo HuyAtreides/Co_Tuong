@@ -9,13 +9,13 @@ function registerIOEvents(io) {
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);
     EventHandlers.registerSendMessageHandlers(io.of("/play"), socket);
-    EventHandlers.registerCheckMateHandlers(io.of("/play"), socket);
     EventHandlers.registerDisconnectHandlers(io.of("/play"), socket);
-    EventHandlers.registerDrawHandlers(io.of("/play"), socket);
+    EventHandlers.registerDrawOfferHandlers(io.of("/play"), socket);
     EventHandlers.registerGameFinishHandlers(io.of("/play"), socket);
     EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
-    EventHandlers.registerLogout(io.of("/play"), socket);
+    EventHandlers.registerLogoutHandlers(io.of("/play"), socket);
+    EventHandlers.registerSendInviteHandlers(io.of("/play"), socket);
     USERDAO.setSocketID(socket.player.playername, socket.id, true);
   };
 

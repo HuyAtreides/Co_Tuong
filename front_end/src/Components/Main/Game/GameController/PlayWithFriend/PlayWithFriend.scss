@@ -12,11 +12,20 @@
     max-height: 13rem;
     background-color: #312e2b;
     li {
+      position: relative;
       div {
         width: 25px;
         img {
           width: 100%;
         }
+      }
+      .fa-times {
+        position: absolute;
+        top: 3%;
+        right: 0.1%;
+        font-size: 0.9rem;
+        color: #8c8a88;
+        cursor: pointer;
       }
       p {
         font-size: 0.9rem;
@@ -143,6 +152,12 @@
       color: black;
       padding-left: 5px;
       margin: 0px;
+    }
+    .status span {
+      display: inline-block;
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 100%;
     }
   }
 }

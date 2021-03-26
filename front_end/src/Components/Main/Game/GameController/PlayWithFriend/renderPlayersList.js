@@ -1,6 +1,6 @@
 const renderPlayersList = (players, handleSelectPlayer) => {
   const playersList = players.map((player, index) => {
-    const { username, photo } = player;
+    const { username, photo, socketID } = player;
     return (
       <li
         key={`player${index}`}
@@ -11,6 +11,11 @@ const renderPlayersList = (players, handleSelectPlayer) => {
           <img src={photo}></img>
         </div>
         <p>{username}</p>
+        <div className="status">
+          <span
+            style={{ backgroundColor: socketID ? "#28a745" : "#6c757d" }}
+          ></span>
+        </div>
       </li>
     );
   });

@@ -36,7 +36,13 @@ const Signup = () => {
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
-    if (/[^_a-z0-9]/i.test(value) || value.length < 3 || value.length > 20) {
+    if (
+      /[^_a-z0-9ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ ]/i.test(
+        value
+      ) ||
+      value.length < 3 ||
+      value.length > 20
+    ) {
       setInvalidUsernameMess(
         "Username must be between 3-20 characters long and use only Latin letters and numbers"
       );
@@ -62,18 +68,16 @@ const Signup = () => {
 
   const handleFirstnameChange = (event) => {
     const value = event.target.value;
-    if (/[^ _a-z]/i.test(value))
-      setInvalidFirstname("Firstname can only contain letter, space and _");
-    else setInvalidFirstname("");
     setFirstname(value);
   };
   const handleLastnameChange = (event) => {
     const value = event.target.value;
-    if (/[^ _a-z]/i.test(value) || /[^a-z]/i.test(value[0])) {
-      if (/[^a-z]/i.test(value[0]))
-        setInvalidLastname("First letter must be letter");
-      else setInvalidLastname("Lastname can only contain letter, space and _");
-    } else setInvalidLastname("");
+    if (
+      /[^a-zA-ZÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ]/.test(
+        value[0]
+      )
+    )
+      setInvalidLastname("First character must be latin letter");
     setLastname(value);
   };
 

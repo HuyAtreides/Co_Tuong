@@ -79,15 +79,17 @@ class EventHandlers {
     });
   }
 
+  static registerSendInviteHandlers(io, socket) {
+    socket.on("sendInvite", (receiverSocketID) => {
+      const receiverSocket = io.sockets.get(receiverSocketID);
+      receiverSocket.join(socket.player.playername);
+    });
+    socket.on("cancelInvite", (receiverSocketID) => {});
+  }
+
   static registerSendMessageHandlers(io, socket) {
     socket.on("sendMessage", (message) => {
       io.to(socket.opponentID).emit("incomingMessage", message);
-    });
-  }
-
-  static registerCheckMateHandlers(io, socket) {
-    socket.on("checkmate", () => {
-      io.to(socket.opponentID).emit("won");
     });
   }
 
@@ -111,13 +113,13 @@ class EventHandlers {
     });
   }
 
-  static registerLogout(io, socket) {
+  static registerLogoutHandlers(io, socket) {
     socket.on("logout", () => {
       socket.to(socket.sessionID).emit("accountLogout");
     });
   }
 
-  static registerDrawHandlers(io, socket) {
+  static registerDrawOfferHandlers(io, socket) {
     socket.on("sendDrawOffer", () => {
       io.to(socket.opponentID).emit("receiveDrawOffer");
     });
