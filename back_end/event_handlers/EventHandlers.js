@@ -42,6 +42,15 @@ class EventHandlers {
     }
   }
 
+  static async handleFoundMatch(socket, curSocket, time) {
+    const [player1, player2] = [socket.player, curSocket.player];
+    EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
+    await USERDAO.updateUserInGame(player1.playername, true);
+    await USERDAO.updateUserInGame(player2.playername, true);
+    socket.emit("foundMatch", player2, socket.firstMove, time);
+    curSocket.emit("foundMatch", player1, !socket.firstMove, time);
+  }
+
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", async (side, time) => {
       const start = new Date();
@@ -64,12 +73,7 @@ class EventHandlers {
               curSocket.opponentID === null &&
               curSocket.player.playername !== socket.player.playername
             ) {
-              const [player1, player2] = [socket.player, curSocket.player];
-              EventHandlers.assignFirstMove(socket, curSocket, id);
-              await USERDAO.updateUserInGame(player1.playername, true);
-              await USERDAO.updateUserInGame(player2.playername, true);
-              socket.emit("foundMatch", player2, socket.firstMove, time);
-              curSocket.emit("foundMatch", player1, !socket.firstMove, time);
+              await EventHandlers.handleFoundMatch(socket, curSocket, time);
               clearInterval(intervalID);
               return;
             }
@@ -80,10 +84,15 @@ class EventHandlers {
   }
 
   static registerSendInviteHandlers(io, socket) {
-    socket.on("sendInvite", (receiverSocketID) => {
+    socket.on("sendInvite", (receiverSocketID, time) => {
       const receiverSocket = io.sockets.get(receiverSocketID);
       receiverSocket.join(socket.player.playername);
-      io.to(receiverSocketID).emit("receiveInvite", socket.player, socket.id);
+      io.to(receiverSocketID).emit(
+        "receiveInvite",
+        socket.player,
+        socket.id,
+        time
+      );
     });
 
     socket.on("cancelInvite", (receiverSocketID) => {
@@ -102,14 +111,14 @@ class EventHandlers {
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", async (reason) => {
       console.log(socket.id + " disconnect");
+      if (reason === "server namespace disconnect") return;
       io.to(socket.opponentID).emit("opponentLeftGame");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
       if (socket.player.guest)
         await USERDAO.removeGuest(socket.player.playername);
       else {
         await USERDAO.updateUserInGame(socket.player.playername, false);
-        if (reason !== "server namespace disconnect")
-          await USERDAO.setSocketID(socket.player.playername, null, false);
+        await USERDAO.setSocketID(socket.player.playername, null, false);
       }
     });
 

@@ -64,7 +64,6 @@ passport.use(
 router.post(
   "/",
   (req, res, next) => {
-    const sessionID = req.cookies["connect.sid"];
     passport.authenticate("local", (err, user, info) => {
       if (err) {
         return res.status(500).json({ user: null, message: err.toString() });
@@ -77,7 +76,7 @@ router.post(
       req.login(user, (err) => {
         if (err)
           return res.status(500).json({ user: user, message: err.toString() });
-        return res.json({ user: user, message: null, sessionID: sessionID });
+        return res.json({ user: user, message: null });
       });
     })(req, res, next);
   },

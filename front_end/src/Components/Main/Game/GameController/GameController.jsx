@@ -7,6 +7,9 @@ import PlayWithFriend from "./PlayWithFriend/PlayWithFriend.jsx";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
+  const [playWithFriendText, setPlayWithFriendText] = useState(
+    "Play With Friend"
+  );
   const [playWithFriend, setPlayWithFriend] = useState(false);
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
@@ -15,14 +18,22 @@ const GameController = (props) => {
   const side = useSelector((state) => state.boardState.side);
 
   const handlePlayWithFriend = () => {
-    setPlayWithFriend(!playWithFriend);
+    if (!socket.connected) {
+      setPlayWithFriendText("Connection Was Closed");
+      setTimeout(() => {
+        setPlayWithFriendText("Play With Friend");
+      }, 700);
+    } else setPlayWithFriend(!playWithFriend);
   };
 
   const handlePlay = () => {
     if (findingMatch !== true) {
-      if (!socket.connected)
+      if (!socket.connected) {
         dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
-      else {
+        setTimeout(() => {
+          dispatch({ type: "setFindingMatch", value: "Play" });
+        }, 700);
+      } else {
         socket.emit("findMatch", side, time);
         dispatch({ type: "setFindingMatch", value: true });
       }
@@ -141,7 +152,7 @@ const GameController = (props) => {
             disabled={findingMatch === true}
             onClick={handlePlayWithFriend}
           >
-            Play With Friend
+            {playWithFriendText}
           </Button>
           <Button className="center-board" onClick={props.handleCenterBoard}>
             {`Center Board: ${props.centerBoard ? "On" : "Off"}`}

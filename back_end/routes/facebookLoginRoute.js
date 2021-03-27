@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const USERDAO = require("../DAO/USERDAO.js");
-const fetch = require("node-fetch");
+const checkingSession = require("./api/checkingSession.js");
 
 passport.use(
   new FacebookStrategy(
@@ -24,7 +24,11 @@ passport.use(
   )
 );
 
-router.get("/", passport.authenticate("facebook", { scope: "email" }));
+router.get(
+  "/",
+  checkingSession,
+  passport.authenticate("facebook", { scope: "email" })
+);
 
 router.get(
   "/callback",

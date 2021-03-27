@@ -1,18 +1,23 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import "./PlayWithFriend.scss";
-import { Button } from "react-bootstrap";
+import { Button, Tooltip, Overlay } from "react-bootstrap";
 import renderPlayersList from "./renderPlayersList.js";
 import renderPendingPlayers from "./renderPendingPlayers.js";
 import callAPI from "../../../../App/callAPI.js";
 import { SocketContext } from "../../../../App/context.js";
 import { Spinner } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 const PlayWithFriend = (props) => {
   const [input, setInput] = useState("");
   const [playersList, setPlayersList] = useState([]);
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [pendingPlayers, setPendingPlayers] = useState({});
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const socket = useContext(SocketContext);
+  const [show, setShow] = useState("");
+  const target = useRef(null);
+  const time = useSelector((state) => state.gameState.time);
 
   const handleSelectPlayer = (event) => {
     const name = event.currentTarget.getAttribute("playername");
@@ -32,8 +37,9 @@ const PlayWithFriend = (props) => {
       });
       const reCheck = document.querySelector("#player-name-search").value;
       if (!players) return;
+      const name = playerInfo.username;
       if (reCheck)
-        setPlayersList(renderPlayersList(players, handleSelectPlayer));
+        setPlayersList(renderPlayersList(players, handleSelectPlayer, name));
     } else setPlayersList([]);
   };
 
@@ -41,6 +47,13 @@ const PlayWithFriend = (props) => {
     const username = event.currentTarget.getAttribute("playername");
     delete pendingPlayers[username];
     setPendingPlayers(Object.assign({}, pendingPlayers));
+  };
+
+  const handleCanotSendInvite = (reason) => {
+    setShow(reason);
+    setTimeout(() => {
+      setShow("");
+    }, 1000);
   };
 
   const handleSendInvite = async (event) => {
@@ -54,14 +67,20 @@ const PlayWithFriend = (props) => {
         ),
       });
       setWaitForResponse(false);
-      if (players && players[0].socketID) {
-        setPendingPlayers((prevState) => {
-          const newState = Object.assign({}, prevState);
-          newState[players[0].username] = players[0];
-          return newState;
-        });
-        socket.emit("sendInvite", players[0].socketID);
-      }
+      if (players.length) {
+        if (players[0].socketID) {
+          if (Object.keys(pendingPlayers).length + 1 > 5) {
+            handleCanotSendInvite("You have sent too many invites");
+            return;
+          }
+          setPendingPlayers((prevState) => {
+            const newState = Object.assign({}, prevState);
+            newState[players[0].username] = players[0];
+            return newState;
+          });
+          socket.emit("sendInvite", players[0].socketID, time);
+        } else handleCanotSendInvite(`${players[0].username} isn't online`);
+      } else handleCanotSendInvite("user not found");
     }
   };
 
@@ -95,7 +114,7 @@ const PlayWithFriend = (props) => {
             onClick={clearInput}
             style={{ display: input ? "inline" : "none" }}
           ></i>
-          <Button className="invite" type="submit">
+          <Button className="invite" type="submit" ref={target}>
             {waitForResponse ? (
               <Spinner
                 animation="border"
@@ -106,6 +125,9 @@ const PlayWithFriend = (props) => {
               "Invite"
             )}
           </Button>
+          <Overlay target={target.current} show={show !== ""}>
+            {(props) => <Tooltip {...props}>{show}</Tooltip>}
+          </Overlay>
           <ul className="players-list">{playersList}</ul>
         </form>
         <Button className="invite-link">Invite Link</Button>

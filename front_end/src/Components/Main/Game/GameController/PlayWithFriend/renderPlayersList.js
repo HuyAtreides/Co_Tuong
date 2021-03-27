@@ -1,6 +1,7 @@
-const renderPlayersList = (players, handleSelectPlayer) => {
+const renderPlayersList = (players, handleSelectPlayer, name) => {
   const playersList = players.map((player, index) => {
     const { username, photo, socketID } = player;
+    if (username === name) return null;
     return (
       <li
         key={`player${index}`}

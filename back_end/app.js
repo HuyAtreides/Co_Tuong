@@ -8,7 +8,6 @@ const httpServer = require("http").createServer(app);
 const registerIOEvents = require("./registerIOEvents/registerIOEvents.js");
 const api = require("./routes/api/api.js");
 const USERDAO = require("./DAO/USERDAO.js");
-const cookieParser = require("cookie-parser");
 const path = require("path");
 const sessionMiddleware = session({
   secret: "co_tuong",
@@ -29,7 +28,6 @@ const io = require("socket.io")(httpServer, {
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());

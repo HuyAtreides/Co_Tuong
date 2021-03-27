@@ -3,6 +3,7 @@ const router = express.Router();
 const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const passport = require("passport");
 const USERDAO = require("../DAO/USERDAO.js");
+const checkingSession = require("./api/checkingSession.js");
 
 passport.use(
   new GoogleStrategy(
@@ -24,6 +25,7 @@ passport.use(
 
 router.get(
   "/",
+  checkingSession,
   passport.authenticate("google", {
     scope: [
       "https://www.googleapis.com/auth/userinfo.profile",

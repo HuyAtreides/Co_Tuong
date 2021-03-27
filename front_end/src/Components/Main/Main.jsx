@@ -28,10 +28,10 @@ const Main = () => {
   useEffect(async () => {
     if (!isAuthenticated) {
       setWaitForResponse(true);
-      const { user, sessionID, message } = await callAPI("GET", "user", null);
+      const { user, message } = await callAPI("GET", "user", null);
       setWaitForResponse(false);
       if (user) {
-        authenticateUser(dispatch, user, sessionID);
+        authenticateUser(dispatch, user);
       } else if (message) dispatch({ type: "setLoginError", value: message });
     }
   }, [isAuthenticated]);

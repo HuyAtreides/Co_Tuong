@@ -3,6 +3,7 @@ const router = express.Router();
 const GithubStrategy = require("passport-github2").Strategy;
 const passport = require("passport");
 const USERDAO = require("../DAO/USERDAO.js");
+const checkingSession = require("./api/checkingSession.js");
 
 passport.use(
   new GithubStrategy(
@@ -22,7 +23,11 @@ passport.use(
   )
 );
 
-router.get("/", passport.authenticate("github", { scope: ["user"] }));
+router.get(
+  "/",
+  checkingSession,
+  passport.authenticate("github", { scope: ["user"] })
+);
 
 router.get(
   "/callback",

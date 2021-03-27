@@ -7,24 +7,28 @@ const Invites = () => {
   const [invites, setInvites] = useState({});
   const socket = useContext(SocketContext);
 
-  const handleAccept = () => {};
+  const handleAccept = (event) => {
+    const playername = event.currentTarget.getAttribute("playername");
+  };
 
-  const handleDecline = () => {};
+  const handleDecline = (event) => {
+    const playername = event.currentTarget.getAttribute("playername");
+  };
 
   useEffect(() => {
-    socket.on("receiveInvite", (sender, senderSocketID) => {
-      setInvites((prevState) => {
-        const newState = Object.assign({}, prevState);
-        sender.socketID = senderSocketID;
-        newState[sender.playername] = sender;
-        return newState;
-      });
+    socket.on("receiveInvite", (sender, senderSocketID, time) => {
+      if (Object.values(invites).length === 5)
+        socket.emit("receiveTooManyInvites", senderSocketID);
+      else
+        setInvites((prevState) => {
+          const newState = Object.assign({}, prevState);
+          sender.socketID = senderSocketID;
+          sender.time = time;
+          newState[sender.playername] = sender;
+          return newState;
+        });
     });
-
-    return () => {
-      socket.removeAllListeners("receiveInvite");
-    };
-  });
+  }, []);
 
   return (
     <ul className="invites-list">

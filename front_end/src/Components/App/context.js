@@ -6,7 +6,7 @@ const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
 const AuthenticateUserContext = React.createContext();
 
-const authenticateUser = (dispatch, user, sessionID) => {
+const authenticateUser = (dispatch, user) => {
   if (socket.connected) socket.disconnect();
   dispatch({ type: "setPlayerInfo", value: user });
   dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
@@ -17,7 +17,6 @@ const authenticateUser = (dispatch, user, sessionID) => {
       photo: user.photo,
       socketID: user.socketID,
     },
-    sessionID: sessionID,
   };
   socket.connect();
 };

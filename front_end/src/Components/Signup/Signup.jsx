@@ -129,7 +129,7 @@ const Signup = () => {
     ) {
       setWaitForResponse(true);
       setError(null);
-      const { message, user, ok, sessionID } = await callAPI("POST", "signup", {
+      const { message, user, ok } = await callAPI("POST", "signup", {
         email: email,
         firstname: firstname,
         username: username,
@@ -138,7 +138,7 @@ const Signup = () => {
       });
       setWaitForResponse(false);
       if (user) {
-        authenticateUser(dispatch, user, sessionID);
+        authenticateUser(dispatch, user);
       } else handleError(ok, message);
     }
   };
@@ -146,10 +146,10 @@ const Signup = () => {
   useEffect(async () => {
     if (isAuthenticated) return;
     setCheckingSession(true);
-    const { user, sessionID, message, ok } = await callAPI("GET", "user", null);
+    const { user, message, ok } = await callAPI("GET", "user", null);
     setCheckingSession(false);
     if (user) {
-      authenticateUser(dispatch, user, sessionID);
+      authenticateUser(dispatch, user);
     } else handleError(ok, message);
   }, [isAuthenticated]);
 
