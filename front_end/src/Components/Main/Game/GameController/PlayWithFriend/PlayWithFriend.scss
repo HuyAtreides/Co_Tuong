@@ -32,11 +32,11 @@
         color: rgba(255, 255, 255, 0.65);
       }
       .pending {
-        animation: finding 1s linear 0s infinite;
+        animation: pending 1s linear 0s infinite;
         animation-fill-mode: both;
         text-align: right;
       }
-      @keyframes finding {
+      @keyframes pending {
         0% {
           color: rgba(255, 255, 255, 0.65);
         }

@@ -83,8 +83,14 @@ class EventHandlers {
     socket.on("sendInvite", (receiverSocketID) => {
       const receiverSocket = io.sockets.get(receiverSocketID);
       receiverSocket.join(socket.player.playername);
+      io.to(receiverSocketID).emit("receiveInvite", socket.player, socket.id);
     });
-    socket.on("cancelInvite", (receiverSocketID) => {});
+
+    socket.on("cancelInvite", (receiverSocketID) => {
+      const receiverSocket = io.sockets.get(receiverSocketID);
+      receiverSocket.leave(socket.player.playername);
+      io.to(receiverSocketID).emit("inviteCanceled", socket.player, socket.id);
+    });
   }
 
   static registerSendMessageHandlers(io, socket) {

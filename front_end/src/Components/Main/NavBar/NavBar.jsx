@@ -1,8 +1,9 @@
 import React, { useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navbar, NavDropdown, Nav, Button } from "react-bootstrap";
+import { Navbar, NavDropdown, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import callAPI from "../../App/callAPI.js";
+import Invites from "./Invites/Invites.jsx";
 import { SocketContext } from "../../App/context.js";
 import "./NavBar.scss";
 
@@ -39,6 +40,7 @@ const NavBar = (props) => {
 
   return (
     <Navbar expand="md" className="nav-bar">
+      <Invites />
       <Navbar.Brand>
         <Link to="/" className="link-brand">
           Xiangqi

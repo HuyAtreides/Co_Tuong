@@ -10,6 +10,7 @@ const authenticateUser = (dispatch, user, sessionID) => {
   if (socket.connected) socket.disconnect();
   dispatch({ type: "setPlayerInfo", value: user });
   dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
+  console.log(user.username);
   socket.auth = {
     player: {
       playername: user.username,
