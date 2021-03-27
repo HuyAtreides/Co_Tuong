@@ -20,8 +20,12 @@ const GameController = (props) => {
 
   const handlePlay = () => {
     if (findingMatch !== true) {
-      socket.emit("findMatch", side, time);
-      dispatch({ type: "setFindingMatch", value: true });
+      if (!socket.connected)
+        dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+      else {
+        socket.emit("findMatch", side, time);
+        dispatch({ type: "setFindingMatch", value: true });
+      }
     }
   };
 

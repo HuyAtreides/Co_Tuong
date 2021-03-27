@@ -100,7 +100,7 @@ class EventHandlers {
   }
 
   static registerDisconnectHandlers(io, socket) {
-    socket.on("disconnect", async () => {
+    socket.on("disconnect", async (reason) => {
       console.log(socket.id + " disconnect");
       io.to(socket.opponentID).emit("opponentLeftGame");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
@@ -108,7 +108,8 @@ class EventHandlers {
         await USERDAO.removeGuest(socket.player.playername);
       else {
         await USERDAO.updateUserInGame(socket.player.playername, false);
-        await USERDAO.setSocketID(socket.player.playername, null, false);
+        if (reason !== "server namespace disconnect")
+          await USERDAO.setSocketID(socket.player.playername, null, false);
       }
     });
 
@@ -116,12 +117,6 @@ class EventHandlers {
       io.to(socket.opponentID).emit("opponentLeftGame");
       socket.opponentID = undefined;
       await USERDAO.updateUserInGame(socket.player.playername, false);
-    });
-  }
-
-  static registerLogoutHandlers(io, socket) {
-    socket.on("logout", () => {
-      socket.to(socket.sessionID).emit("accountLogout");
     });
   }
 

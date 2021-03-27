@@ -7,20 +7,23 @@ import { useSelector, useDispatch } from "react-redux";
 import Game from "./Game/Game.jsx";
 import { Spinner } from "react-bootstrap";
 import callAPI from "../App/callAPI.js";
-import { AuthenticateUserContext } from "../App/context";
+import { AuthenticateUserContext, SocketContext } from "../App/context";
 import { Redirect } from "react-router-dom";
+import Warning from "./Warning/Warning.jsx";
 import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
 
 const Main = () => {
   const dispatch = useDispatch();
   const [waitForResponse, setWaitForResponse] = useState(false);
   const authenticateUser = useContext(AuthenticateUserContext);
+  const socket = useContext(SocketContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
   const lang = useSelector((state) => state.appState.lang);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
+  const [loginOnOtherPlace, setLoginOnOtherPlace] = useState(false);
 
   useEffect(async () => {
     if (!isAuthenticated) {
@@ -37,6 +40,12 @@ const Main = () => {
     document.querySelector("title").innerText =
       lang === "English" ? "Xiangqi" : "Cờ Tướng";
   }, [lang]);
+
+  useEffect(() => {
+    socket.on("loginOnOtherPlace", () => {
+      setLoginOnOtherPlace(true);
+    });
+  }, []);
 
   if (loginError) return <Redirect to="/signin" />;
 
@@ -61,6 +70,7 @@ const Main = () => {
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
         <VerifyEmailNote />
       ) : null}
+      {loginOnOtherPlace ? <Warning /> : null}
     </Container>
   );
 };

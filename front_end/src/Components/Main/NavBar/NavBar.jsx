@@ -19,24 +19,13 @@ const NavBar = (props) => {
     (state) => state.appState.isAuthenticated
   );
 
-  const handleLogout = async (event) => {
+  const handleLogout = async () => {
     props.setWaitForResponse(true);
     await callAPI("GET", "logout", null);
-    if (event) socket.emit("logout");
     dispatch({ type: "setIsAuthenticated", value: false });
     dispatch({ type: "setPlayerInfo", value: null });
     socket.disconnect();
   };
-
-  useEffect(() => {
-    socket.on("accountLogout", () => {
-      handleLogout(null);
-    });
-
-    return () => {
-      socket.removeAllListeners("accountLogout");
-    };
-  }, []);
 
   return (
     <Navbar expand="md" className="nav-bar">
