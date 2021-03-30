@@ -8,7 +8,7 @@ const renderPendingPlayers = (pendingPlayers, cancelInvite) => {
         </div>
         <p>{username}</p>
         <p className={value.declineInvite ? "decline" : "pending"}>
-          {value.declineInvite ? "Decline" : "Pending..."}
+          {value.declineInvite ? "Declined" : "Pending..."}
         </p>
         <i
           className="fas fa-times"

@@ -70,43 +70,55 @@ const Login = () => {
   };
 
   const handleLogin = async (event) => {
-    event.preventDefault();
-    const missingField = handleMissingField();
-    if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
-      setError(null);
-      setWaitForResponse(true);
-      const { message, user, ok } = await callAPI("POST", "login", {
-        username: username,
-        password: password,
-      });
-      setWaitForResponse(false);
-      if (user) {
-        authenticateUser(dispatch, user);
-      } else handleError(ok, message);
+    try {
+      event.preventDefault();
+      const missingField = handleMissingField();
+      if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
+        setError(null);
+        setWaitForResponse(true);
+        const { message, user, ok } = await callAPI("POST", "login", {
+          username: username,
+          password: password,
+        });
+        setWaitForResponse(false);
+        if (user) {
+          authenticateUser(dispatch, user);
+        } else handleError(ok, message);
+      }
+    } catch (err) {
+      handleError(false, err.toString());
     }
   };
 
   const handleLoginAsGuest = async () => {
-    if (isAuthenticated === "guest") setSuccessfullyLogin(true);
-    else {
-      setWaitForServer(true);
-      const { user } = await callAPI("GET", "login-as-guest", null);
-      setWaitForServer(false);
-      setSuccessfullyLogin(true);
-      authenticateUser(dispatch, user);
+    try {
+      if (isAuthenticated === "guest") setSuccessfullyLogin(true);
+      else {
+        setWaitForServer(true);
+        const { user } = await callAPI("GET", "login-as-guest", null);
+        setWaitForServer(false);
+        setSuccessfullyLogin(true);
+        authenticateUser(dispatch, user);
+      }
+    } catch (err) {
+      handleError(false, err.toString());
     }
   };
 
   useEffect(async () => {
-    if (isAuthenticated) return;
-    if (!loginError) {
-      setCheckingSession(true);
-      const { message, user, ok } = await callAPI("GET", "user", null);
-      setCheckingSession(false);
-      if (user) {
-        authenticateUser(dispatch, user);
-      } else handleError(ok, message);
-    } else handleError(false, loginError);
+    try {
+      if (isAuthenticated) return;
+      if (!loginError) {
+        setCheckingSession(true);
+        const { message, user, ok } = await callAPI("GET", "user", null);
+        setCheckingSession(false);
+        if (user) {
+          authenticateUser(dispatch, user);
+        } else handleError(ok, message);
+      } else handleError(false, loginError);
+    } catch (err) {
+      handleError(false, err.toString());
+    }
   }, [isAuthenticated]);
 
   if (isAuthenticated) {

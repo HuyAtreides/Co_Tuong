@@ -9,6 +9,7 @@ MongoClient.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
+
   .then(async (client) => {
     try {
       await USERDAO.injectDB(client);

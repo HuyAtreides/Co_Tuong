@@ -47,8 +47,8 @@ const PlayWithFriend = (props) => {
         if (reCheck)
           setPlayersList(renderPlayersList(players, handleSelectPlayer, name));
       } else setPlayersList([]);
-    } catch (err) {
-      handleCanotSendInvite(err.toString());
+    } catch (_) {
+      handleCanotSendInvite("Something went wrong there. Try again");
     }
   };
 
@@ -87,8 +87,8 @@ const PlayWithFriend = (props) => {
           } else handleCanotSendInvite(`${players[0].username} isn't online`);
         } else handleCanotSendInvite("user not found");
       }
-    } catch (err) {
-      handleCanotSendInvite(err.toString());
+    } catch (_) {
+      handleCanotSendInvite("Something went wrong there. Try again");
     }
   };
 
@@ -137,6 +137,7 @@ const PlayWithFriend = (props) => {
       socket.removeAllListeners("validInvite");
       socket.removeAllListeners("invalidInvite");
       socket.removeAllListeners("inviteDeclined");
+      socket.removeAllListeners("playerInGame");
     };
   }, [invitedPlayer]);
 

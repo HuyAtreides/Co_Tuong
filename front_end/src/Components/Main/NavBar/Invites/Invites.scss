@@ -10,11 +10,11 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    width: 347px;
+    min-width: 347px;
     background-color: white;
     margin-top: 17px;
     height: 5rem;
-    padding: 7px;
+    padding: 5px;
     .image-container {
       height: 70%;
       img {
@@ -26,19 +26,31 @@
       flex-direction: column;
 
       p {
-        #player-name {
-          font-family: "Montserrat-Bold";
-        }
-        #cancel-invite {
-          color: var(--danger) !important;
-        }
-
         text-align: left;
         font-family: "Montserrat-Regular";
         font-size: 0.9rem;
+        display: flex;
+        align-items: center;
         color: black;
         padding-left: 5px;
         margin-bottom: 3px;
+        #player-name {
+          display: inline-block;
+          max-width: 60px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          font-family: "Montserrat-Bold";
+        }
+        #invite-text {
+          margin-left: 5px;
+          display: inline-block;
+        }
+        #cancel-invite {
+          margin-left: 5px;
+          color: var(--danger) !important;
+        }
       }
       .btn-container {
         display: flex;

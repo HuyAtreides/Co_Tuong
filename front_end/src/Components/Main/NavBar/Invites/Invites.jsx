@@ -39,6 +39,7 @@ const Invites = () => {
     socket.on("inviteCanceled", (senderInfo) => {
       setInvites((prevState) => {
         const newState = Object.assign({}, prevState);
+        console.log(senderInfo.playername);
         if (newState[senderInfo.playername])
           newState[senderInfo.playername].cancelInvite = true;
         return newState;

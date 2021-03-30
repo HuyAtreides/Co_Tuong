@@ -10,11 +10,11 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
         </div>
         <div className="name-and-btn-container">
           <p>
-            <span id="player-name">{playername}</span>{" "}
-            <span id={cancelInvite ? "cancel-invite" : ""}>
+            <span id="player-name">{playername}</span>
+            <span id={cancelInvite ? "cancel-invite" : "invite-text"}>
               {cancelInvite
-                ? "canceled invite"
-                : `invites you to a game (${time} min)`}
+                ? " canceled invite"
+                : ` invites you to a game (${time} min)`}
             </span>
           </p>
           <div className="btn-container">

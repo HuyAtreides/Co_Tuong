@@ -43,7 +43,7 @@ passport.deserializeUser(async (username, done) => {
 
 app.use(express.static("./build/"));
 app.use("/api", api);
-app.use((req, res) => {
+app.use((_, res) => {
   return res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 

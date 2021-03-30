@@ -117,40 +117,48 @@ const Signup = () => {
   };
 
   const handleSignUp = async (event) => {
-    event.preventDefault();
-    const missingField = handleMissingField();
-    if (
-      !missingField &&
-      !invalidEmailMess &&
-      !invalidPasswordMess &&
-      !invalidUsernameMess &&
-      !invalidFirstname &&
-      !invalidLastname
-    ) {
-      setWaitForResponse(true);
-      setError(null);
-      const { message, user, ok } = await callAPI("POST", "signup", {
-        email: email,
-        firstname: firstname,
-        username: username,
-        password: password,
-        lastname: lastname,
-      });
-      setWaitForResponse(false);
-      if (user) {
-        authenticateUser(dispatch, user);
-      } else handleError(ok, message);
+    try {
+      event.preventDefault();
+      const missingField = handleMissingField();
+      if (
+        !missingField &&
+        !invalidEmailMess &&
+        !invalidPasswordMess &&
+        !invalidUsernameMess &&
+        !invalidFirstname &&
+        !invalidLastname
+      ) {
+        setWaitForResponse(true);
+        setError(null);
+        const { message, user, ok } = await callAPI("POST", "signup", {
+          email: email,
+          firstname: firstname,
+          username: username,
+          password: password,
+          lastname: lastname,
+        });
+        setWaitForResponse(false);
+        if (user) {
+          authenticateUser(dispatch, user);
+        } else handleError(ok, message);
+      }
+    } catch (err) {
+      handleError(false, err.toString());
     }
   };
 
   useEffect(async () => {
-    if (isAuthenticated) return;
-    setCheckingSession(true);
-    const { user, message, ok } = await callAPI("GET", "user", null);
-    setCheckingSession(false);
-    if (user) {
-      authenticateUser(dispatch, user);
-    } else handleError(ok, message);
+    try {
+      if (isAuthenticated) return;
+      setCheckingSession(true);
+      const { user, message, ok } = await callAPI("GET", "user", null);
+      setCheckingSession(false);
+      if (user) {
+        authenticateUser(dispatch, user);
+      } else handleError(ok, message);
+    } catch (err) {
+      handleError(false, err.toString());
+    }
   }, [isAuthenticated]);
 
   if (isAuthenticated) {

@@ -27,13 +27,17 @@ const Main = () => {
   const [loginOnOtherPlace, setLoginOnOtherPlace] = useState(false);
 
   useEffect(async () => {
-    if (!isAuthenticated) {
-      setWaitForResponse(true);
-      const { user, message } = await callAPI("GET", "user", null);
-      setWaitForResponse(false);
-      if (user) {
-        authenticateUser(dispatch, user);
-      } else if (message) dispatch({ type: "setLoginError", value: message });
+    try {
+      if (!isAuthenticated) {
+        setWaitForResponse(true);
+        const { user, message } = await callAPI("GET", "user", null);
+        setWaitForResponse(false);
+        if (user) {
+          authenticateUser(dispatch, user);
+        } else if (message) dispatch({ type: "setLoginError", value: message });
+      }
+    } catch (err) {
+      dispatch({ type: "setLoginError", value: err.toString() });
     }
   }, [isAuthenticated]);
 
@@ -49,8 +53,11 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("disconnect", () => {
-      if (!loginOnOtherPlace) setConnectionError("The connection was closed");
+    socket.on("disconnect", (event) => {
+      if (!loginOnOtherPlace && event !== "io client disconnect") {
+        setConnectionError("The connection was closed");
+        dispatch({ type: "setGameResult", value: undefined });
+      }
     });
 
     return () => {
