@@ -9,25 +9,63 @@ const Invites = () => {
 
   const handleAccept = (event) => {
     const playername = event.currentTarget.getAttribute("playername");
+    const { time, socketID } = invites[playername];
+    socket.emit("acceptInvite", socketID, time);
+    setInvites({});
   };
 
   const handleDecline = (event) => {
     const playername = event.currentTarget.getAttribute("playername");
+    setInvites((prevState) => {
+      const newState = Object.assign({}, prevState);
+      delete newState[playername];
+      return newState;
+    });
+    socket.emit("declineInvite", invites[playername].socketID, false);
   };
 
   useEffect(() => {
     socket.on("receiveInvite", (sender, senderSocketID, time) => {
-      if (Object.values(invites).length === 5)
-        socket.emit("receiveTooManyInvites", senderSocketID);
-      else
+      setInvites((prevState) => {
+        const newState = Object.assign({}, prevState);
+        sender.socketID = senderSocketID;
+        sender.time = time;
+        newState[sender.playername] = sender;
+        return newState;
+      });
+      socket.emit("inviteReceived", senderSocketID);
+    });
+
+    socket.on("inviteCanceled", (senderInfo) => {
+      setInvites((prevState) => {
+        const newState = Object.assign({}, prevState);
+        if (newState[senderInfo.playername])
+          newState[senderInfo.playername].cancelInvite = true;
+        return newState;
+      });
+      setTimeout(() => {
         setInvites((prevState) => {
           const newState = Object.assign({}, prevState);
-          sender.socketID = senderSocketID;
-          sender.time = time;
-          newState[sender.playername] = sender;
+          delete newState[senderInfo.playername];
           return newState;
         });
+      }, 1000);
     });
+
+    socket.on("inviteAccepted", () => {
+      setInvites({});
+    });
+
+    return () => {
+      socket.removeAllListeners("receiveInvite");
+      socket.removeAllListeners("inviteCanceled");
+    };
+  }, [invites]);
+
+  useEffect(() => {
+    return () => {
+      socket.emit("declineInvite", null, true);
+    };
   }, []);
 
   return (

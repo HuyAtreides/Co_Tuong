@@ -26,7 +26,7 @@ passport.use(
 router.get(
   "/",
   checkingSession,
-  passport.authenticate("github", { scope: ["user"] })
+  passport.authenticate("github", { scope: ["user:email"] })
 );
 
 router.get(

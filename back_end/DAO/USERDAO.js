@@ -48,10 +48,11 @@ class USERDAO {
   }
 
   static async setSocketID(username, id, set) {
-    await users.findOneAndUpdate(
+    const result = await users.findOneAndUpdate(
       { username: username },
       set ? { $set: { socketID: id } } : { $unset: { socketID: "" } }
     );
+    return result.value;
   }
 
   static async findUser(username) {
@@ -91,13 +92,14 @@ class USERDAO {
   static async insertGuest() {
     try {
       const cursor = await users.find({ guest: true });
-      const guests = await cursor.sort("username", -1).toArray();
-      const num = guests[0] ? guests[0].username.slice(5) : "";
-      const guestName = "Guest" + (+num + 1);
+      const guests = await cursor.sort("number", -1).toArray();
+      const num = guests[0] ? guests[0].number + 1 : 1;
+      const guestName = "Guest" + num;
       const result = await users.insertOne({
         username: guestName,
         name: { lastname: null, firstname: null },
         guest: true,
+        number: num,
         photo: "images/Pieces/general-black.png",
       });
       return result.ops[0];

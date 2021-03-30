@@ -17,6 +17,7 @@ const PlayWithFriend = (props) => {
   const socket = useContext(SocketContext);
   const [show, setShow] = useState("");
   const target = useRef(null);
+  const [invitedPlayer, setInvitedPlayer] = useState(null);
   const time = useSelector((state) => state.gameState.time);
 
   const handleSelectPlayer = (event) => {
@@ -25,31 +26,41 @@ const PlayWithFriend = (props) => {
     setPlayersList([]);
   };
 
+  const replaceSpecialCharacters = (str) => {
+    return str.replace(
+      /[^0-9a-zA-Z_ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ -]+/g,
+      ""
+    );
+  };
+
   const handleOnChange = async (event) => {
-    const value = event.currentTarget.value;
-    setInput(value);
-    if (value) {
-      const { players } = await callAPI("POST", "players", {
-        playername: value.replace(
-          /[^0-9a-zA-Z_ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ -]+/g,
-          ""
-        ),
-      });
-      const reCheck = document.querySelector("#player-name-search").value;
-      if (!players) return;
-      const name = playerInfo.username;
-      if (reCheck)
-        setPlayersList(renderPlayersList(players, handleSelectPlayer, name));
-    } else setPlayersList([]);
+    try {
+      const value = event.currentTarget.value;
+      setInput(value);
+      if (value) {
+        const { players } = await callAPI("POST", "players", {
+          playername: replaceSpecialCharacters(value),
+        });
+        const reCheck = document.querySelector("#player-name-search").value;
+        if (!players) return;
+        const name = playerInfo.username;
+        if (reCheck)
+          setPlayersList(renderPlayersList(players, handleSelectPlayer, name));
+      } else setPlayersList([]);
+    } catch (err) {
+      handleCanotSendInvite(err.toString());
+    }
   };
 
   const cancelInvite = (event) => {
-    const username = event.currentTarget.getAttribute("playername");
-    delete pendingPlayers[username];
+    const playername = event.currentTarget.getAttribute("playername");
+    socket.emit("cancelInvite", pendingPlayers[playername].socketID, false);
+    delete pendingPlayers[playername];
     setPendingPlayers(Object.assign({}, pendingPlayers));
   };
 
   const handleCanotSendInvite = (reason) => {
+    setWaitForResponse(false);
     setShow(reason);
     setTimeout(() => {
       setShow("");
@@ -57,30 +68,27 @@ const PlayWithFriend = (props) => {
   };
 
   const handleSendInvite = async (event) => {
-    event.preventDefault();
-    if (!pendingPlayers[input]) {
-      setWaitForResponse(true);
-      const { players } = await callAPI("POST", "players", {
-        playername: input.replace(
-          /[^0-9a-zA-Z_ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ -]+/g,
-          ""
-        ),
-      });
-      setWaitForResponse(false);
-      if (players.length) {
-        if (players[0].socketID) {
-          if (Object.keys(pendingPlayers).length + 1 > 5) {
-            handleCanotSendInvite("You have sent too many invites");
-            return;
-          }
-          setPendingPlayers((prevState) => {
-            const newState = Object.assign({}, prevState);
-            newState[players[0].username] = players[0];
-            return newState;
-          });
-          socket.emit("sendInvite", players[0].socketID, time);
-        } else handleCanotSendInvite(`${players[0].username} isn't online`);
-      } else handleCanotSendInvite("user not found");
+    try {
+      event.preventDefault();
+      if (waitForResponse) return;
+      if (!pendingPlayers[input]) {
+        setWaitForResponse(true);
+        const { players } = await callAPI("POST", "players", {
+          playername: replaceSpecialCharacters(input),
+        });
+        if (players.length && players[0].username !== playerInfo.username) {
+          if (players[0].socketID) {
+            if (Object.keys(pendingPlayers).length + 1 > 5) {
+              handleCanotSendInvite("You have sent too many invites");
+              return;
+            }
+            setInvitedPlayer(players[0]);
+            socket.emit("sendInvite", players[0].socketID, time);
+          } else handleCanotSendInvite(`${players[0].username} isn't online`);
+        } else handleCanotSendInvite("user not found");
+      }
+    } catch (err) {
+      handleCanotSendInvite(err.toString());
     }
   };
 
@@ -88,6 +96,55 @@ const PlayWithFriend = (props) => {
     setInput("");
     setPlayersList([]);
   };
+
+  useEffect(() => {
+    socket.on("validInvite", () => {
+      setWaitForResponse(false);
+      setPendingPlayers((prevState) => {
+        const newState = Object.assign({}, prevState);
+        newState[invitedPlayer.username] = invitedPlayer;
+        return newState;
+      });
+    });
+
+    socket.on("inviteDeclined", (receiverInfo) => {
+      setPendingPlayers((prevState) => {
+        const newState = Object.assign({}, prevState);
+        if (newState[receiverInfo.playername])
+          newState[receiverInfo.playername].declineInvite = true;
+        return newState;
+      });
+      setTimeout(() => {
+        setPendingPlayers((prevState) => {
+          const newState = Object.assign({}, prevState);
+          delete newState[receiverInfo.playername];
+          return newState;
+        });
+      }, 1000);
+    });
+
+    socket.on("playerInGame", (playername) => {
+      setWaitForResponse(false);
+      handleCanotSendInvite(`${playername} is in a game`);
+    });
+
+    socket.on("invalidInvite", (playername) => {
+      setWaitForResponse(false);
+      handleCanotSendInvite(`${playername} have received too many invites`);
+    });
+
+    return () => {
+      socket.removeAllListeners("validInvite");
+      socket.removeAllListeners("invalidInvite");
+      socket.removeAllListeners("inviteDeclined");
+    };
+  }, [invitedPlayer]);
+
+  useEffect(() => {
+    return () => {
+      socket.emit("cancelInvite", null, true);
+    };
+  }, []);
 
   return (
     <div className="play-with-friend-container">

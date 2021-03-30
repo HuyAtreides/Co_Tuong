@@ -28,15 +28,8 @@ const GameController = (props) => {
 
   const handlePlay = () => {
     if (findingMatch !== true) {
-      if (!socket.connected) {
-        dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
-        setTimeout(() => {
-          dispatch({ type: "setFindingMatch", value: "Play" });
-        }, 700);
-      } else {
-        socket.emit("findMatch", side, time);
-        dispatch({ type: "setFindingMatch", value: true });
-      }
+      socket.emit("findMatch", side, time);
+      dispatch({ type: "setFindingMatch", value: true });
     }
   };
 
@@ -59,6 +52,13 @@ const GameController = (props) => {
         type: "setFindingMatch",
         value: "No Players are currently online :(",
       });
+    });
+
+    socket.on("connectionClosed", () => {
+      dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+      setTimeout(() => {
+        dispatch({ type: "setFindingMatch", value: "Play" });
+      }, 700);
     });
 
     socket.on("foundMatch", (opponent, firstMove, time) => {
@@ -93,7 +93,7 @@ const GameController = (props) => {
               className="red-side"
               value="red"
               onClick={handleSwitchSide}
-              disabled={findingMatch === true}
+              disabled={findingMatch === true || findingMatch === "Waiting..."}
             >
               Red
             </Button>
@@ -101,7 +101,7 @@ const GameController = (props) => {
               className="black-side"
               value="black"
               onClick={handleSwitchSide}
-              disabled={findingMatch === true}
+              disabled={findingMatch === true || findingMatch === "Waiting..."}
             >
               Black
             </Button>
@@ -110,7 +110,7 @@ const GameController = (props) => {
             <Button
               className="select-timer"
               onClick={props.handleToggle}
-              disabled={findingMatch === true}
+              disabled={findingMatch === true || findingMatch === "Waiting..."}
             >
               <i className="fas fa-clock"></i> {time + ":00"}{" "}
               <i className="fas fa-angle-down"></i>
@@ -141,7 +141,9 @@ const GameController = (props) => {
           </div>
           <Button
             className={`play ${
-              findingMatch === true ? "finding-opponent" : ""
+              findingMatch === true || findingMatch === "Waiting..."
+                ? "finding-opponent"
+                : ""
             }`}
             onClick={handlePlay}
           >
@@ -149,7 +151,7 @@ const GameController = (props) => {
           </Button>
           <Button
             className="play-with-friend"
-            disabled={findingMatch === true}
+            disabled={findingMatch === true || findingMatch === "Waiting..."}
             onClick={handlePlayWithFriend}
           >
             {playWithFriendText}

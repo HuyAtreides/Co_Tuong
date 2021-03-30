@@ -14,6 +14,7 @@ import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
 
 const Main = () => {
   const dispatch = useDispatch();
+  const [connectionError, setConnectionError] = useState(null);
   const [waitForResponse, setWaitForResponse] = useState(false);
   const authenticateUser = useContext(AuthenticateUserContext);
   const socket = useContext(SocketContext);
@@ -47,6 +48,16 @@ const Main = () => {
     });
   }, []);
 
+  useEffect(() => {
+    socket.on("disconnect", () => {
+      if (!loginOnOtherPlace) setConnectionError("The connection was closed");
+    });
+
+    return () => {
+      socket.removeAllListeners("disconnect");
+    };
+  }, [loginOnOtherPlace]);
+
   if (loginError) return <Redirect to="/signin" />;
 
   return (
@@ -70,7 +81,9 @@ const Main = () => {
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
         <VerifyEmailNote />
       ) : null}
-      {loginOnOtherPlace ? <Warning /> : null}
+      {loginOnOtherPlace || connectionError ? (
+        <Warning connectionError={connectionError} />
+      ) : null}
     </Container>
   );
 };

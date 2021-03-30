@@ -2,9 +2,14 @@ const EventHandlers = require("../event_handlers/EventHandlers.js");
 const USERDAO = require("../DAO/USERDAO");
 
 function registerIOEvents(io) {
-  const onConnectionHandler = (socket) => {
+  const onConnectionHandler = async (socket) => {
     console.log(`${socket.id} connect`);
-    const socketID = socket.player.socketID;
+    const player = await USERDAO.setSocketID(
+      socket.player.playername,
+      socket.id,
+      true
+    );
+    const socketID = player.socketID;
     if (socketID) {
       const socket = io.of("/play").sockets.get(socketID);
       if (socket) {
@@ -22,7 +27,6 @@ function registerIOEvents(io) {
     EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
     EventHandlers.registerSendInviteHandlers(io.of("/play"), socket);
-    USERDAO.setSocketID(socket.player.playername, socket.id, true);
   };
 
   io.of("/play").use((socket, next) => {

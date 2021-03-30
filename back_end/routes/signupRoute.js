@@ -33,7 +33,6 @@ router.post("/", checkEmail, checkUsername, async (req, res) => {
   try {
     const formData = req.body;
     const user = await USERDAO.insertUser(formData);
-
     req.login(user, (err) => {
       if (err)
         return res.status(500).json({ user: user, message: err.toString() });

@@ -14,12 +14,6 @@ import {
 } from "./context.js";
 
 function App(props) {
-  useEffect(() => {
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
   return (
     <SocketContext.Provider value={socket}>
       <SetMoveTimerContext.Provider value={setMoveTimer}>

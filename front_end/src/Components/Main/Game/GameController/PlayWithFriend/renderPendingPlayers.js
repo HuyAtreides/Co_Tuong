@@ -7,7 +7,9 @@ const renderPendingPlayers = (pendingPlayers, cancelInvite) => {
           <img src={photo} alt="" />
         </div>
         <p>{username}</p>
-        <p className="pending">Pending...</p>
+        <p className={value.declineInvite ? "decline" : "pending"}>
+          {value.declineInvite ? "Decline" : "Pending..."}
+        </p>
         <i
           className="fas fa-times"
           onClick={cancelInvite}

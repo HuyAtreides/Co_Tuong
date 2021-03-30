@@ -27,7 +27,7 @@ passport.use(
 router.get(
   "/",
   checkingSession,
-  passport.authenticate("facebook", { scope: "email" })
+  passport.authenticate("facebook", { scope: ["email"] })
 );
 
 router.get(

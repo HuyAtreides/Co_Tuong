@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 
 const renderInvites = (invites, handleAccept, handleDecline) => {
   return Object.values(invites).map((value, index) => {
-    const { playername, photo, time } = value;
+    const { playername, photo, time, cancelInvite } = value;
     return (
       <li key={`invite-${index}`}>
         <div className="image-container">
@@ -10,13 +10,19 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
         </div>
         <div className="name-and-btn-container">
           <p>
-            <span>{playername}</span> {`invites you to a game (${time} min)`}
+            <span id="player-name">{playername}</span>{" "}
+            <span id={cancelInvite ? "cancel-invite" : ""}>
+              {cancelInvite
+                ? "canceled invite"
+                : `invites you to a game (${time} min)`}
+            </span>
           </p>
           <div className="btn-container">
             <Button
               onClick={handleAccept}
               className="accept-invite"
               playername={playername}
+              disabled={cancelInvite}
             >
               Accept
             </Button>
@@ -24,6 +30,7 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
               onClick={handleDecline}
               className="decline-invite"
               playername={playername}
+              disabled={cancelInvite}
             >
               Decline
             </Button>

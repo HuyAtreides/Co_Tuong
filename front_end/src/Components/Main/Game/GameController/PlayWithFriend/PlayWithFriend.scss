@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  
   .players-pending {
     position: static;
     max-height: 13rem;
@@ -35,6 +35,10 @@
         animation: pending 1s linear 0s infinite;
         animation-fill-mode: both;
         text-align: right;
+      }
+      .decline {
+        text-align: right;
+        color: var(--danger);
       }
       @keyframes pending {
         0% {
