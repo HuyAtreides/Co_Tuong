@@ -31,12 +31,10 @@ const ChatSection = () => {
 
   const handleSendMessage = (event) => {
     if (input) {
-      const listItemRef = React.createRef();
       const message = {
         from: `${playerInfo.username}: `,
         message: input,
         className: "",
-        ref: listItemRef,
       };
       dispatch({ type: "setMessage", value: message });
       setInput("");
@@ -48,7 +46,7 @@ const ChatSection = () => {
   useEffect(() => {
     if (messages.length > 0) {
       const list = messagesContainerRef.current;
-      const lastListItem = messages[messages.length - 1].ref.current;
+      const lastListItem = document.querySelector(`#m${messages.length - 1}`);
       if (lastListItem) {
         list.scrollTop = lastListItem.offsetTop;
       }

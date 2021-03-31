@@ -3,7 +3,7 @@ import EntryComponent from "./EntryComponent/EntryComponent.jsx";
 import NavBar from "./NavBar/NavBar.jsx";
 import { Container } from "react-bootstrap";
 import "./Main.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import Game from "./Game/Game.jsx";
 import { Spinner } from "react-bootstrap";
 import callAPI from "../App/callAPI.js";
@@ -18,6 +18,7 @@ const Main = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const authenticateUser = useContext(AuthenticateUserContext);
   const socket = useContext(SocketContext);
+  const store = useStore();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
   const lang = useSelector((state) => state.appState.lang);
@@ -53,10 +54,28 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("disconnect", (event) => {
-      if (!loginOnOtherPlace && event !== "io client disconnect") {
+    socket.on("disconnect", (reason) => {
+      const foundMatch = store.getState().gameState.foundMatch;
+      if (!foundMatch) {
+        dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+        setTimeout(() => {
+          dispatch({ type: "setFindingMatch", value: "Play" });
+        }, 700);
+      }
+      if (!loginOnOtherPlace && reason !== "io client disconnect") {
         setConnectionError("The connection was closed");
-        dispatch({ type: "setGameResult", value: undefined });
+        if (foundMatch) {
+          dispatch({ type: "setGameResult", value: undefined });
+          dispatch({
+            type: "setMessage",
+            value: {
+              from: "",
+              className: "game-message",
+
+              message: "The connection was closed",
+            },
+          });
+        }
       }
     });
 

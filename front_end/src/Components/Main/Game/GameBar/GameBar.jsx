@@ -18,13 +18,11 @@ const GameBar = (props) => {
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
   const handlePauseOrResume = (event) => {
-    const listItemRef = React.createRef();
     const action = event.currentTarget.id;
     const message = {
       from: `${playerInfo.username}`,
       message: `${action}d Game`,
       className: "game-message",
-      ref: listItemRef,
     };
     dispatch({ type: "setMessage", value: message });
     dispatch({
@@ -35,7 +33,6 @@ const GameBar = (props) => {
   };
 
   const handleGameOver = (result, reason) => {
-    const listItemRef = React.createRef();
     dispatch({ type: "setGameResult", value: result });
     dispatch({
       type: "setMessage",
@@ -48,7 +45,6 @@ const GameBar = (props) => {
         } Won - `,
         reason: reason,
         className: "game-message",
-        ref: listItemRef,
       },
     });
     setMoveTimer(null, true, dispatch);
@@ -56,14 +52,12 @@ const GameBar = (props) => {
 
   const handleOfferDraw = () => {
     if (!receiveDrawOffer) {
-      const listItemRef = React.createRef();
       dispatch({
         type: "setMessage",
         value: {
           from: `${playerInfo.username}`,
           message: "Offered A Draw",
           className: "game-message",
-          ref: listItemRef,
         },
       });
       socket.emit("sendDrawOffer");
@@ -82,14 +76,12 @@ const GameBar = (props) => {
     });
 
     socket.on("opponentLeftGame", () => {
-      const listItemRef = React.createRef();
       dispatch({
         type: "setMessage",
         value: {
           from: `${opponentInfo.playername}`,
           message: "Left The Game",
           className: "game-message",
-          ref: listItemRef,
         },
       });
     });

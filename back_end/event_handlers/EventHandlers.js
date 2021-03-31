@@ -68,13 +68,15 @@ class EventHandlers {
     }
   }
 
-  static async handleFoundMatch(socket, curSocket, time) {
+  static handleFoundMatch(socket, curSocket, time) {
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
     socket.emit("foundMatch", player2, socket.firstMove, time);
     curSocket.emit("foundMatch", player1, !socket.firstMove, time);
-    await USERDAO.updateUserInGame(player1.playername, true);
-    await USERDAO.updateUserInGame(player2.playername, true);
+    socket.emit("clearInvites");
+    curSocket.emit("clearInvites");
+    USERDAO.updateUserInGame(player1.playername, true);
+    USERDAO.updateUserInGame(player2.playername, true);
   }
 
   static canJoinGame(socket, curSocket) {
@@ -87,6 +89,28 @@ class EventHandlers {
     );
   }
 
+  static findMatch(io, socket, timeElapse) {
+    if (timeElapse > 10) {
+      socket.emit("timeout");
+      socket.opponentID = undefined;
+      return true;
+    } else if (socket.opponentID) {
+      return true;
+    } else if (!socket.connected) {
+      socket.opponentID = undefined;
+      return true;
+    } else {
+      for (let [_, curSocket] of io.sockets) {
+        if (EventHandlers.canJoinGame(socket, curSocket)) {
+          EventHandlers.declineAllInvites(io, curSocket, socket.id);
+          EventHandlers.declineAllInvites(io, socket, curSocket.id);
+          EventHandlers.handleFoundMatch(socket, curSocket, socket.time);
+          return true;
+        }
+      }
+    }
+  }
+
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", async (side, time) => {
       const start = new Date();
@@ -94,28 +118,20 @@ class EventHandlers {
       if (user.inGame) return socket.emit("isInGame");
       socket.opponentID = null;
       socket.side = side[1];
+      socket.time = time;
       const intervalID = setInterval(async () => {
         const timeElapse = (new Date() - start) / 1000;
-        if (timeElapse > 10) {
-          socket.emit("timeout");
-          socket.opponentID = undefined;
-          clearInterval(intervalID);
-        } else if (socket.opponentID) {
-          clearInterval(intervalID);
-        } else if (!socket.connected) {
-          socket.opponentID = undefined;
-          socket.emit("connectionClosed");
-          clearInterval(intervalID);
-        } else {
-          for (let [_, curSocket] of io.sockets) {
-            if (EventHandlers.canJoinGame(socket, curSocket)) {
-              await EventHandlers.handleFoundMatch(socket, curSocket, time);
-              clearInterval(intervalID);
-              return;
-            }
-          }
-        }
+        const finish = EventHandlers.findMatch(io, socket, timeElapse);
+        if (finish) clearInterval(intervalID);
       }, 1000);
+
+      socket.on("cancelFindMatch", () => {
+        if (socket.opponentID === null) {
+          socket.opponentID = undefined;
+          clearInterval(intervalID);
+          socket.emit("findMatchCanceled");
+        }
+      });
     });
   }
 
@@ -169,7 +185,7 @@ class EventHandlers {
       io.to(senderSocketID).emit("validInvite");
     });
 
-    socket.on("acceptInvite", async (senderSocketID, time) => {
+    socket.on("acceptInvite", (senderSocketID, time) => {
       try {
         const senderSocket = io.sockets.get(senderSocketID);
         if (
@@ -178,7 +194,7 @@ class EventHandlers {
         ) {
           EventHandlers.declineAllInvites(io, senderSocket, socket.id);
           EventHandlers.declineAllInvites(io, socket, senderSocketID);
-          await EventHandlers.handleFoundMatch(socket, senderSocket, time);
+          EventHandlers.handleFoundMatch(socket, senderSocket, time);
         }
       } catch (err) {
         console.log(err);

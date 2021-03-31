@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Col, Button } from "react-bootstrap";
+import PlayButton from "./PlayButton/PlayButton.jsx";
 import "./GameController.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
@@ -27,10 +28,15 @@ const GameController = (props) => {
   };
 
   const handlePlay = () => {
-    if (findingMatch !== true) {
+    if (!socket.connected) {
+      dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+      setTimeout(() => {
+        dispatch({ type: "setFindingMatch", value: "Play" });
+      }, 700);
+    } else if (findingMatch !== true) {
       socket.emit("findMatch", side, time);
       dispatch({ type: "setFindingMatch", value: true });
-    }
+    } else socket.emit("cancelFindMatch");
   };
 
   const handleSelectTime = (event) => {
@@ -54,14 +60,8 @@ const GameController = (props) => {
       });
     });
 
-    socket.on("connectionClosed", () => {
-      dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
-      setTimeout(() => {
-        dispatch({ type: "setFindingMatch", value: "Play" });
-      }, 700);
-    });
-
     socket.on("foundMatch", (opponent, firstMove, time) => {
+      dispatch({ type: "setFoundMatch", value: true });
       dispatch({
         type: "setOpponentInfo",
         value: {
@@ -71,7 +71,6 @@ const GameController = (props) => {
       });
       dispatch({ type: "setTime", value: time });
       dispatch({ type: "setTurnToMove", value: firstMove });
-      dispatch({ type: "setFoundMatch", value: true });
       setMoveTimer(firstMove, false, dispatch);
     });
 
@@ -82,6 +81,14 @@ const GameController = (props) => {
           "Your account is currently in a game. Please try again after the game was finished",
       });
     });
+
+    socket.on("findMatchCanceled", () => {
+      dispatch({ type: "setFindingMatch", value: "play" });
+    });
+
+    return () => {
+      socket.emit("cancelFindMatch");
+    };
   }, []);
 
   return (
@@ -139,16 +146,8 @@ const GameController = (props) => {
               </Button>
             </div>
           </div>
-          <Button
-            className={`play ${
-              findingMatch === true || findingMatch === "Waiting..."
-                ? "finding-opponent"
-                : ""
-            }`}
-            onClick={handlePlay}
-          >
-            {findingMatch === true ? "Finding Opponent..." : findingMatch}
-          </Button>
+          <PlayButton findingMatch={findingMatch} handlePlay={handlePlay} />
+
           <Button
             className="play-with-friend"
             disabled={findingMatch === true || findingMatch === "Waiting..."}

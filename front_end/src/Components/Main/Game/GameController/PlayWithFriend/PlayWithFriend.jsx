@@ -110,13 +110,14 @@ const PlayWithFriend = (props) => {
     socket.on("inviteDeclined", (receiverInfo) => {
       setPendingPlayers((prevState) => {
         const newState = Object.assign({}, prevState);
-        if (newState[receiverInfo.playername])
-          newState[receiverInfo.playername].declineInvite = true;
+        if (!newState[receiverInfo.playername]) return prevState;
+        newState[receiverInfo.playername].declineInvite = true;
         return newState;
       });
       setTimeout(() => {
         setPendingPlayers((prevState) => {
           const newState = Object.assign({}, prevState);
+          if (!newState[receiverInfo.playername]) return prevState;
           delete newState[receiverInfo.playername];
           return newState;
         });

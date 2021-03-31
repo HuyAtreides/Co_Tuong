@@ -141,6 +141,18 @@ class Piece {
     return false;
   }
 
+  modifyBoard(board, [newRow, newCol], dispatch) {
+    const [curRow, curCol] = this.position;
+    this.setPosition(null, newRow, newCol);
+    const tmp = board[curRow][curCol];
+    if (board[newRow][newCol])
+      dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
+    board[curRow][curCol] = 0;
+    board[newRow][newCol] = tmp;
+    dispatch({ type: "setTurnToMove", value: true });
+    dispatch({ type: "setBoard", value: [...board] });
+  }
+
   animateMove([newRow, newCol], board, dispatch) {
     const [curRow, curCol] = this.position;
     this.DOMNode = document.querySelector(`#p${curRow}${curCol}`);
@@ -150,18 +162,10 @@ class Piece {
   }
 
   setTransform([xB, yB], board, dispatch) {
-    const [yA, xA] = this.position;
     const translate = `translate(${xB * this.width}, ${yB * this.width})`;
     this.DOMNode.setAttribute("transform", translate);
     if (board) {
-      this.setPosition(null, yB, xB);
-      const tmp = board[yA][xA];
-      if (board[yB][xB])
-        dispatch({ type: "setCapturedPieces", value: board[yB][xB] });
-      board[yA][xA] = 0;
-      board[yB][xB] = tmp;
-      dispatch({ type: "setTurnToMove", value: true });
-      dispatch({ type: "setBoard", value: [...board] });
+      this.modifyBoard(board, [yB, xB], dispatch);
     }
   }
 

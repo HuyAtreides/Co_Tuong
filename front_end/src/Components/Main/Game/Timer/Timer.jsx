@@ -13,7 +13,6 @@ const Timer = (props) => {
 
   useEffect(() => {
     if (props.timeLeftToMove === 0 && turnToMove) {
-      const listItemRef = React.createRef();
       dispatch({ type: "setGameResult", value: "Lose" });
       dispatch({
         type: "setMessage",
@@ -22,7 +21,6 @@ const Timer = (props) => {
           winner: "Opponent Won - ",
           reason: "Game Abandoned",
           className: "game-message",
-          ref: listItemRef,
         },
       });
       setMoveTimer(null, true, dispatch);

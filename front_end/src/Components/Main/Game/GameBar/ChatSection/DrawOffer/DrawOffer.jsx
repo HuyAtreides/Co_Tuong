@@ -18,7 +18,6 @@ const DrawOffer = (props) => {
   );
 
   const handleDrawResult = () => {
-    const listItemRef = React.createRef();
     dispatch({ type: "setGameResult", value: "Draw" });
     dispatch({
       type: "setMessage",
@@ -27,7 +26,6 @@ const DrawOffer = (props) => {
         winner: "",
         reason: "Game Draw By Agreement",
         className: "game-message",
-        ref: listItemRef,
       },
     });
     setMoveTimer(null, true, dispatch);
@@ -40,7 +38,6 @@ const DrawOffer = (props) => {
   };
 
   const handleDeclineOffer = () => {
-    const listItemRef = React.createRef();
     dispatch({ type: "setReceiveDrawOffer", value: false });
     dispatch({
       type: "setMessage",
@@ -48,14 +45,12 @@ const DrawOffer = (props) => {
         from: `${playerInfo.username}`,
         message: "Declined A Draw",
         className: "game-message",
-        ref: listItemRef,
       },
     });
     socket.emit("sendMessage", {
       from: `${playerInfo.username}`,
       message: "Declined A Draw",
       className: "game-message",
-      ref: listItemRef,
     });
   };
 

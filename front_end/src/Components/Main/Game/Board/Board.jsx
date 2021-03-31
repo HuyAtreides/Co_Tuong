@@ -171,7 +171,6 @@ function Board() {
     const width = document.querySelector(".board-container").offsetWidth;
     dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
     dispatch({ type: "setBoard", value: constructNewPiecesWidth(width / 9) });
-
     window.ondragstart = () => false;
   }, []);
 

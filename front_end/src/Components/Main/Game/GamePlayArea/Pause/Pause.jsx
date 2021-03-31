@@ -27,7 +27,6 @@ const Timer = (props) => {
     }
 
     socket.on("pauseOver", () => {
-      const listItemRef = React.createRef();
       dispatch({ type: "setPause", value: "Timeout" });
       dispatch({ type: "setPauseTime", value: "timeout" });
       socket.emit("starTimer", true);
@@ -37,7 +36,6 @@ const Timer = (props) => {
           from: "",
           message: "Pause Timeout",
           className: "game-message",
-          ref: listItemRef,
         },
       });
     });
@@ -92,12 +90,10 @@ const Pause = () => {
 
     const handleOpponentPauseOrResumeGame = (pause) => {
       const opponentInfo = store.getState().gameState.opponentInfo;
-      const listItemRef = React.createRef();
       const message = {
         from: `${opponentInfo.playername}`,
         message: `${pause ? "Paused" : "Resumed"} Game`,
         className: "game-message",
-        ref: listItemRef,
       };
       dispatch({ type: "setMessage", value: message });
       dispatch({
