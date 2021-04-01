@@ -1,4 +1,4 @@
-import { Button } from "react-bootstrap";
+import { Button, Tooltip, OverlayTrigger, Overlay } from "react-bootstrap";
 
 const renderInvites = (invites, handleAccept, handleDecline) => {
   return Object.values(invites).map((value, index) => {
@@ -10,7 +10,13 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
         </div>
         <div className="name-and-btn-container">
           <p>
-            <span id="player-name">{playername}</span>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip id="sender-name-tooltip">{playername}</Tooltip>}
+            >
+              <span id="player-name">{playername}</span>
+            </OverlayTrigger>
+
             <span id={cancelInvite ? "cancel-invite" : "invite-text"}>
               {cancelInvite
                 ? " canceled invite"

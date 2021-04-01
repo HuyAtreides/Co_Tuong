@@ -65,7 +65,7 @@ function Board() {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      setMoveTimer(true, false, dispatch);
+      // setMoveTimer(true, false, dispatch);
     }
   };
 
@@ -97,8 +97,8 @@ function Board() {
       dispatch({ type: "setBoard", value: [...board] });
       if (moveResult && !/translate/.test(moveResult)) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
-        setMoveTimer(false, false, dispatch);
         socket.emit("opponentMove", moveResult, [curRow, curCol]);
+        // setMoveTimer(false, false, dispatch);
       }
     }
   };
@@ -126,8 +126,8 @@ function Board() {
     dispatch({ type: "setBoard", value: [...board] });
     if (moveResult && !/translate/.test(moveResult)) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
-      setMoveTimer(false, false, dispatch);
       socket.emit("opponentMove", moveResult, [curRow, curCol]);
+      // setMoveTimer(false, false, dispatch);
     }
   };
 
@@ -181,12 +181,16 @@ function Board() {
     socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
       handleOpponentMove([curRow, curCol], [newRow, newCol]);
     });
+    socket.on("setTimer", () => {
+      setMoveTimer(turnToMove, false, dispatch);
+    });
 
     return () => {
       window.onmouseup = null;
       window.onmousemove = null;
       window.onresize = null;
       socket.removeAllListeners("move");
+      socket.removeAllListeners("setTimer");
     };
   });
 
@@ -206,8 +210,8 @@ function Board() {
             ref: listItemRef,
           },
         });
-        setMoveTimer(null, true, dispatch);
         socket.emit("gameFinish", ["Won", lostReason]);
+        setMoveTimer(null, true, dispatch);
       }
     }
   }, [turnToMove]);

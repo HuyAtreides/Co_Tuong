@@ -14,7 +14,7 @@ import {
   socket,
 } from "./context.js";
 
-function App(props) {
+function App() {
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
   const dispatch = useDispatch();
 

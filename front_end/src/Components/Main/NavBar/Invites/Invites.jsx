@@ -41,20 +41,20 @@ const Invites = () => {
     });
 
     socket.on("inviteCanceled", (senderInfo) => {
-      setInvites((prevState) => {
-        const newState = Object.assign({}, prevState);
-        if (!newState[senderInfo.playername]) return prevState;
-        newState[senderInfo.playername].cancelInvite = true;
-        return newState;
-      });
-      setTimeout(() => {
+      if (invites[senderInfo.playername]) {
         setInvites((prevState) => {
           const newState = Object.assign({}, prevState);
-          if (!newState[senderInfo.playername]) return prevState;
-          delete newState[senderInfo.playername];
+          newState[senderInfo.playername].cancelInvite = true;
           return newState;
         });
-      }, 1000);
+        setTimeout(() => {
+          setInvites((prevState) => {
+            const newState = Object.assign({}, prevState);
+            delete newState[senderInfo.playername];
+            return newState;
+          });
+        }, 1000);
+      }
     });
 
     return () => {

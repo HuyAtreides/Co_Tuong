@@ -51,6 +51,10 @@ class EventHandlers {
         [symmetryNewRow, symmetryNewCol]
       );
     });
+
+    socket.on("finishMove", () => {
+      io.to(socket.id).to(socket.opponentID).emit("setTimer");
+    });
   }
 
   static assignFirstMove(socket, curSocket, id) {

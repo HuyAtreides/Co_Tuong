@@ -1,3 +1,5 @@
+import { socket } from "../Components/App/context.js";
+
 class Piece {
   constructor(width, row, col, name, choosenSide) {
     this.width = width;
@@ -151,6 +153,7 @@ class Piece {
     board[newRow][newCol] = tmp;
     dispatch({ type: "setTurnToMove", value: true });
     dispatch({ type: "setBoard", value: [...board] });
+    socket.emit("finishMove");
   }
 
   animateMove([newRow, newCol], board, dispatch) {

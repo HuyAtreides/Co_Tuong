@@ -7,9 +7,13 @@ const SetMoveTimerContext = React.createContext();
 const AuthenticateUserContext = React.createContext();
 
 const authenticateUser = (dispatch, user) => {
-  if (user.guest) socket.disconnect();
+  if (socket.guest) socket.disconnect();
+  socket.guest = user.guest;
   dispatch({ type: "setPlayerInfo", value: user });
   dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
+  if (user.lang) dispatch({ type: "setLang", value: user.lang });
+  dispatch({ type: "resetGameState" });
+  dispatch({ type: "resetBoardState", value: 520 });
   socket.auth = {
     player: {
       playername: user.username,

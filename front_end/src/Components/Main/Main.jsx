@@ -71,7 +71,6 @@ const Main = () => {
             value: {
               from: "",
               className: "game-message",
-
               message: "The connection was closed",
             },
           });

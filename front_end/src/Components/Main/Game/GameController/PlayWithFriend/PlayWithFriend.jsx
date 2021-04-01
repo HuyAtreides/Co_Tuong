@@ -108,20 +108,20 @@ const PlayWithFriend = (props) => {
     });
 
     socket.on("inviteDeclined", (receiverInfo) => {
-      setPendingPlayers((prevState) => {
-        const newState = Object.assign({}, prevState);
-        if (!newState[receiverInfo.playername]) return prevState;
-        newState[receiverInfo.playername].declineInvite = true;
-        return newState;
-      });
-      setTimeout(() => {
+      if (pendingPlayers[receiverInfo.playername]) {
         setPendingPlayers((prevState) => {
           const newState = Object.assign({}, prevState);
-          if (!newState[receiverInfo.playername]) return prevState;
-          delete newState[receiverInfo.playername];
+          newState[receiverInfo.playername].declineInvite = true;
           return newState;
         });
-      }, 1000);
+        setTimeout(() => {
+          setPendingPlayers((prevState) => {
+            const newState = Object.assign({}, prevState);
+            delete newState[receiverInfo.playername];
+            return newState;
+          });
+        }, 1000);
+      }
     });
 
     socket.on("playerInGame", (playername) => {
@@ -140,7 +140,7 @@ const PlayWithFriend = (props) => {
       socket.removeAllListeners("inviteDeclined");
       socket.removeAllListeners("playerInGame");
     };
-  }, [invitedPlayer]);
+  }, [invitedPlayer, pendingPlayers]);
 
   useEffect(() => {
     return () => {
