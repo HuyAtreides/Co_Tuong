@@ -36,7 +36,7 @@ const GameController = (props) => {
     } else if (findingMatch !== true) {
       socket.emit("findMatch", side, time);
       dispatch({ type: "setFindingMatch", value: true });
-    } else socket.emit("cancelFindMatch");
+    } else if (findingMatch === true) socket.emit("cancelFindMatch");
   };
 
   const handleSelectTime = (event) => {

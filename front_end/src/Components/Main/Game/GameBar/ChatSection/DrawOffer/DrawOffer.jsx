@@ -13,6 +13,7 @@ const DrawOffer = (props) => {
   const setMoveTimer = useContext(SetMoveTimerContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
+  const gameResult = useSelector((state) => state.gameState.gameResult);
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
@@ -32,9 +33,11 @@ const DrawOffer = (props) => {
   };
 
   const handleAcceptOffer = () => {
-    dispatch({ type: "setReceiveDrawOffer", value: false });
-    handleDrawResult();
-    socket.emit("gameFinish", "Draw");
+    if (!gameResult) {
+      dispatch({ type: "setReceiveDrawOffer", value: false });
+      handleDrawResult();
+      socket.emit("gameFinish", "Draw");
+    }
   };
 
   const handleDeclineOffer = () => {

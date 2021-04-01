@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useContext, useState } from "react";
 import Piece from "./Piece/Piece.jsx";
 import "./Board.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 import PieceClass from "../../../../pieces/piece.js";
 
 function Board() {
   const dispatch = useDispatch();
+  const store = useStore();
   const board = useSelector((state) => state.boardState.board);
   const targetDisplay = useSelector((state) => state.boardState.targetDisplay);
   const boardSize = useSelector((state) => state.boardState.boardSize);
@@ -181,16 +182,12 @@ function Board() {
     socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
       handleOpponentMove([curRow, curCol], [newRow, newCol]);
     });
-    socket.on("setTimer", () => {
-      setMoveTimer(turnToMove, false, dispatch);
-    });
 
     return () => {
       window.onmouseup = null;
       window.onmousemove = null;
       window.onresize = null;
       socket.removeAllListeners("move");
-      socket.removeAllListeners("setTimer");
     };
   });
 
@@ -212,8 +209,17 @@ function Board() {
         });
         socket.emit("gameFinish", ["Won", lostReason]);
         setMoveTimer(null, true, dispatch);
+        return;
       }
     }
+
+    socket.on("setTimer", () => {
+      setMoveTimer(turnToMove, false, dispatch);
+    });
+
+    return () => {
+      socket.removeAllListeners("setTimer");
+    };
   }, [turnToMove]);
 
   return (

@@ -14,22 +14,21 @@ const Timer = (props) => {
   useEffect(() => {
     if (time === 0) {
       if (/Paused/.test(props.pause)) {
-        socket.emit("startTimer", true);
         dispatch({ type: "setPauseTime", value: "timeout" });
         dispatch({ type: "setPause", value: "Timeout" });
+        socket.emit("startTimer", true);
       } else {
         socket.emit("startTimer", false);
         dispatch({ type: "setPauseTime", value: "restart" });
         dispatch({ type: "setPause", value: null });
-        setMoveTimer(turnToMove, false, dispatch);
         socket.emit("startGame");
+        setMoveTimer(turnToMove, false, dispatch);
       }
     }
 
     socket.on("pauseOver", () => {
       dispatch({ type: "setPause", value: "Timeout" });
       dispatch({ type: "setPauseTime", value: "timeout" });
-      socket.emit("starTimer", true);
       dispatch({
         type: "setMessage",
         value: {
@@ -38,6 +37,7 @@ const Timer = (props) => {
           className: "game-message",
         },
       });
+      socket.emit("starTimer", true);
     });
 
     socket.on("gameStarted", () => {
@@ -78,13 +78,13 @@ const Pause = () => {
     if (pause) {
       if (/Paused/.test(pause)) {
         socket.removeAllListeners("oneSecondPass");
-        socket.emit("startTimer", true);
         socket.on("oneSecondPass", () => {
           dispatch({ type: "setPauseTime", value: null });
         });
-      } else if (/Resumed/.test(pause)) {
         socket.emit("startTimer", true);
+      } else if (/Resumed/.test(pause)) {
         dispatch({ type: "setPauseTime", value: "timeout" });
+        socket.emit("startTimer", true);
       }
     }
 

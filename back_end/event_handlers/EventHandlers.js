@@ -84,8 +84,12 @@ class EventHandlers {
   }
 
   static canJoinGame(socket, curSocket) {
+    if (curSocket.id !== socket.id) {
+      console.log([curSocket.id, curSocket.opponentID]);
+    }
     return (
       curSocket.id !== socket.id &&
+      socket.opponentID === null &&
       curSocket.opponentID === null &&
       curSocket.player.playername !== socket.player.playername &&
       socket.connected &&
@@ -118,24 +122,29 @@ class EventHandlers {
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", async (side, time) => {
       const start = new Date();
-      const user = await USERDAO.findUser(socket.player.playername);
-      if (user.inGame) return socket.emit("isInGame");
       socket.opponentID = null;
       socket.side = side[1];
       socket.time = time;
-      const intervalID = setInterval(async () => {
-        const timeElapse = (new Date() - start) / 1000;
-        const finish = EventHandlers.findMatch(io, socket, timeElapse);
-        if (finish) clearInterval(intervalID);
-      }, 1000);
+      let intervalID;
+      socket.removeAllListeners("cancelFindMatch");
 
       socket.on("cancelFindMatch", () => {
-        if (socket.opponentID === null) {
+        if (!socket.opponentID) {
           socket.opponentID = undefined;
           clearInterval(intervalID);
           socket.emit("findMatchCanceled");
         }
       });
+
+      const user = await USERDAO.findUser(socket.player.playername);
+      if (user.inGame) return socket.emit("isInGame");
+      if (socket.opponentID === null) {
+        intervalID = setInterval(() => {
+          const timeElapse = (new Date() - start) / 1000;
+          const finish = EventHandlers.findMatch(io, socket, timeElapse);
+          if (finish) clearInterval(intervalID);
+        }, 1000);
+      }
     });
   }
 

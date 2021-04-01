@@ -72,6 +72,7 @@ const Login = () => {
   const handleLogin = async (event) => {
     try {
       event.preventDefault();
+      setError("");
       const missingField = handleMissingField();
       if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
         setError(null);
@@ -86,12 +87,14 @@ const Login = () => {
         } else handleError(ok, message);
       }
     } catch (err) {
+      setWaitForResponse(false);
       handleError(false, err.toString());
     }
   };
 
   const handleLoginAsGuest = async () => {
     try {
+      setError("");
       if (isAuthenticated === "guest") setSuccessfullyLogin(true);
       else {
         setWaitForServer(true);
@@ -101,6 +104,7 @@ const Login = () => {
         authenticateUser(dispatch, user);
       }
     } catch (err) {
+      setWaitForServer(false);
       handleError(false, err.toString());
     }
   };

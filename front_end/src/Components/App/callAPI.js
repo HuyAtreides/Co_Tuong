@@ -19,7 +19,7 @@ const callAPI = async (method, endPoint, data) => {
     responseData.ok = response.ok;
     return responseData;
   } catch (err) {
-    throw new Error(err.toString());
+    throw new Error(err.message);
   }
 };
 

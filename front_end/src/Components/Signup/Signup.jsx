@@ -119,6 +119,7 @@ const Signup = () => {
   const handleSignUp = async (event) => {
     try {
       event.preventDefault();
+      setError("");
       const missingField = handleMissingField();
       if (
         !missingField &&
@@ -143,6 +144,7 @@ const Signup = () => {
         } else handleError(ok, message);
       }
     } catch (err) {
+      setWaitForResponse(false);
       handleError(false, err.toString());
     }
   };
