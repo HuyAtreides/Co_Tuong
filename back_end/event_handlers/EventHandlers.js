@@ -265,21 +265,29 @@ class EventHandlers {
     });
   }
 
-  static registerPauseGameHandlers(io, socket) {
+  static registerPauseAndResumeGameHandlers(io, socket) {
     socket.on("playerPauseGame", () => {
       io.to(socket.opponentID).emit("opponentPauseGame");
     });
 
-    socket.on("pauseTimeout", () => {
-      io.to(socket.opponentID).emit("pauseOver");
+    socket.on("playerResumeGame", () => {
+      io.to(socket.opponentID).emit("opponentResumeGame");
+    });
+
+    socket.on("receivePauseSignalAck", () => {
+      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer");
+    });
+
+    socket.on("receiveResumeSignalAck", () => {
+      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer");
     });
 
     socket.on("startGame", () => {
-      io.to(socket.opponentID).emit("gameStarted");
+      io.to(socket.opponentID).emit("receiveGameStartSignal");
     });
 
-    socket.on("playerResumeGame", () => {
-      io.to(socket.opponentID).emit("opponentResumeGame");
+    socket.on("receiveGameStartSignalAck", () => {
+      io.to(socket.opponentID).to(socket.id).emit("gameStarted");
     });
   }
 }

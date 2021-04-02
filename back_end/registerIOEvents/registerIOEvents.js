@@ -11,7 +11,7 @@ function registerIOEvents(io) {
     EventHandlers.registerDisconnectHandlers(io.of("/play"), socket);
     EventHandlers.registerDrawOfferHandlers(io.of("/play"), socket);
     EventHandlers.registerGameFinishHandlers(io.of("/play"), socket);
-    EventHandlers.registerPauseGameHandlers(io.of("/play"), socket);
+    EventHandlers.registerPauseAndResumeGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
     EventHandlers.registerSendInviteHandlers(io.of("/play"), socket);
   };
@@ -20,8 +20,8 @@ function registerIOEvents(io) {
     socket.player = socket.handshake.auth.player;
     const playername = socket.player.playername;
     socket.join(playername);
-    const rooms = await io.of("/play").to(playername).allSockets();
-    if (rooms.size === 2) {
+    const rooms = io.of("/play").to(playername).sockets;
+    if (rooms.size === 1) {
       socket.leave(playername);
       return next(
         new Error(

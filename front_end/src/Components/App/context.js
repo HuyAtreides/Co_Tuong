@@ -1,7 +1,7 @@
 import React from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://192.168.1.6:8080/play", { autoConnect: false });
+const socket = io("http://localhost:8080/play", { autoConnect: false });
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
 const AuthenticateUserContext = React.createContext();
@@ -9,8 +9,8 @@ const AuthenticateUserContext = React.createContext();
 const authenticateUser = (dispatch, user) => {
   if (socket.guest) socket.disconnect();
   socket.guest = user.guest;
-  dispatch({ type: "setPlayerInfo", value: user });
   dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
+  dispatch({ type: "setPlayerInfo", value: user });
   if (user.lang) dispatch({ type: "setLang", value: user.lang });
   dispatch({ type: "resetGameState" });
   dispatch({ type: "resetBoardState", value: 520 });
@@ -27,7 +27,6 @@ const authenticateUser = (dispatch, user) => {
 const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
   socket.removeAllListeners("oneSecondPass");
   if (gameFinish) {
-    socket.emit("setTimer", false);
     dispatch({ type: "setPause", value: null });
     dispatch({ type: "setPauseTime", value: "restart" });
     dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });

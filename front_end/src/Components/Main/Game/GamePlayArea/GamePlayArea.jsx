@@ -50,7 +50,9 @@ const GamePlayArea = (props) => {
         </div>
         <Timer
           timeLeftToMove={opponentTimeLeftToMove}
-          turnToMove={foundMatch && !gameResult ? !turnToMove : turnToMove}
+          turnToMove={
+            foundMatch && gameResult === null ? !turnToMove : turnToMove
+          }
         />
       </div>
       <Board />

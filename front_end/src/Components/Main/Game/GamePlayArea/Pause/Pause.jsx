@@ -10,7 +10,7 @@ const Timer = (props) => {
   const time = useSelector((state) => state.gameState.pauseTime);
   const minute = Math.floor(time / 60);
   const second = time % 60;
-  const turnToMove = useSelector((state) => state.boardState.turnToMove);
+  const store = useStore();
   useEffect(() => {
     if (time === 0) {
       if (/Paused/.test(props.pause)) {
@@ -18,29 +18,18 @@ const Timer = (props) => {
         dispatch({ type: "setPause", value: "Timeout" });
         socket.emit("startTimer", true);
       } else {
-        socket.emit("startTimer", false);
-        dispatch({ type: "setPauseTime", value: "restart" });
-        dispatch({ type: "setPause", value: null });
         socket.emit("startGame");
-        setMoveTimer(turnToMove, false, dispatch);
       }
     }
 
-    socket.on("pauseOver", () => {
-      dispatch({ type: "setPause", value: "Timeout" });
-      dispatch({ type: "setPauseTime", value: "timeout" });
-      dispatch({
-        type: "setMessage",
-        value: {
-          from: "",
-          message: "Pause Timeout",
-          className: "game-message",
-        },
-      });
-      socket.emit("starTimer", true);
+    socket.on("receiveGameStartSignal", () => {
+      socket.emit("receiveGameStartSignalAck");
     });
 
     socket.on("gameStarted", () => {
+      const turnToMove = store.getState().boardState.turnToMove;
+      dispatch({ type: "setPauseTime", value: "restart" });
+      dispatch({ type: "setPause", value: null });
       socket.emit("startTimer", false);
       dispatch({ type: "setPause", value: null });
       dispatch({ type: "setPauseTime", value: "restart" });
@@ -48,7 +37,7 @@ const Timer = (props) => {
     });
 
     return () => {
-      socket.removeAllListeners("pauseOver");
+      socket.removeAllListeners("receiveGameStartSignal");
       socket.removeAllListeners("gameStarted");
     };
   }, [time]);
@@ -75,18 +64,8 @@ const Pause = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    if (pause) {
-      if (/Paused/.test(pause)) {
-        socket.removeAllListeners("oneSecondPass");
-        socket.on("oneSecondPass", () => {
-          dispatch({ type: "setPauseTime", value: null });
-        });
-        socket.emit("startTimer", true);
-      } else if (/Resumed/.test(pause)) {
-        dispatch({ type: "setPauseTime", value: "timeout" });
-        socket.emit("startTimer", true);
-      }
-    }
+    if (/Resumed/.test(pause))
+      dispatch({ type: "setPauseTime", value: "timeout" });
 
     const handleOpponentPauseOrResumeGame = (pause) => {
       const opponentInfo = store.getState().gameState.opponentInfo;
@@ -102,7 +81,16 @@ const Pause = () => {
           pause ? "Paused" : "Resumed"
         } Game`,
       });
+      socket.emit(`receive${pause ? "Pause" : "Resume"}SignalAck`);
     };
+
+    socket.on("startPauseTimer", () => {
+      socket.removeAllListeners("oneSecondPass");
+      socket.on("oneSecondPass", () => {
+        dispatch({ type: "setPauseTime", value: null });
+      });
+      socket.emit("startTimer", true);
+    });
 
     socket.on("opponentPauseGame", () => {
       handleOpponentPauseOrResumeGame(true);
@@ -115,6 +103,7 @@ const Pause = () => {
     return () => {
       socket.removeAllListeners("opponentPauseGame");
       socket.removeAllListeners("opponentResumeGame");
+      socket.removeAllListeners("startPauseTimer");
     };
   }, [pause]);
 

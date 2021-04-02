@@ -20,12 +20,12 @@ const sessionMiddleware = session({
 });
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://192.168.1.6:3000",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
 
-app.use(cors({ origin: "http://192.168.1.6:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(sessionMiddleware);

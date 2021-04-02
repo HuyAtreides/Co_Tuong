@@ -78,6 +78,7 @@ const Signup = () => {
       )
     )
       setInvalidLastname("First character must be latin letter");
+    else setInvalidLastname("");
     setLastname(value);
   };
 
