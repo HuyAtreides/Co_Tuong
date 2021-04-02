@@ -74,14 +74,6 @@ const GameController = (props) => {
       setMoveTimer(firstMove, false, dispatch);
     });
 
-    socket.on("isInGame", () => {
-      dispatch({
-        type: "setFindingMatch",
-        value:
-          "Your account is currently in a game. Please try again after the game was finished",
-      });
-    });
-
     socket.on("findMatchCanceled", () => {
       dispatch({ type: "setFindingMatch", value: "play" });
     });

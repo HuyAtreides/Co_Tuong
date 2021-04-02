@@ -4,54 +4,59 @@ import renderInvites from "./renderInvites.js";
 import "./Invites.scss";
 
 const Invites = () => {
-  const [invites, setInvites] = useState({});
+  const [invites, setInvites] = useState([]);
   const socket = useContext(SocketContext);
 
   const handleAccept = (event) => {
     const playername = event.currentTarget.getAttribute("playername");
-    const { time, socketID } = invites[playername];
+    const index = invites.findIndex(
+      (player) => player.playername === playername
+    );
+    const { time, socketID } = invites[index];
     socket.emit("acceptInvite", socketID, time);
-    setInvites({});
+    setInvites([]);
   };
 
   const handleDecline = (event) => {
     const playername = event.currentTarget.getAttribute("playername");
+    const index = invites.findIndex(
+      (player) => player.playername === playername
+    );
+    socket.emit("declineInvite", invites[index].socketID, false);
     setInvites((prevState) => {
-      const newState = Object.assign({}, prevState);
-      delete newState[playername];
-      return newState;
+      prevState.splice(index, 1);
+      return [...prevState];
     });
-    socket.emit("declineInvite", invites[playername].socketID, false);
   };
 
   useEffect(() => {
     socket.on("receiveInvite", (sender, senderSocketID, time) => {
       setInvites((prevState) => {
-        const newState = Object.assign({}, prevState);
         sender.socketID = senderSocketID;
         sender.time = time;
-        newState[sender.playername] = sender;
-        return newState;
+        prevState.push(sender);
+        return [...prevState];
       });
       socket.emit("inviteReceived", senderSocketID);
     });
 
     socket.on("clearInvites", () => {
-      setInvites({});
+      setInvites([]);
     });
 
     socket.on("inviteCanceled", (senderInfo) => {
-      if (invites[senderInfo.playername]) {
+      const index = invites.findIndex(
+        (player) => player.playername === senderInfo.playername
+      );
+      if (index !== -1) {
         setInvites((prevState) => {
-          const newState = Object.assign({}, prevState);
-          newState[senderInfo.playername].cancelInvite = true;
-          return newState;
+          prevState[index].cancelInvite = true;
+          return [...prevState];
         });
         setTimeout(() => {
           setInvites((prevState) => {
-            const newState = Object.assign({}, prevState);
-            delete newState[senderInfo.playername];
-            return newState;
+            prevState.splice(index, 1);
+            return [...prevState];
           });
         }, 1000);
       }

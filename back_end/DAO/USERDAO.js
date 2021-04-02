@@ -34,10 +34,10 @@ class USERDAO {
     }
   }
 
-  static async findPlayers(playername) {
+  static async findPlayers(playername, exact) {
     try {
       const regex = new RegExp(`${playername}`, "i");
-      const result = await users.find({ username: regex });
+      const result = await users.find({ username: exact ? playername : regex });
       const players = await result
         .project({ username: 1, photo: 1, socketID: 1 })
         .toArray();
@@ -150,7 +150,6 @@ class USERDAO {
           lastOnline: new Date(),
           join: new Date(),
           matches: [],
-          inGame: false,
         });
         return result.ops[0];
       }
@@ -179,7 +178,6 @@ class USERDAO {
         lang: "English",
         failedLoginAttempt: 0,
         failedVerifyAttempt: 0,
-        inGame: false,
       });
 
       return result.ops[0];

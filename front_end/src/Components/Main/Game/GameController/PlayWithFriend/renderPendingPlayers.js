@@ -1,5 +1,5 @@
 const renderPendingPlayers = (pendingPlayers, cancelInvite) => {
-  return Object.values(pendingPlayers).map((value, index) => {
+  return pendingPlayers.map((value, index) => {
     const { username, photo } = value;
     return (
       <li key={`pending-player-${index}`}>

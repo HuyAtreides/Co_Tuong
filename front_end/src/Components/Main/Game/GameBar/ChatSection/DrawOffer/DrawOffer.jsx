@@ -33,8 +33,8 @@ const DrawOffer = (props) => {
   };
 
   const handleAcceptOffer = () => {
+    dispatch({ type: "setReceiveDrawOffer", value: false });
     if (!gameResult) {
-      dispatch({ type: "setReceiveDrawOffer", value: false });
       handleDrawResult();
       socket.emit("gameFinish", "Draw");
     }

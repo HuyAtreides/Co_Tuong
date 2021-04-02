@@ -25,7 +25,6 @@ const Main = () => {
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
-  const [loginOnOtherPlace, setLoginOnOtherPlace] = useState(false);
 
   useEffect(async () => {
     try {
@@ -48,9 +47,13 @@ const Main = () => {
   }, [lang]);
 
   useEffect(() => {
-    socket.on("loginOnOtherPlace", () => {
-      setLoginOnOtherPlace(true);
+    socket.on("connect_error", (err) => {
+      setConnectionError(err.message);
     });
+
+    return () => {
+      socket.removeAllListeners("connect_error");
+    };
   }, []);
 
   useEffect(() => {
@@ -62,7 +65,7 @@ const Main = () => {
           dispatch({ type: "setFindingMatch", value: "Play" });
         }, 700);
       }
-      if (!loginOnOtherPlace && reason !== "io client disconnect") {
+      if (reason !== "io client disconnect") {
         setConnectionError("The connection was closed");
         if (foundMatch) {
           dispatch({ type: "setGameResult", value: undefined });
@@ -81,7 +84,7 @@ const Main = () => {
     return () => {
       socket.removeAllListeners("disconnect");
     };
-  }, [loginOnOtherPlace]);
+  }, []);
 
   if (loginError) return <Redirect to="/signin" />;
 
@@ -106,9 +109,7 @@ const Main = () => {
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
         <VerifyEmailNote />
       ) : null}
-      {loginOnOtherPlace || connectionError ? (
-        <Warning connectionError={connectionError} />
-      ) : null}
+      {connectionError ? <Warning connectionError={connectionError} /> : null}
     </Container>
   );
 };

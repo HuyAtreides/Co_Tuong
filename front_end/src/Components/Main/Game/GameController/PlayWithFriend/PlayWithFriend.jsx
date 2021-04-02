@@ -12,7 +12,7 @@ const PlayWithFriend = (props) => {
   const [input, setInput] = useState("");
   const [playersList, setPlayersList] = useState([]);
   const [waitForResponse, setWaitForResponse] = useState(false);
-  const [pendingPlayers, setPendingPlayers] = useState({});
+  const [pendingPlayers, setPendingPlayers] = useState([]);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const socket = useContext(SocketContext);
   const [show, setShow] = useState("");
@@ -54,9 +54,14 @@ const PlayWithFriend = (props) => {
 
   const cancelInvite = (event) => {
     const playername = event.currentTarget.getAttribute("playername");
-    socket.emit("cancelInvite", pendingPlayers[playername].socketID, false);
-    delete pendingPlayers[playername];
-    setPendingPlayers(Object.assign({}, pendingPlayers));
+    const index = pendingPlayers.findIndex(
+      (player) => player.username === playername
+    );
+    socket.emit("cancelInvite", pendingPlayers[index].socketID, false);
+    setPendingPlayers((prevState) => {
+      prevState.splice(index, 1);
+      return [...prevState];
+    });
   };
 
   const handleCanotSendInvite = (reason) => {
@@ -71,14 +76,18 @@ const PlayWithFriend = (props) => {
     try {
       event.preventDefault();
       if (waitForResponse) return;
-      if (!pendingPlayers[input]) {
+      const index = pendingPlayers.findIndex(
+        (player) => player.username === input
+      );
+      if (index === -1) {
         setWaitForResponse(true);
         const { players } = await callAPI("POST", "players", {
           playername: replaceSpecialCharacters(input),
+          exact: true,
         });
         if (players.length && players[0].username !== playerInfo.username) {
           if (players[0].socketID) {
-            if (Object.keys(pendingPlayers).length + 1 > 5) {
+            if (pendingPlayers.length + 1 > 5) {
               handleCanotSendInvite("You have sent too many invites");
               return;
             }
@@ -101,24 +110,24 @@ const PlayWithFriend = (props) => {
     socket.on("validInvite", () => {
       setWaitForResponse(false);
       setPendingPlayers((prevState) => {
-        const newState = Object.assign({}, prevState);
-        newState[invitedPlayer.username] = invitedPlayer;
-        return newState;
+        prevState.push(invitedPlayer);
+        return [...prevState];
       });
     });
 
     socket.on("inviteDeclined", (receiverInfo) => {
-      if (pendingPlayers[receiverInfo.playername]) {
+      const index = pendingPlayers.findIndex(
+        (player) => player.username === receiverInfo.playername
+      );
+      if (index !== -1) {
         setPendingPlayers((prevState) => {
-          const newState = Object.assign({}, prevState);
-          newState[receiverInfo.playername].declineInvite = true;
-          return newState;
+          prevState[index].declineInvite = true;
+          return [...prevState];
         });
         setTimeout(() => {
           setPendingPlayers((prevState) => {
-            const newState = Object.assign({}, prevState);
-            delete newState[receiverInfo.playername];
-            return newState;
+            prevState.splice(index, 1);
+            return [...prevState];
           });
         }, 1000);
       }

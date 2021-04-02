@@ -1,7 +1,7 @@
 import { Button, Tooltip, OverlayTrigger, Overlay } from "react-bootstrap";
 
 const renderInvites = (invites, handleAccept, handleDecline) => {
-  return Object.values(invites).map((value, index) => {
+  return invites.map((value, index) => {
     const { playername, photo, time, cancelInvite } = value;
     return (
       <li key={`invite-${index}`}>

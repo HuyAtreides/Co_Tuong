@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
     await verifyEmail({
       from: process.env.EMAIL,
       to: email,
-      html: `<p style="font-size: 22px">Hi ${capitalLastname}, <br> This is your verification code <strong>${verifyCode}</strong>.<br> Happy playing!</p>`,
+      html: `<p style="font-size: 22px">Hi ${capitalLastname}, <br>Thank you for using my app.<br> This is your verification code <strong>${verifyCode}</strong>.<br> Happy playing!</p>`,
       subject: "Verification",
     });
     return res.json({ code: verifyCode });

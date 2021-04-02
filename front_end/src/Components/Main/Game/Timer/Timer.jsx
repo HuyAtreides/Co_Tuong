@@ -12,7 +12,7 @@ const Timer = (props) => {
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
 
   useEffect(() => {
-    if (props.timeLeftToMove === 0 && turnToMove) {
+    if (props.timeLeftToMove <= 0 && turnToMove) {
       dispatch({ type: "setGameResult", value: "Lose" });
       dispatch({
         type: "setMessage",
@@ -26,7 +26,7 @@ const Timer = (props) => {
       setMoveTimer(null, true, dispatch);
       socket.emit("gameFinish", ["Won", "Game Abandoned"]);
     }
-  }, [props.timeLeftToMove]);
+  }, [turnToMove, props.timeLeftToMove]);
 
   return (
     <div className={`clock ${props.turnToMove ? "turn-to-move" : ""}`}>

@@ -9,11 +9,7 @@ const Warning = (props) => {
       <div className="warning-icon">
         <i className="fas fa-exclamation-triangle fa-2x"></i>
       </div>
-      <p>
-        {props.connectionError
-          ? props.connectionError
-          : "This connection was closed because you logged in on another browser or device."}
-      </p>
+      <p>{props.connectionError}</p>
       <i
         className="fas fa-times"
         onClick={() => {
