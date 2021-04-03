@@ -49,12 +49,23 @@ const Main = () => {
   useEffect(() => {
     socket.on("connect_error", (err) => {
       setConnectionError(err.message);
+      socket.close();
+    });
+
+    socket.on("connect", () => {
+      if (connectionError) {
+        setConnectionError("Successfully reconnect");
+        setTimeout(() => {
+          setConnectionError(null);
+        }, 1000);
+      }
     });
 
     return () => {
       socket.removeAllListeners("connect_error");
+      socket.removeAllListeners("connect");
     };
-  }, []);
+  }, [connectionError]);
 
   useEffect(() => {
     socket.on("disconnect", (reason) => {

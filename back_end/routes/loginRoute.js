@@ -3,6 +3,7 @@ const router = express.Router();
 const LocalStrategy = require("passport-local").Strategy;
 const passport = require("passport");
 const USERDAO = require("../DAO/USERDAO.js");
+const checkingSession = require("./api/checkingSession.js");
 const bcrypt = require("bcrypt");
 
 const handleIncorrectPassword = async (req, res) => {
@@ -58,6 +59,7 @@ passport.use(
 
 router.post(
   "/",
+  checkingSession,
   (req, res, next) => {
     passport.authenticate("local", (err, user, info) => {
       if (err) {

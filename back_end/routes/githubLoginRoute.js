@@ -29,12 +29,26 @@ router.get(
   passport.authenticate("github", { scope: ["user:email"] })
 );
 
-router.get(
-  "/callback",
-  passport.authenticate("github", {
-    successRedirect: "http://localhost:3000/",
-    failureRedirect: "http://localhost:3000/",
-  })
-);
+router.get("/callback", checkingSession, (req, res, next) => {
+  passport.authenticate("github", (err, user, _) => {
+    if (err) next(err);
+    if (!user) return res.redirect("http://localhost:3000");
+    req.login(user, (err) => {
+      if (err) req.session.loginError = err.message;
+      req.session.save((err) => {
+        return res.redirect("http://localhost:3000");
+      });
+    });
+  })(req, res, next);
+});
+
+router.use((err, req, res, next) => {
+  if (err.message.toLowerCase() === "failed to fetch user profile")
+    return res.redirect("http://localhost:8080/api/auth/github/");
+  req.session.loginError = err.message;
+  req.session.save((err) => {
+    return res.redirect("http://localhost:3000");
+  });
+});
 
 module.exports = router;

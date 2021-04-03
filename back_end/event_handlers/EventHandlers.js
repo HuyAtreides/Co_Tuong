@@ -231,15 +231,17 @@ class EventHandlers {
   static registerDisconnectHandlers(io, socket) {
     socket.on("disconnect", async (reason) => {
       console.log(socket.id + " disconnect");
+
       if (reason === "server namespace disconnect") return;
       io.to(socket.opponentID).emit("opponentLeftGame");
       io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);
-      socket.leave(socket.player.playername);
+
       if (socket.player.guest)
         await USERDAO.removeGuest(socket.player.playername);
       else {
+        io[socket.player.playername] = undefined;
         await USERDAO.setSocketID(socket.player.playername, null, false);
       }
     });

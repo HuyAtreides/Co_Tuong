@@ -20,8 +20,9 @@ function registerIOEvents(io) {
     socket.player = socket.handshake.auth.player;
     const playername = socket.player.playername;
     socket.join(playername);
-    const rooms = io.of("/play").to(playername).sockets;
-    if (rooms.size === 1) {
+    const socketsInRoom = io.of("/play").adapter.rooms.get(playername);
+
+    if (socketsInRoom.size >= 2) {
       socket.leave(playername);
       return next(
         new Error(

@@ -34,12 +34,24 @@ router.get(
   })
 );
 
-router.get(
-  "/callback",
-  passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/",
-    failureRedirect: "http://localhost:8080/",
-  })
-);
+router.get("/callback", checkingSession, (req, res, next) => {
+  passport.authenticate("google", (err, user, _) => {
+    if (err) next(err);
+    if (!user) return res.redirect("http://localhost:3000");
+    req.login(user, (err) => {
+      if (err) req.session.loginError = err.message;
+      req.session.save((err) => {
+        return res.redirect("http://localhost:3000");
+      });
+    });
+  })(req, res, next);
+});
+
+router.use((err, req, res, next) => {
+  req.session.loginError = err.message;
+  req.session.save((err) => {
+    return res.redirect("http://localhost:3000");
+  });
+});
 
 module.exports = router;
