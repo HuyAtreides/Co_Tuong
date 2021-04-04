@@ -30,9 +30,10 @@ const Invites = () => {
   };
 
   useEffect(() => {
-    socket.on("receiveInvite", (sender, senderSocketID) => {
+    socket.on("receiveInvite", (sender, senderSocketID, time) => {
       setInvites((prevState) => {
         sender.socketID = senderSocketID;
+        sender.time = time;
         prevState.push(sender);
         return [...prevState];
       });
@@ -53,16 +54,12 @@ const Invites = () => {
           return [...prevState];
         });
 
-        setTimeout(
-          (index) => {
-            setInvites((prevState) => {
-              prevState.splice(index, 1);
-              return [...prevState];
-            });
-          },
-          1000,
-          index
-        );
+        setTimeout(() => {
+          setInvites((prevState) => {
+            prevState.splice(index, 1);
+            return [...prevState];
+          });
+        }, 1000);
       }
     });
 

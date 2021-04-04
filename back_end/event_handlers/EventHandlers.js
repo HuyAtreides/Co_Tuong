@@ -15,7 +15,7 @@ class EventHandlers {
     if (socket.inviteSenders !== undefined) {
       socket.inviteSenders.forEach((senderID) => {
         const senderSocket = io.sockets.get(senderID);
-        if (excludeID === null || excludeID !== senderID) {
+        if (senderSocket && (excludeID === null || excludeID !== senderID)) {
           const index = senderSocket.sentInvites.indexOf(socket.id);
           senderSocket.sentInvites.splice(index, 1);
           io.to(senderID).emit("inviteDeclined", socket.player);
@@ -29,7 +29,7 @@ class EventHandlers {
     if (socket.sentInvites !== undefined) {
       socket.sentInvites.forEach((socketID) => {
         const receiverSocket = io.sockets.get(socketID);
-        if (excludeID === null || socketID !== excludeID) {
+        if (receiverSocket && (excludeID === null || socketID !== excludeID)) {
           const index = receiverSocket.inviteSenders.indexOf(socket.id);
           receiverSocket.inviteSenders.splice(index, 1);
           receiverSocket.emit("inviteCanceled", socket.player);
@@ -93,11 +93,11 @@ class EventHandlers {
     curSocket.emit("clearInvites");
   }
 
-  static canJoinGame(socket, curSocket) {
+  static canJoinGame(socket, curSocket, useInviteLink) {
     return (
       curSocket.id !== socket.id &&
-      socket.opponentID === null &&
-      curSocket.opponentID === null &&
+      (socket.opponentID === null || useInviteLink) &&
+      (curSocket.opponentID === null || useInviteLink) &&
       curSocket.player.playername !== socket.player.playername &&
       socket.connected &&
       curSocket.connected
@@ -147,24 +147,35 @@ class EventHandlers {
         intervalID = setInterval(() => {
           const timeElapse = (new Date() - start) / 1000;
           const finish = EventHandlers.findMatch(io, socket, timeElapse);
-          if (finish) clearInterval(intervalID);
+          if (finish) {
+            socket.removeAllListeners("cancelFindMatch");
+            clearInterval(intervalID);
+          }
         }, 1000);
       }
     });
   }
 
   static registerSendInviteHandlers(io, socket) {
-    socket.on("sendInvite", (receiverSocketID) => {
+    socket.on("sendInvite", (receiverSocketID, playername) => {
       try {
         const receiverSocket = io.sockets.get(receiverSocketID);
-        if (receiverSocket.opponentID || receiverSocket.opponentID === null)
-          socket.emit("playerInGame", receiverSocket.player.playername);
-        else if (
+        if (!receiverSocket) {
+          const message = `${playername}'s connection may have been closed`;
+          socket.emit("invalidInvite", message);
+        } else if (
+          receiverSocket.opponentID ||
+          receiverSocket.opponentID === null
+        ) {
+          const message = `${receiverSocket.player.playername} is in a game`;
+          socket.emit("invalidInvite", message);
+        } else if (
           receiverSocket.inviteSenders &&
           receiverSocket.inviteSenders.length >= 5
-        )
-          socket.emit("invalidInvite", receiverSocket.player.playername);
-        else {
+        ) {
+          const message = `${receiverSocket.player.playername} has received too many invites`;
+          socket.emit("invalidInvite", message);
+        } else {
           if (!receiverSocket.inviteSenders) receiverSocket.inviteSenders = [];
           if (!socket.sentInvites) socket.sentInvites = [];
           socket.sentInvites.push(receiverSocketID);
@@ -172,7 +183,8 @@ class EventHandlers {
           io.to(receiverSocketID).emit(
             "receiveInvite",
             socket.player,
-            socket.id
+            socket.id,
+            socket.time
           );
         }
       } catch (err) {
@@ -184,11 +196,12 @@ class EventHandlers {
       try {
         if (all) EventHandlers.declineAllInvites(io, socket, null);
         else {
-          const senderSocket = io.sockets.get(senderSocketID);
-          let index = senderSocket.sentInvites.indexOf(socket.id);
-          senderSocket.sentInvites.splice(index, 1);
-          index = socket.inviteSenders.indexOf(senderSocketID);
+          let index = socket.inviteSenders.indexOf(senderSocketID);
           socket.inviteSenders.splice(index, 1);
+          const senderSocket = io.sockets.get(senderSocketID);
+          if (!senderSocket) return;
+          index = senderSocket.sentInvites.indexOf(socket.id);
+          senderSocket.sentInvites.splice(index, 1);
           io.to(senderSocketID).emit("inviteDeclined", socket.player);
         }
       } catch (err) {
@@ -201,6 +214,7 @@ class EventHandlers {
         EventHandlers.cancelAllInvites(io, socket, null);
       } else {
         const receiverSocket = io.sockets.get(receiverSocketID);
+        if (!receiverSocket) return;
         let index = receiverSocket.inviteSenders.indexOf(socket.id);
         receiverSocket.inviteSenders.splice(index, 1);
         index = socket.sentInvites.indexOf(receiverSocketID);

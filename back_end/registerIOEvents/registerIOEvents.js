@@ -5,8 +5,10 @@ const handleUseInviteLink = (io, socket) => {
   if (socket.opponentID) {
     const opponentSocket = io.sockets.get(socket.opponentID);
     if (opponentSocket && opponentSocket.useInviteLink) {
-      const time = opponentSocket.time;
-      EventHandlers.handleFoundMatch(socket, opponentSocket, time);
+      if (EventHandlers.canJoinGame(socket, opponentSocket, true)) {
+        const time = opponentSocket.time;
+        EventHandlers.handleFoundMatch(socket, opponentSocket, time);
+      }
     }
   }
 };

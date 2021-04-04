@@ -26,8 +26,7 @@ const VerifyEmail = () => {
 
   const handleVerificationCodeChange = (event) => {
     const value = event.target.value;
-    if (/[^0-9]/.test(value) || value.length > 5)
-      setInvalidCodeMess("Invalid verification code");
+    if (/[^0-9]/.test(value)) setInvalidCodeMess("Invalid verification code");
     else setInvalidCodeMess("");
     setVerficationCode(value);
   };

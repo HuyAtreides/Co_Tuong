@@ -94,7 +94,7 @@ const PlayWithFriend = (props) => {
               return;
             }
             setInvitedPlayer(players[0]);
-            socket.emit("sendInvite", players[0].socketID);
+            socket.emit("sendInvite", players[0].socketID, players[0].username);
           } else handleCanotSendInvite(`${players[0].username} isn't online`);
         } else handleCanotSendInvite("user not found");
       }
@@ -141,27 +141,18 @@ const PlayWithFriend = (props) => {
           prevState[index].declineInvite = true;
           return [...prevState];
         });
-        setTimeout(
-          (index) => {
-            setPendingPlayers((prevState) => {
-              prevState.splice(index, 1);
-              return [...prevState];
-            });
-          },
-          1000,
-          index
-        );
+        setTimeout(() => {
+          setPendingPlayers((prevState) => {
+            prevState.splice(index, 1);
+            return [...prevState];
+          });
+        }, 1000);
       }
     });
 
-    socket.on("playerInGame", (playername) => {
+    socket.on("invalidInvite", (message) => {
       setWaitForResponse(false);
-      handleCanotSendInvite(`${playername} is in a game`);
-    });
-
-    socket.on("invalidInvite", (playername) => {
-      setWaitForResponse(false);
-      handleCanotSendInvite(`${playername} have received too many invites`);
+      handleCanotSendInvite(message);
     });
 
     return () => {
