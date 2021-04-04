@@ -39,6 +39,11 @@ const NavBar = (props) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="nav">
           <Link
+            target={
+              isAuthenticated && isAuthenticated !== "guest"
+                ? "_blank"
+                : "_self"
+            }
             to={`/${
               isAuthenticated && isAuthenticated !== "guest" ? "home" : "signin"
             }`}

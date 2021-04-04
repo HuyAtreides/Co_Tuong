@@ -61,6 +61,7 @@ router.post(
   "/",
   checkingSession,
   (req, res, next) => {
+    const opponentID = req.session.opponentID;
     passport.authenticate("local", (err, user, info) => {
       if (err) {
         return res.status(500).json({ user: null, message: err.toString() });
@@ -73,7 +74,14 @@ router.post(
       req.login(user, (err) => {
         if (err)
           return res.status(500).json({ user: user, message: err.toString() });
-        return res.json({ user: user, message: null });
+        req.session.opponentID = undefined;
+        req.session.save(() => {
+          return res.json({
+            user: user,
+            message: null,
+            opponentID: opponentID,
+          });
+        });
       });
     })(req, res, next);
   },

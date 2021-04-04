@@ -12,8 +12,8 @@ const Invites = () => {
     const index = invites.findIndex(
       (player) => player.playername === playername
     );
-    const { time, socketID } = invites[index];
-    socket.emit("acceptInvite", socketID, time);
+    const { socketID } = invites[index];
+    socket.emit("acceptInvite", socketID);
     setInvites([]);
   };
 
@@ -30,10 +30,9 @@ const Invites = () => {
   };
 
   useEffect(() => {
-    socket.on("receiveInvite", (sender, senderSocketID, time) => {
+    socket.on("receiveInvite", (sender, senderSocketID) => {
       setInvites((prevState) => {
         sender.socketID = senderSocketID;
-        sender.time = time;
         prevState.push(sender);
         return [...prevState];
       });
@@ -53,12 +52,17 @@ const Invites = () => {
           prevState[index].cancelInvite = true;
           return [...prevState];
         });
-        setTimeout(() => {
-          setInvites((prevState) => {
-            prevState.splice(index, 1);
-            return [...prevState];
-          });
-        }, 1000);
+
+        setTimeout(
+          (index) => {
+            setInvites((prevState) => {
+              prevState.splice(index, 1);
+              return [...prevState];
+            });
+          },
+          1000,
+          index
+        );
       }
     });
 

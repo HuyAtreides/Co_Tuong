@@ -34,25 +34,33 @@ const GameController = (props) => {
         dispatch({ type: "setFindingMatch", value: "Play" });
       }, 700);
     } else if (findingMatch !== true) {
-      socket.emit("findMatch", side, time);
-      dispatch({ type: "setFindingMatch", value: true });
+      socket.emit("setTimeAndSide", +time, side[1], () => {
+        socket.emit("findMatch");
+        dispatch({ type: "setFindingMatch", value: true });
+      });
     } else if (findingMatch === true) socket.emit("cancelFindMatch");
   };
 
   const handleSelectTime = (event) => {
     const selectedTime = +event.currentTarget.getAttribute("value");
     dispatch({ type: "setTime", value: selectedTime });
+    socket.emit("setTimeAndSide", selectedTime, side[1]);
     props.handleToggle();
   };
 
   const handleSwitchSide = (event) => {
     const selectedSide = event.currentTarget.getAttribute("value");
-    if (selectedSide === "black")
+    if (selectedSide === "black") {
       dispatch({ type: "switchSide", value: ["red", "black"] });
-    else dispatch({ type: "switchSide", value: ["black", "red"] });
+      socket.emit("setTimeAndSide", +time, "black");
+    } else {
+      dispatch({ type: "switchSide", value: ["black", "red"] });
+      socket.emit("setTimeAndSide", +time, "red");
+    }
   };
 
   useEffect(() => {
+    socket.emit("setTimeAndSide", +time, side[1]);
     socket.on("timeout", () => {
       dispatch({
         type: "setFindingMatch",

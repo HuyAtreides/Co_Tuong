@@ -1,10 +1,21 @@
 const EventHandlers = require("../event_handlers/EventHandlers.js");
 const USERDAO = require("../DAO/USERDAO");
 
+const handleUseInviteLink = (io, socket) => {
+  if (socket.opponentID) {
+    const opponentSocket = io.sockets.get(socket.opponentID);
+    if (opponentSocket && opponentSocket.useInviteLink) {
+      const time = opponentSocket.time;
+      EventHandlers.handleFoundMatch(socket, opponentSocket, time);
+    }
+  }
+};
+
 function registerIOEvents(io) {
   const onConnectionHandler = async (socket) => {
     console.log(`${socket.id} connect`);
 
+    EventHandlers.registerSetTimeAndSideHandlers(socket);
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);
     EventHandlers.registerSendMessageHandlers(io.of("/play"), socket);
@@ -14,10 +25,12 @@ function registerIOEvents(io) {
     EventHandlers.registerPauseAndResumeGameHandlers(io.of("/play"), socket);
     EventHandlers.registerTimerHandlers(io.of("/play"), socket);
     EventHandlers.registerSendInviteHandlers(io.of("/play"), socket);
+    handleUseInviteLink(io.of("/play"), socket);
   };
 
   io.of("/play").use(async (socket, next) => {
     socket.player = socket.handshake.auth.player;
+    socket.opponentID = socket.handshake.auth.opponentID;
     const playername = socket.player.playername;
     socket.join(playername);
     const socketsInRoom = io.of("/play").adapter.rooms.get(playername);

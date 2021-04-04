@@ -77,13 +77,17 @@ const Login = () => {
       if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
         setError(null);
         setWaitForResponse(true);
-        const { message, user, ok } = await callAPI("POST", "login", {
-          username: username,
-          password: password,
-        });
+        const { message, user, ok, opponentID } = await callAPI(
+          "POST",
+          "login",
+          {
+            username: username,
+            password: password,
+          }
+        );
         setWaitForResponse(false);
         if (user) {
-          authenticateUser(dispatch, user);
+          authenticateUser(dispatch, user, opponentID);
         } else handleError(ok, message);
       }
     } catch (err) {
@@ -98,10 +102,14 @@ const Login = () => {
       if (isAuthenticated === "guest") setSuccessfullyLogin(true);
       else {
         setWaitForServer(true);
-        const { user } = await callAPI("GET", "login-as-guest", null);
+        const { user, opponentID } = await callAPI(
+          "GET",
+          "login-as-guest",
+          null
+        );
         setWaitForServer(false);
         setSuccessfullyLogin(true);
-        authenticateUser(dispatch, user);
+        authenticateUser(dispatch, user, opponentID);
       }
     } catch (err) {
       setWaitForServer(false);

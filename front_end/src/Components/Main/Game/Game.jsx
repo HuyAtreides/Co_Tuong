@@ -29,6 +29,7 @@ const Game = () => {
       const foundMatch = store.getState().gameState.foundMatch;
       const result = store.getState().gameState.result;
       if (foundMatch && !result) {
+        console.log("?");
         dispatch({ type: "setGameResult", value: "Lose" });
         dispatch({
           type: "setMessage",

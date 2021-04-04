@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+
   .players-pending {
     position: static;
     max-height: 13rem;
@@ -66,7 +66,7 @@
   }
   .btn-container {
     width: 100%;
-    flex-basis: 130px;
+    flex-basis: 125px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -111,6 +111,7 @@
       }
     }
     .invite-link {
+      margin-top: 12px;
       background-color: rgba(2, 1, 1, 0.18);
       width: 100%;
       font-size: 1.3rem;
@@ -120,7 +121,48 @@
         color: white;
       }
     }
+
+    .link-container {
+      position: relative;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      background-color: white;
+      justify-content: center;
+      border-radius: 0.2rem;
+      width: 100%;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      .fa-times {
+        position: absolute;
+        top: 3%;
+        right: 0%;
+        cursor: pointer;
+      }
+      .link {
+        border: 1px solid #dbd9d7;
+        padding: 5px 8px 5px 8px;
+
+        outline: none;
+        color: #312e2b;
+        font-family: "Montserrat-Regular";
+        border-radius: 3px;
+        font-size: 0.9rem;
+      }
+      .copy-link {
+        background-color: transparent;
+        font-family: "Montserrat-Bold";
+        color: #3a729c;
+      }
+    }
   }
+}
+
+.copied {
+  background-color: #343a40;
+  color: hsla(0, 0%, 100%, 0.65);
+  padding: 0.4rem;
+  border-radius: 0.2rem;
 }
 
 .players-list {

@@ -34,10 +34,14 @@ router.post("/", checkEmail, checkUsername, async (req, res) => {
     const formData = req.body;
     const user = await USERDAO.insertUser(formData);
     if (req.user) return res.json({ user: req.user, message: null });
+    const opponentID = req.session.opponentID;
     req.login(user, (err) => {
       if (err)
         return res.status(500).json({ user: user, message: err.toString() });
-      return res.json({ user: user, message: null });
+      req.session.opponentID = undefined;
+      req.session.save(() => {
+        return res.json({ user: user, message: null, opponentID: opponentID });
+      });
     });
   } catch (err) {
     res.status(500).json({ message: err.toString() });

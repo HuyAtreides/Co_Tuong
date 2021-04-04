@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import "./PlayWithFriend.scss";
-import { Button, Tooltip, Overlay } from "react-bootstrap";
+import { Button, Tooltip, Overlay, Spinner } from "react-bootstrap";
 import renderPlayersList from "./renderPlayersList.js";
 import renderPendingPlayers from "./renderPendingPlayers.js";
 import callAPI from "../../../../App/callAPI.js";
 import { SocketContext } from "../../../../App/context.js";
-import { Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const PlayWithFriend = (props) => {
@@ -17,8 +16,11 @@ const PlayWithFriend = (props) => {
   const socket = useContext(SocketContext);
   const [show, setShow] = useState("");
   const target = useRef(null);
+  const copyButton = useRef(null);
+  const [inviteLink, setInviteLink] = useState("");
   const [invitedPlayer, setInvitedPlayer] = useState(null);
-  const time = useSelector((state) => state.gameState.time);
+
+  const [showText, setShowText] = useState(false);
 
   const handleSelectPlayer = (event) => {
     const name = event.currentTarget.getAttribute("playername");
@@ -92,7 +94,7 @@ const PlayWithFriend = (props) => {
               return;
             }
             setInvitedPlayer(players[0]);
-            socket.emit("sendInvite", players[0].socketID, time);
+            socket.emit("sendInvite", players[0].socketID);
           } else handleCanotSendInvite(`${players[0].username} isn't online`);
         } else handleCanotSendInvite("user not found");
       }
@@ -104,6 +106,21 @@ const PlayWithFriend = (props) => {
   const clearInput = () => {
     setInput("");
     setPlayersList([]);
+  };
+
+  const handleGenerateInviteLink = () => {
+    socket.emit("generateInviteLink", (inviteLink) => {
+      setInviteLink(inviteLink);
+    });
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      setShowText(true);
+      setTimeout(() => {
+        setShowText(false);
+      }, 1000);
+    });
   };
 
   useEffect(() => {
@@ -124,12 +141,16 @@ const PlayWithFriend = (props) => {
           prevState[index].declineInvite = true;
           return [...prevState];
         });
-        setTimeout(() => {
-          setPendingPlayers((prevState) => {
-            prevState.splice(index, 1);
-            return [...prevState];
-          });
-        }, 1000);
+        setTimeout(
+          (index) => {
+            setPendingPlayers((prevState) => {
+              prevState.splice(index, 1);
+              return [...prevState];
+            });
+          },
+          1000,
+          index
+        );
       }
     });
 
@@ -198,7 +219,35 @@ const PlayWithFriend = (props) => {
           </Overlay>
           <ul className="players-list">{playersList}</ul>
         </form>
-        <Button className="invite-link">Invite Link</Button>
+        <Button className="invite-link" onClick={handleGenerateInviteLink}>
+          Invite Link
+        </Button>
+        <div
+          className="link-container"
+          style={{ display: inviteLink ? "flex" : "none" }}
+        >
+          <i className="fas fa-times" onClick={() => setInviteLink("")}></i>
+          <input
+            type="text"
+            value={inviteLink}
+            className="link"
+            readOnly={true}
+          />
+          <button
+            className="copy-link"
+            onClick={handleCopyLink}
+            ref={copyButton}
+          >
+            Copy
+          </button>
+          <Overlay placement="top" show={showText} target={copyButton.current}>
+            {({ placement, arrowProps, show: _show, popper, ...props }) => (
+              <div {...props} className="copied">
+                Copied
+              </div>
+            )}
+          </Overlay>
+        </div>
       </div>
     </div>
   );

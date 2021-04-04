@@ -10,6 +10,7 @@ const googleLoginRoute = require("../googleLoginRoute.js");
 const loginAsGuestRoute = require("../loginAsGuestRoute.js");
 const githubLoginRoute = require("../githubLoginRoute.js");
 const playersRoute = require("../playersRoute.js");
+const playWithFriendRoute = require("../playWithFriendRoute.js");
 
 router.use("/user", userRoute);
 router.use("/login", loginRoute);
@@ -21,5 +22,6 @@ router.use("/auth/google", googleLoginRoute);
 router.use("/auth/github", githubLoginRoute);
 router.use("/login-as-guest", loginAsGuestRoute);
 router.use("/players", playersRoute);
+router.use("/play-with-friend/", playWithFriendRoute);
 
 module.exports = router;

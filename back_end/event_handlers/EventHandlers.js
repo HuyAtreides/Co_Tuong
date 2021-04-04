@@ -3,6 +3,14 @@ const USERDAO = require("../DAO/USERDAO.js");
 class EventHandlers {
   static intervalID;
 
+  static registerSetTimeAndSideHandlers(socket) {
+    socket.on("setTimeAndSide", (time, side, callback) => {
+      socket.time = time;
+      socket.side = side;
+      if (callback) callback();
+    });
+  }
+
   static declineAllInvites(io, socket, excludeID) {
     if (socket.inviteSenders !== undefined) {
       socket.inviteSenders.forEach((senderID) => {
@@ -75,6 +83,8 @@ class EventHandlers {
   }
 
   static handleFoundMatch(socket, curSocket, time) {
+    socket.useInviteLink = undefined;
+    curSocket.useInviteLink = undefined;
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
     socket.emit("foundMatch", player2, socket.firstMove, time);
@@ -119,11 +129,9 @@ class EventHandlers {
   }
 
   static registerFindMatchHandlers(io, socket) {
-    socket.on("findMatch", async (side, time) => {
+    socket.on("findMatch", async () => {
       const start = new Date();
       socket.opponentID = null;
-      socket.side = side[1];
-      socket.time = time;
       let intervalID;
       socket.removeAllListeners("cancelFindMatch");
 
@@ -146,12 +154,15 @@ class EventHandlers {
   }
 
   static registerSendInviteHandlers(io, socket) {
-    socket.on("sendInvite", (receiverSocketID, time) => {
+    socket.on("sendInvite", (receiverSocketID) => {
       try {
         const receiverSocket = io.sockets.get(receiverSocketID);
         if (receiverSocket.opponentID || receiverSocket.opponentID === null)
           socket.emit("playerInGame", receiverSocket.player.playername);
-        else if (receiverSocket.rooms.size - 1 === 5)
+        else if (
+          receiverSocket.inviteSenders &&
+          receiverSocket.inviteSenders.length >= 5
+        )
           socket.emit("invalidInvite", receiverSocket.player.playername);
         else {
           if (!receiverSocket.inviteSenders) receiverSocket.inviteSenders = [];
@@ -161,8 +172,7 @@ class EventHandlers {
           io.to(receiverSocketID).emit(
             "receiveInvite",
             socket.player,
-            socket.id,
-            time
+            socket.id
           );
         }
       } catch (err) {
@@ -203,13 +213,15 @@ class EventHandlers {
       io.to(senderSocketID).emit("validInvite");
     });
 
-    socket.on("acceptInvite", (senderSocketID, time) => {
+    socket.on("acceptInvite", (senderSocketID) => {
       try {
         const senderSocket = io.sockets.get(senderSocketID);
         if (
+          senderSocket &&
           senderSocket.opponentID === undefined &&
           socket.opponentID === undefined
         ) {
+          const time = senderSocket.time;
           EventHandlers.cancelAllInvites(io, socket, null);
           EventHandlers.cancelAllInvites(io, senderSocket, null);
           EventHandlers.declineAllInvites(io, senderSocket, socket.id);
@@ -219,6 +231,12 @@ class EventHandlers {
       } catch (err) {
         console.log(err);
       }
+    });
+
+    socket.on("generateInviteLink", (callback) => {
+      socket.useInviteLink = true;
+      const url = "http://localhost:8080/api/play-with-friend/" + socket.id;
+      callback(url);
     });
   }
 

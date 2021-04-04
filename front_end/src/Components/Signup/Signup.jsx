@@ -132,7 +132,7 @@ const Signup = () => {
       ) {
         setWaitForResponse(true);
         setError(null);
-        const { message, user, ok } = await callAPI("POST", "signup", {
+        const { message, user, ok, opponentID } = await callAPI("POST", "signup", {
           email: email,
           firstname: firstname,
           username: username,
@@ -141,7 +141,7 @@ const Signup = () => {
         });
         setWaitForResponse(false);
         if (user) {
-          authenticateUser(dispatch, user);
+          authenticateUser(dispatch, user, opponentID);
         } else handleError(ok, message);
       }
     } catch (err) {

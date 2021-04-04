@@ -20,6 +20,7 @@ function App() {
 
   useEffect(() => {
     if (foundMatch && window.location.pathname !== "/") {
+      console.log("App effect");
       dispatch({ type: "setGameResult", value: "Lose" });
       dispatch({
         type: "setMessage",

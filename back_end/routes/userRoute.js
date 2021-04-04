@@ -3,8 +3,10 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   const message = req.session.loginError;
+  const opponentID = req.session.opponentID;
   if (req.isAuthenticated()) {
-    return res.json({ user: req.user });
+    req.session.opponentID = undefined;
+    return res.json({ user: req.user, opponentID: opponentID });
   }
   return res.json({ user: null, message: message });
 });

@@ -30,9 +30,13 @@ const Main = () => {
     try {
       if (!isAuthenticated) {
         setWaitForResponse(true);
-        const { user, message } = await callAPI("GET", "user", null);
+        const { user, message, opponentID } = await callAPI(
+          "GET",
+          "user",
+          null
+        );
         if (user) {
-          authenticateUser(dispatch, user);
+          authenticateUser(dispatch, user, opponentID);
         } else if (message) dispatch({ type: "setLoginError", value: message });
         setWaitForResponse(false);
       }
