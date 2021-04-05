@@ -41,7 +41,7 @@ const Main = () => {
         setWaitForResponse(false);
       }
     } catch (err) {
-      dispatch({ type: "setLoginError", value: err.toString() });
+      dispatch({ type: "setLoginError", value: err.message });
     }
   }, [isAuthenticated]);
 
@@ -57,7 +57,7 @@ const Main = () => {
     });
 
     socket.on("connect", () => {
-      if (connectionError) {
+      if (connectionError === "The connection was closed") {
         setConnectionError("Successfully reconnect");
         setTimeout(() => {
           setConnectionError(null);

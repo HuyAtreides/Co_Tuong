@@ -9,6 +9,7 @@ const useHandleRoutingWhilePlaying = (socket, setMoveTimer) => {
 
   useEffect(() => {
     const foundMatch = store.getState().gameState.foundMatch;
+    const opponentInfo = store.getState().gameState.opponentInfo;
     const result = store.getState().gameState.gameResult;
     if (result === undefined) return;
     if (foundMatch && location.pathname !== "/" && !result) {
@@ -17,7 +18,7 @@ const useHandleRoutingWhilePlaying = (socket, setMoveTimer) => {
         type: "setMessage",
         value: {
           type: "game result message",
-          winner: "Opponent Won - ",
+          winner: `${opponentInfo.playername} Won - `,
           reason: "Game Abandoned",
           className: "game-message",
         },

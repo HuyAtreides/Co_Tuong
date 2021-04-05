@@ -30,6 +30,7 @@ const ChatSection = () => {
   };
 
   const handleSendMessage = (event) => {
+    event.preventDefault();
     if (input) {
       const message = {
         from: `${playerInfo.username}: `,
@@ -39,7 +40,6 @@ const ChatSection = () => {
       dispatch({ type: "setMessage", value: message });
       setInput("");
       socket.emit("sendMessage", message);
-      event.preventDefault();
     }
   };
 

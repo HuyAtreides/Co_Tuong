@@ -8,7 +8,6 @@ import PlayWithFriend from "./PlayWithFriend/PlayWithFriend.jsx";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
-  const store = useStore();
   const [playWithFriendText, setPlayWithFriendText] = useState(
     "Play With Friend"
   );
@@ -78,6 +77,7 @@ const GameController = (props) => {
           photo: opponent.photo,
         },
       });
+
       dispatch({ type: "setTime", value: time });
       dispatch({ type: "setTurnToMove", value: firstMove });
       setMoveTimer(firstMove, false, dispatch);
