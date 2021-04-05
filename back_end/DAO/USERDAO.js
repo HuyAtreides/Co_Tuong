@@ -81,6 +81,26 @@ class USERDAO {
     }
   }
 
+  static async updateMatchHistory(player, opponent, [result, reason]) {
+    try {
+      await users.updateOne(
+        { username: player.playername },
+        {
+          $push: {
+            matches: {
+              opponent: opponent.playername,
+              result: result,
+              reason: reason,
+              date: new Date(),
+            },
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
   static async removeGuest(guestName) {
     try {
       await users.deleteOne({ username: guestName });

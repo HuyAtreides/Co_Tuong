@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
+import { SocketContext } from "../../../App/context.js";
 import { Col, Button } from "react-bootstrap";
 import "./GameBar.scss";
-import { useDispatch, useSelector } from "react-redux";
 import ChatSection from "./ChatSection/ChatSection.jsx";
-import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
+import { useDispatch, useSelector } from "react-redux";
 
 const GameBar = (props) => {
   const dispatch = useDispatch();
@@ -12,10 +12,8 @@ const GameBar = (props) => {
   );
   const gameResult = useSelector((state) => state.gameState.gameResult);
   const socket = useContext(SocketContext);
-  const setMoveTimer = useContext(SetMoveTimerContext);
   const pause = useSelector((state) => state.gameState.pause);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
-  const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
   const handlePauseOrResume = (event) => {
     const action = event.currentTarget.id;
@@ -32,24 +30,6 @@ const GameBar = (props) => {
     socket.emit(`player${action}Game`);
   };
 
-  const handleGameOver = (result, reason) => {
-    dispatch({ type: "setGameResult", value: result });
-    dispatch({
-      type: "setMessage",
-      value: {
-        type: "game result message",
-        winner: `${
-          result === "Won"
-            ? `${playerInfo.username}`
-            : `${opponentInfo.playername}`
-        } Won - `,
-        reason: reason,
-        className: "game-message",
-      },
-    });
-    setMoveTimer(null, true, dispatch);
-  };
-
   const handleOfferDraw = () => {
     if (!receiveDrawOffer) {
       dispatch({
@@ -63,34 +43,6 @@ const GameBar = (props) => {
       socket.emit("sendDrawOffer");
     }
   };
-
-  const handleResign = () => {
-    handleGameOver("Lose", `${playerInfo.username} Resign`);
-    socket.emit("gameFinish", ["Won", `${playerInfo.username} Resign`]);
-  };
-
-  useEffect(() => {
-    socket.on("gameOver", (result, reason) => {
-      if (gameResult !== null) return;
-      handleGameOver(result, reason);
-    });
-
-    socket.on("opponentLeftGame", () => {
-      dispatch({
-        type: "setMessage",
-        value: {
-          from: `${opponentInfo.playername}`,
-          message: "Left The Game",
-          className: "game-message",
-        },
-      });
-    });
-
-    return () => {
-      socket.removeAllListeners("opponentLeftGame");
-      socket.removeAllListeners("gameOver");
-    };
-  });
 
   const handleExit = () => {
     const width = document.querySelector(".board-container").offsetWidth;
@@ -118,7 +70,7 @@ const GameBar = (props) => {
           <Button
             className="black-side resign-btn"
             value="resign"
-            onClick={handleResign}
+            onClick={props.handleResign}
             disabled={gameResult !== null || pause}
           >
             <i className="fas fa-flag"></i> Resign

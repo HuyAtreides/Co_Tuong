@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
       return res.json({ user: user, opponentID: opponentID });
     });
   } catch (err) {
-    res.status(500).json({ message: err.toString() });
+    res.status(500).json({ message: err.message });
   }
 });
 

@@ -25,7 +25,7 @@ const handleIncorrectCode = async (req, res) => {
     }
     return res.json({ message: "Incorrect Code" });
   } catch (err) {
-    return res.status(500).json({ message: err.toString() });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -45,7 +45,7 @@ router.post(
       const updatedUser = await USERDAO.updateUserEmail(username);
       return res.json({ user: updatedUser });
     } catch (err) {
-      return res.status(500).json({ message: err.toString() });
+      return res.status(500).json({ message: err.message });
     }
   },
   handleIncorrectCode
@@ -64,7 +64,7 @@ router.post("/", async (req, res) => {
     });
     return res.json({ code: verifyCode });
   } catch (err) {
-    return res.status(500).json({ message: err.toString() });
+    return res.status(500).json({ message: err.message });
   }
 });
 

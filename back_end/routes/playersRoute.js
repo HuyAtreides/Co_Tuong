@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
     const players = await USERDAO.findPlayers(playername, exact);
     res.json({ players: players });
   } catch (err) {
-    res.status(500).json({ message: err.toString() });
+    res.status(500).json({ message: err.message });
   }
 });
 

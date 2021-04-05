@@ -31,7 +31,11 @@ const Timer = (props) => {
   }, [turnToMove, props.timeLeftToMove]);
 
   return (
-    <div className={`clock ${props.turnToMove ? "turn-to-move" : ""}`}>
+    <div
+      className={`clock ${
+        props.turnToMove && socket.connected ? "turn-to-move" : ""
+      }`}
+    >
       <span>
         {(minute < 10 ? "0" + minute : minute) +
           ":" +

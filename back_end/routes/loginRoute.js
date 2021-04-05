@@ -26,7 +26,7 @@ const handleIncorrectPassword = async (req, res) => {
     }
     return res.json({ user: null, message: "Incorrect Password" });
   } catch (err) {
-    return res.status(500).json({ message: err.toString() });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -52,7 +52,7 @@ passport.use(
         return done(null, false, { message: "Incorrect Password" });
       });
     } catch (err) {
-      return done(err.toString(), null, null);
+      return done(err.message, null, null);
     }
   })
 );
@@ -64,7 +64,7 @@ router.post(
     const opponentID = req.session.opponentID;
     passport.authenticate("local", (err, user, info) => {
       if (err) {
-        return res.status(500).json({ user: null, message: err.toString() });
+        return res.status(500).json({ user: null, message: err.message });
       }
       if (!user) {
         if (info.message !== "Incorrect Password")
@@ -73,7 +73,7 @@ router.post(
       }
       req.login(user, (err) => {
         if (err)
-          return res.status(500).json({ user: user, message: err.toString() });
+          return res.status(500).json({ user: user, message: err.message });
         req.session.opponentID = undefined;
         req.session.save(() => {
           return res.json({

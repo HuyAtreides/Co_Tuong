@@ -12,7 +12,7 @@ const checkEmail = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    return res.status(500).json({ message: err.toString() });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -25,7 +25,7 @@ const checkUsername = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    return res.status(500).json({ message: err.toString() });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -37,14 +37,14 @@ router.post("/", checkEmail, checkUsername, async (req, res) => {
     const opponentID = req.session.opponentID;
     req.login(user, (err) => {
       if (err)
-        return res.status(500).json({ user: user, message: err.toString() });
+        return res.status(500).json({ user: user, message: err.message });
       req.session.opponentID = undefined;
       req.session.save(() => {
         return res.json({ user: user, message: null, opponentID: opponentID });
       });
     });
   } catch (err) {
-    res.status(500).json({ message: err.toString() });
+    res.status(500).json({ message: err.message });
   }
 });
 

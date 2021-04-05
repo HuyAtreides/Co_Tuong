@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { SocketContext, SetMoveTimerContext } from "../../App/context.js";
 import "./Game.scss";
 import { Row } from "react-bootstrap";
 import GameController from "./GameController/GameController.jsx";
 import GamePlayArea from "./GamePlayArea/GamePlayArea.jsx";
-import { useSelector, useDispatch, useStore } from "react-redux";
+import { useSelector, useStore, useDispatch } from "react-redux";
 import GameBar from "./GameBar/GameBar.jsx";
-import { SocketContext, SetMoveTimerContext } from "../../App/context.js";
 
 const Game = () => {
   const dispatch = useDispatch();
-  const socket = useContext(SocketContext);
-  const setMoveTimer = useContext(SetMoveTimerContext);
   const [timeSelectorDisplay, setTimeSelectorDisplay] = useState("none");
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
-  const store = useStore();
   const [centerBoard, setCenterBoard] = useState(false);
+  const socket = useContext(SocketContext);
+  const store = useStore();
+  const setMoveTimer = useContext(SetMoveTimerContext);
 
   const handleCenterBoard = () => {
     setCenterBoard(!centerBoard);
@@ -24,25 +24,57 @@ const Game = () => {
     setTimeSelectorDisplay(timeSelectorDisplay === "none" ? "flex" : "none");
   };
 
+  const handleGameOver = (result, reason) => {
+    const opponentInfo = store.getState().gameState.opponentInfo;
+    const playerInfo = store.getState().appState.playerInfo;
+    dispatch({ type: "setGameResult", value: result });
+    dispatch({
+      type: "setMessage",
+      value: {
+        type: "game result message",
+        winner: `${
+          result === "Won"
+            ? `${playerInfo.username}`
+            : `${opponentInfo.playername}`
+        } Won - `,
+        reason: reason,
+        className: "game-message",
+      },
+    });
+    setMoveTimer(null, true, dispatch);
+  };
+
+  const handleResign = () => {
+    const playerInfo = store.getState().appState.playerInfo;
+    handleGameOver("Lose", `${playerInfo.username} Resign`);
+    socket.emit("gameFinish", ["Won", `${playerInfo.username} Resign`]);
+  };
+
   useEffect(() => {
-    return () => {
+    socket.on("gameOver", (result, reason) => {
       const foundMatch = store.getState().gameState.foundMatch;
-      const result = store.getState().gameState.result;
-      if (foundMatch && !result) {
-        console.log("?");
-        dispatch({ type: "setGameResult", value: "Lose" });
+      const gameResult = store.getState().gameState.gameResult;
+      if (gameResult !== null || !foundMatch) return;
+      handleGameOver(result, reason);
+    });
+
+    socket.on("opponentLeftGame", () => {
+      const foundMatch = store.getState().gameState.foundMatch;
+      const opponentInfo = store.getState().gameState.opponentInfo;
+      if (foundMatch)
         dispatch({
           type: "setMessage",
           value: {
-            type: "game result message",
-            winner: "Opponent Won - ",
-            reason: "Game Abandoned",
+            from: `${opponentInfo.playername}`,
+            message: "Left The Game",
             className: "game-message",
           },
         });
-        setMoveTimer(null, true, dispatch);
-        socket.emit("gameFinish", ["Won", "Game Abandoned"]);
-      }
+    });
+
+    return () => {
+      socket.removeAllListeners("opponentLeftGame");
+      socket.removeAllListeners("gameOver");
     };
   }, []);
 
@@ -64,6 +96,7 @@ const Game = () => {
         <GameBar
           handleCenterBoard={handleCenterBoard}
           centerBoard={centerBoard}
+          handleResign={handleResign}
         />
       )}
     </Row>

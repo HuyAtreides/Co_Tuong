@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { Col, Button } from "react-bootstrap";
 import PlayButton from "./PlayButton/PlayButton.jsx";
 import "./GameController.scss";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 import PlayWithFriend from "./PlayWithFriend/PlayWithFriend.jsx";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
+  const store = useStore();
   const [playWithFriendText, setPlayWithFriendText] = useState(
     "Play With Friend"
   );

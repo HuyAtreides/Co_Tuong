@@ -157,25 +157,33 @@ class EventHandlers {
   }
 
   static registerSendInviteHandlers(io, socket) {
+    const canSendInvite = (receiverSocket, playername) => {
+      if (!receiverSocket) {
+        const message = `${playername} may be disconnected`;
+        socket.emit("invalidInvite", message);
+        return false;
+      } else if (
+        receiverSocket.opponentID ||
+        receiverSocket.opponentID === null
+      ) {
+        const message = `${receiverSocket.player.playername} is in a game`;
+        socket.emit("invalidInvite", message);
+        return false;
+      } else if (
+        receiverSocket.inviteSenders &&
+        receiverSocket.inviteSenders.length >= 5
+      ) {
+        const message = `${receiverSocket.player.playername} has received too many invites`;
+        socket.emit("invalidInvite", message);
+        return false;
+      }
+      return true;
+    };
+
     socket.on("sendInvite", (receiverSocketID, playername) => {
       try {
         const receiverSocket = io.sockets.get(receiverSocketID);
-        if (!receiverSocket) {
-          const message = `${playername}'s connection may have been closed`;
-          socket.emit("invalidInvite", message);
-        } else if (
-          receiverSocket.opponentID ||
-          receiverSocket.opponentID === null
-        ) {
-          const message = `${receiverSocket.player.playername} is in a game`;
-          socket.emit("invalidInvite", message);
-        } else if (
-          receiverSocket.inviteSenders &&
-          receiverSocket.inviteSenders.length >= 5
-        ) {
-          const message = `${receiverSocket.player.playername} has received too many invites`;
-          socket.emit("invalidInvite", message);
-        } else {
+        if (canSendInvite(receiverSocket, playername)) {
           if (!receiverSocket.inviteSenders) receiverSocket.inviteSenders = [];
           if (!socket.sentInvites) socket.sentInvites = [];
           socket.sentInvites.push(receiverSocketID);
@@ -261,20 +269,32 @@ class EventHandlers {
   }
 
   static registerDisconnectHandlers(io, socket) {
-    socket.on("disconnect", async (reason) => {
+    const handleGameFinish = () => {
+      if (socket.opponentID) {
+        io.to(socket.opponentID).emit("opponentLeftGame");
+        io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
+        USERDAO.updateMatchHistory(socket.player, socket.opponent, [
+          "Lost",
+          "Game Abandoned",
+        ]);
+        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
+          "Won",
+          "Game Abandoned",
+        ]);
+      }
+    };
+
+    socket.on("disconnect", (reason) => {
       console.log(socket.id + " disconnect");
 
       if (reason === "server namespace disconnect") return;
-      io.to(socket.opponentID).emit("opponentLeftGame");
-      io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
+      handleGameFinish();
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);
 
-      if (socket.player.guest)
-        await USERDAO.removeGuest(socket.player.playername);
+      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
       else {
-        io[socket.player.playername] = undefined;
-        await USERDAO.setSocketID(socket.player.playername, null, false);
+        USERDAO.setSocketID(socket.player.playername, null, false);
       }
     });
 
@@ -294,8 +314,23 @@ class EventHandlers {
     socket.on("gameFinish", (gameResult) => {
       if (gameResult !== "Draw") {
         const [result, reason] = gameResult;
+
         io.to(socket.opponentID).emit("gameOver", result, reason);
-      } else io.to(socket.opponentID).emit("draw", gameResult, null);
+        USERDAO.updateMatchHistory(socket.player, socket.opponent, [
+          result === "Won" ? "Lost" : "Won",
+          reason,
+        ]);
+        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
+          result,
+          reason,
+        ]);
+      } else {
+        io.to(socket.opponentID).emit("draw", gameResult, null);
+        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
+          "Draw",
+          "Game Draw By Agreement",
+        ]);
+      }
     });
   }
 
