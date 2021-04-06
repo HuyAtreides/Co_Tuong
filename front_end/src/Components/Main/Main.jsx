@@ -82,6 +82,7 @@ const Main = () => {
       }
       if (reason !== "io client disconnect") {
         setConnectionError("The connection was closed");
+        socket.open();
         if (foundMatch) {
           dispatch({ type: "setGameResult", value: undefined });
           dispatch({

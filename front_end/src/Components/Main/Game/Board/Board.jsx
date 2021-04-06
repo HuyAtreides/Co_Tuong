@@ -66,7 +66,8 @@ function Board() {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      // setMoveTimer(true, false, dispatch);
+      dispatch({ type: "setTurnToMove", value: true });
+      socket.emit("finishMove");
     }
   };
 
@@ -99,7 +100,6 @@ function Board() {
       if (moveResult && !/translate/.test(moveResult)) {
         dispatch({ type: "setTurnToMove", value: !turnToMove });
         socket.emit("opponentMove", moveResult, [curRow, curCol]);
-        // setMoveTimer(false, false, dispatch);
       }
     }
   };
@@ -128,7 +128,7 @@ function Board() {
     if (moveResult && !/translate/.test(moveResult)) {
       dispatch({ type: "setTurnToMove", value: !turnToMove });
       socket.emit("opponentMove", moveResult, [curRow, curCol]);
-      // setMoveTimer(false, false, dispatch);
+      socket.emit("finishMove");
     }
   };
 
@@ -173,6 +173,15 @@ function Board() {
     dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
     dispatch({ type: "setBoard", value: constructNewPiecesWidth(width / 9) });
     window.ondragstart = () => false;
+
+    socket.on("setTimer", () => {
+      const turnToMove = store.getState().boardState.turnToMove;
+      setMoveTimer(turnToMove, false, dispatch);
+    });
+
+    return () => {
+      socket.removeAllListeners("setTimer");
+    };
   }, []);
 
   useEffect(() => {
@@ -192,7 +201,7 @@ function Board() {
   });
 
   useEffect(() => {
-    if (turnToMove) {
+    if (turnToMove && !draggable) {
       const lostReason = PieceClass.isLost(board, side[1]);
       if (lostReason) {
         const listItemRef = React.createRef();
@@ -212,15 +221,7 @@ function Board() {
         return;
       }
     }
-
-    socket.on("setTimer", () => {
-      setMoveTimer(turnToMove, false, dispatch);
-    });
-
-    return () => {
-      socket.removeAllListeners("setTimer");
-    };
-  }, [turnToMove]);
+  }, [turnToMove, board, draggable]);
 
   return (
     <svg

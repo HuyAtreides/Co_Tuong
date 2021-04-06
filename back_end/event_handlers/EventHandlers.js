@@ -44,7 +44,8 @@ class EventHandlers {
       clearInterval(EventHandlers.intervalID);
       if (start) {
         EventHandlers.intervalID = setInterval(() => {
-          io.emit("oneSecondPass");
+          if (io.sockets.size === 0) clearInterval(EventHandlers.intervalID);
+          else io.emit("oneSecondPass");
         }, 1000);
       }
     });
@@ -85,6 +86,8 @@ class EventHandlers {
   static handleFoundMatch(socket, curSocket, time) {
     socket.useInviteLink = undefined;
     curSocket.useInviteLink = undefined;
+    socket.gameFinished = false;
+    curSocket.gameFinished = false;
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
     socket.emit("foundMatch", player2, socket.firstMove, time);
@@ -270,17 +273,22 @@ class EventHandlers {
 
   static registerDisconnectHandlers(io, socket) {
     const handleGameFinish = () => {
-      if (socket.opponentID) {
+      if (socket.opponentID && !socket.gameFinished) {
+        const opponentSocket = io.sockets.get(socket.opponentID);
+        socket.gameFinished = true;
         io.to(socket.opponentID).emit("opponentLeftGame");
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
         USERDAO.updateMatchHistory(socket.player, socket.opponent, [
           "Lost",
           "Game Abandoned",
         ]);
-        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
-          "Won",
-          "Game Abandoned",
-        ]);
+        if (opponentSocket && !opponentSocket.gameFinished) {
+          USERDAO.updateMatchHistory(socket.opponent, socket.player, [
+            "Won",
+            "Game Abandoned",
+          ]);
+          opponentSocket.gameFinished = true;
+        }
       }
     };
 
@@ -312,23 +320,23 @@ class EventHandlers {
 
   static registerGameFinishHandlers(io, socket) {
     socket.on("gameFinish", (gameResult) => {
+      const opponentSocket = io.sockets.get(socket.opponentID);
+      if (socket.gameFinished) return;
+      let [result, reason] = ["Draw", "Game Draw By Agreement"];
+      socket.gameFinished = true;
       if (gameResult !== "Draw") {
-        const [result, reason] = gameResult;
-
+        [result, reason] = gameResult;
         io.to(socket.opponentID).emit("gameOver", result, reason);
-        USERDAO.updateMatchHistory(socket.player, socket.opponent, [
-          result === "Won" ? "Lost" : "Won",
-          reason,
-        ]);
+      } else io.to(socket.opponentID).emit("draw", result, null);
+      USERDAO.updateMatchHistory(socket.player, socket.opponent, [
+        result === "Draw" ? result : result === "Won" ? "Lost" : "Won",
+        reason,
+      ]);
+      if (opponentSocket && !opponentSocket.gameFinished) {
+        opponentSocket.gameFinished = true;
         USERDAO.updateMatchHistory(socket.opponent, socket.player, [
           result,
           reason,
-        ]);
-      } else {
-        io.to(socket.opponentID).emit("draw", gameResult, null);
-        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
-          "Draw",
-          "Game Draw By Agreement",
         ]);
       }
     });

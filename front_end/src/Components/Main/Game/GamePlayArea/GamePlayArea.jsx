@@ -1,5 +1,5 @@
 import React from "react";
-import { Col } from "react-bootstrap";
+import { Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Timer from "../Timer/Timer.jsx";
 import Board from "../Board/Board";
 import "./GamePlayArea.scss";
@@ -33,7 +33,16 @@ const GamePlayArea = (props) => {
       <div className="player-area">
         <div className="avatar-and-name">
           <img src={opponentInfo.photo} alt="" />
-          <p className="user-name">{opponentInfo.playername}</p>
+          <OverlayTrigger
+            placement="bottom"
+            overlay={(props) => (
+              <Tooltip id="name-tooltip" {...props}>
+                {opponentInfo.playername}
+              </Tooltip>
+            )}
+          >
+            <p className="user-name">{opponentInfo.playername}</p>
+          </OverlayTrigger>
         </div>
         <div className="captured-pieces">
           {capturedPieces.map((element, index) => {
@@ -60,7 +69,16 @@ const GamePlayArea = (props) => {
         <div className="avatar-and-name">
           <div className="avatar-and-name">
             <img src={playerInfo.photo} alt="" />
-            <p className="user-name">{playerInfo.username}</p>
+            <OverlayTrigger
+              placement="top"
+              overlay={(props) => (
+                <Tooltip id="name-tooltip" {...props}>
+                  {playerInfo.username}
+                </Tooltip>
+              )}
+            >
+              <p className="user-name">{playerInfo.username}</p>
+            </OverlayTrigger>
           </div>
         </div>
         <div className="captured-pieces">

@@ -151,9 +151,7 @@ class Piece {
       dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
     board[curRow][curCol] = 0;
     board[newRow][newCol] = tmp;
-    dispatch({ type: "setTurnToMove", value: true });
     dispatch({ type: "setBoard", value: [...board] });
-    socket.emit("finishMove");
   }
 
   animateMove([newRow, newCol], board, dispatch) {
