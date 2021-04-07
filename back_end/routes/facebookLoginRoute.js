@@ -4,6 +4,7 @@ const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const USERDAO = require("../DAO/USERDAO.js");
 const checkingSession = require("./api/checkingSession.js");
+const fetch = require("node-fetch");
 
 passport.use(
   new FacebookStrategy(
@@ -11,13 +12,21 @@ passport.use(
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       callbackURL: "http://localhost:8080/api/auth/facebook/callback",
-      profileFields: ["id", "displayName", "photos", "email", "name"],
+      profileFields: [
+        "id",
+        "displayName",
+        "email",
+        "name",
+        "picture.type(large)",
+      ],
     },
-    async (__, _, profile, done) => {
+
+    async (accessToken, _, profile, done) => {
       try {
         const user = await USERDAO.createNewUser(profile);
         return done(null, user);
       } catch (err) {
+        console.log(err.toString());
         return done(err.toString(), null, null);
       }
     }
@@ -44,6 +53,7 @@ router.get("/callback", checkingSession, (req, res, next) => {
 });
 
 router.use((err, req, res, next) => {
+  console.log(err.message);
   if (err.message.toLowerCase() === "this authorization code has been used")
     return res.redirect("http://localhost:8080/api/auth/facebook");
   return res.redirect("htpp://localhost:3000/");

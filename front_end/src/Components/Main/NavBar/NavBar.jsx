@@ -40,9 +40,7 @@ const NavBar = (props) => {
         <Nav className="nav">
           <Link
             target={
-              isAuthenticated && isAuthenticated !== "guest"
-                ? "_blank"
-                : "_self"
+              isAuthenticated && isAuthenticated !== "guest" ? "_self" : "_self"
             }
             to={`/${
               isAuthenticated && isAuthenticated !== "guest" ? "home" : "signin"

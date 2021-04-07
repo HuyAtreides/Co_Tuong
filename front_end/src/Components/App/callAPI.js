@@ -1,14 +1,14 @@
-const callAPI = async (method, endPoint, data) => {
+const callAPI = async (method, endPoint, data, isFile) => {
   try {
     let response;
     if (method === "POST") {
       const init = {
         method: "POST",
         credentials: "include",
-        headers: {
+        headers: isFile ? {} : {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: isFile ? data : JSON.stringify(data),
       };
       response = await fetch(`http://localhost:8080/api/${endPoint}`, init);
     } else
