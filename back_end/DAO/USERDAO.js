@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const ObjectID = require("mongodb").ObjectID;
 const nonAccentVietnamese = require("./nonAccentVietnamese.js");
 let users;
 
@@ -81,7 +82,10 @@ class USERDAO {
     }
   }
 
-  static async updateMatchHistory(player, opponent, [result, reason]) {
+  static async updateMatchHistory(socket, result) {
+    const player = socket.player;
+    const opponent = socket.opponent;
+    const time = socket.time;
     try {
       await users.updateOne(
         { username: player.playername },
@@ -90,8 +94,8 @@ class USERDAO {
             matches: {
               opponent: opponent.playername,
               result: result,
-              reason: reason,
               date: new Date(),
+              time: time,
             },
           },
         }
@@ -125,6 +129,24 @@ class USERDAO {
       return result.ops[0];
     } catch (err) {
       throw new Error(err.toString());
+    }
+  }
+
+  static async updateUserProfilePic(id, filename) {
+    try {
+      const result = await users.findOneAndUpdate(
+        { _id: ObjectID(id) },
+        {
+          $set: {
+            photo: `http://localhost:8080/uploads/profile_pictures/${filename}`,
+          },
+        },
+        { returnOriginal: false }
+      );
+
+      return result.value;
+    } catch (err) {
+      throw new Error(err.message);
     }
   }
 

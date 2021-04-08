@@ -40,7 +40,7 @@ const PlayWithFriend = (props) => {
       const value = event.currentTarget.value;
       setInput(value);
       if (value) {
-        const { players } = await callAPI("POST", "players", {
+        const { players } = await callAPI("POST", "api/players", {
           playername: replaceSpecialCharacters(value),
         });
         const reCheck = document.querySelector("#player-name-search").value;
@@ -83,7 +83,7 @@ const PlayWithFriend = (props) => {
       );
       if (index === -1) {
         setWaitForResponse(true);
-        const { players } = await callAPI("POST", "players", {
+        const { players } = await callAPI("POST", "api/players", {
           playername: replaceSpecialCharacters(input),
           exact: true,
         });

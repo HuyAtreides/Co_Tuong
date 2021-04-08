@@ -79,7 +79,7 @@ const Login = () => {
         setWaitForResponse(true);
         const { message, user, ok, opponentID } = await callAPI(
           "POST",
-          "login",
+          "api/login",
           {
             username: username,
             password: password,
@@ -104,7 +104,7 @@ const Login = () => {
         setWaitForServer(true);
         const { user, opponentID } = await callAPI(
           "GET",
-          "login-as-guest",
+          "api/login-as-guest",
           null
         );
         setWaitForServer(false);
@@ -122,7 +122,7 @@ const Login = () => {
       if (isAuthenticated) return;
       if (!loginError) {
         setCheckingSession(true);
-        const { message, user, ok } = await callAPI("GET", "user", null);
+        const { message, user, ok } = await callAPI("GET", "api/user", null);
         setCheckingSession(false);
         if (user) {
           authenticateUser(dispatch, user);
@@ -154,7 +154,7 @@ const Login = () => {
       ) : (
         <Row className="justify-content-center">
           <Col
-            md={{ span: 4 }}
+            md={{ span: 6 }}
             sm={{ span: 6 }}
             xs={{ span: 10 }}
             className="login-component d-flex flex-column  align-items-center"
@@ -169,6 +169,7 @@ const Login = () => {
                     placeholder="Username or Email"
                     onChange={handleUsernameChange}
                     value={username}
+                    disabled={waitForResponse || waitForServer}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -187,6 +188,7 @@ const Login = () => {
                     placeholder="Password"
                     onChange={handlePasswordChange}
                     value={password}
+                    disabled={waitForResponse || waitForServer}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -196,14 +198,18 @@ const Login = () => {
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
-              <Button type="submit">
+              <Button type="submit" disabled={waitForResponse || waitForServer}>
                 {waitForResponse ? (
                   <Spinner animation="border" variant="dark" />
                 ) : (
                   "Log In"
                 )}
               </Button>
-              <Button className="log-in-as-guest" onClick={handleLoginAsGuest}>
+              <Button
+                className="log-in-as-guest"
+                onClick={handleLoginAsGuest}
+                disabled={waitForResponse || waitForServer}
+              >
                 {waitForServer ? (
                   <Spinner animation="border" variant="dark" />
                 ) : (

@@ -132,13 +132,17 @@ const Signup = () => {
       ) {
         setWaitForResponse(true);
         setError(null);
-        const { message, user, ok, opponentID } = await callAPI("POST", "signup", {
-          email: email,
-          firstname: firstname,
-          username: username,
-          password: password,
-          lastname: lastname,
-        });
+        const { message, user, ok, opponentID } = await callAPI(
+          "POST",
+          "api/signup",
+          {
+            email: email,
+            firstname: firstname,
+            username: username,
+            password: password,
+            lastname: lastname,
+          }
+        );
         setWaitForResponse(false);
         if (user) {
           authenticateUser(dispatch, user, opponentID);
@@ -154,7 +158,7 @@ const Signup = () => {
     try {
       if (isAuthenticated) return;
       setCheckingSession(true);
-      const { user, message, ok } = await callAPI("GET", "user", null);
+      const { user, message, ok } = await callAPI("GET", "api/user", null);
       setCheckingSession(false);
       if (user) {
         authenticateUser(dispatch, user);
@@ -185,7 +189,7 @@ const Signup = () => {
       ) : (
         <Row className="justify-content-center">
           <Col
-            md={{ span: 4 }}
+            md={{ span: 6 }}
             sm={{ span: 6 }}
             xs={{ span: 10 }}
             className="login-component d-flex flex-column  align-items-center"
@@ -200,6 +204,7 @@ const Signup = () => {
                     isInvalid={invalidUsernameMess !== ""}
                     onChange={handleUsernameChange}
                     value={username}
+                    disabled={waitForResponse}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -218,6 +223,7 @@ const Signup = () => {
                     isInvalid={invalidFirstname !== ""}
                     onChange={handleFirstnameChange}
                     value={firstname}
+                    disabled={waitForResponse}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -236,6 +242,7 @@ const Signup = () => {
                     isInvalid={invalidLastname !== ""}
                     onChange={handleLastnameChange}
                     value={lastname}
+                    disabled={waitForResponse}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -254,6 +261,7 @@ const Signup = () => {
                     isInvalid={invalidEmailMess !== ""}
                     onChange={handleEmailChange}
                     value={email}
+                    disabled={waitForResponse}
                   />
                   <Form.Control.Feedback
                     type="invalid"
@@ -271,6 +279,7 @@ const Signup = () => {
                     isInvalid={invalidPasswordMess !== ""}
                     onChange={handlePasswordChange}
                     value={password}
+                    disabled={waitForResponse}
                   />
                   <Form.Control.Feedback
                     type="invalid"

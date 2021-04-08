@@ -88,6 +88,7 @@ class EventHandlers {
     curSocket.useInviteLink = undefined;
     socket.gameFinished = false;
     curSocket.gameFinished = false;
+    curSocket.time = time;
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
     socket.emit("foundMatch", player2, socket.firstMove, time);
@@ -278,15 +279,9 @@ class EventHandlers {
         socket.gameFinished = true;
         io.to(socket.opponentID).emit("opponentLeftGame");
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
-        USERDAO.updateMatchHistory(socket.player, socket.opponent, [
-          "Lost",
-          "Game Abandoned",
-        ]);
+        USERDAO.updateMatchHistory(socket, "Lost");
         if (opponentSocket && !opponentSocket.gameFinished) {
-          USERDAO.updateMatchHistory(socket.opponent, socket.player, [
-            "Won",
-            "Game Abandoned",
-          ]);
+          USERDAO.updateMatchHistory(socket, "Won");
           opponentSocket.gameFinished = true;
         }
       }
@@ -309,6 +304,7 @@ class EventHandlers {
     socket.on("exitGame", async () => {
       io.to(socket.opponentID).emit("opponentLeftGame");
       socket.opponentID = undefined;
+      socket.time = undefined;
     });
   }
 
@@ -328,16 +324,13 @@ class EventHandlers {
         [result, reason] = gameResult;
         io.to(socket.opponentID).emit("gameOver", result, reason);
       } else io.to(socket.opponentID).emit("draw", result, null);
-      USERDAO.updateMatchHistory(socket.player, socket.opponent, [
-        result === "Draw" ? result : result === "Won" ? "Lost" : "Won",
-        reason,
-      ]);
+      USERDAO.updateMatchHistory(
+        socket,
+        result === "Draw" ? result : result === "Won" ? "Lost" : "Won"
+      );
       if (opponentSocket && !opponentSocket.gameFinished) {
         opponentSocket.gameFinished = true;
-        USERDAO.updateMatchHistory(socket.opponent, socket.player, [
-          result,
-          reason,
-        ]);
+        USERDAO.updateMatchHistory(socket, result);
       }
     });
   }

@@ -9,6 +9,7 @@ const registerIOEvents = require("./registerIOEvents/registerIOEvents.js");
 const api = require("./routes/api/api.js");
 const USERDAO = require("./DAO/USERDAO.js");
 const path = require("path");
+const uploadsRoutes = require("./routes/uploadsRoute.js");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
@@ -44,6 +45,7 @@ passport.deserializeUser(async (username, done) => {
 
 app.use(express.static("./build/"));
 app.use("/api", api);
+app.use("/uploads", uploadsRoutes);
 app.use((_, res) => {
   return res.sendFile(path.join(__dirname + "/build/index.html"));
 });

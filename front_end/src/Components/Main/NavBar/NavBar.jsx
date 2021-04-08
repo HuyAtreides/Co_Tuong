@@ -21,7 +21,7 @@ const NavBar = (props) => {
 
   const handleLogout = async () => {
     props.setWaitForResponse(true);
-    await callAPI("GET", "logout", null);
+    await callAPI("GET", "api/logout", null);
     dispatch({ type: "setIsAuthenticated", value: false });
     dispatch({ type: "setPlayerInfo", value: null });
     socket.disconnect();

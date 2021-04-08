@@ -35,7 +35,7 @@ const Main = (props) => {
         setWaitForResponse(true);
         const { user, message, opponentID } = await callAPI(
           "GET",
-          "user",
+          "api/user",
           null
         );
         if (user) {

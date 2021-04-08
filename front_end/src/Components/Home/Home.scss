@@ -3,6 +3,26 @@
   align-items: flex-start;
   min-width: 347px;
 
+  .upload-pic-err {
+    position: absolute;
+    top: 3%;
+    width: 100%;
+    background-color: var(--danger);
+    color: white;
+    font-size: 0.9rem;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    font-family: "Montserrat-Bold";
+
+    .fa-times {
+      position: absolute;
+      top: 3%;
+      right: 0%;
+      color: black;
+      cursor: pointer;
+    }
+  }
+
   .find-players-container {
     @media screen and (max-width: 768px) {
       & {
@@ -200,7 +220,7 @@
           tbody {
             .game-table-row {
               height: 3.7rem;
-
+              border-bottom: 1.7px solid hsla(0, 0%, 100%, 0.1);
               td {
                 background-color: rgba(0, 0, 0, 0.2);
                 color: hsla(0, 0%, 100%, 0.65);
@@ -221,7 +241,7 @@
 
               .match-result {
                 padding-top: 1.37rem;
-                color: #769656;
+
                 div {
                   display: flex;
                   flex-direction: column;
@@ -244,6 +264,10 @@
                     white-space: nowrap;
                     margin: 0;
                     text-align: left;
+
+                    .fa-equals {
+                      color: hsla(0, 0%, 100%, 0.4);
+                    }
 
                     .fa-minus-square {
                       color: var(--danger);
