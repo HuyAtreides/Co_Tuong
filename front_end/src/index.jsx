@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 import { batchedSubscribe } from "redux-batched-subscribe";
 import { debounce } from "lodash";
 import rootReducer from "./reducer/rootReducer.js";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 const debounceNotify = debounce((notify) => notify());
 const store = createStore(rootReducer, batchedSubscribe(debounceNotify));

@@ -21,8 +21,19 @@
       background-color: rgba(0, 0, 0, 0.2);
       border-radius: 0.3rem;
       .change-pic-area {
-        height: 10rem;
+        height: 7.7rem;
+        width: 7.7rem;
         position: relative;
+        background-color: #4b4847;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .spinner-border {
+          border: 0.3rem solid hsla(0, 0%, 100%, 0.2);
+          border-top-color: hsla(0, 0%, 100%, 0.65);
+        }
+
         &:hover {
           .change-pic {
             display: block;
@@ -30,13 +41,14 @@
         }
 
         @media screen and (max-width: 1200px) {
-          height: 7rem;
+          height: 5.7rem;
+          width: 5.7rem;
         }
 
         .change-pic {
           position: absolute;
           bottom: 0;
-          font-size: 1.2rem;
+          font-size: 0.97rem;
           display: none;
           background-color: hsla(0, 0%, 100%, 0.8);
           width: 100%;
@@ -77,9 +89,10 @@
           margin-left: 10px;
 
           .user-name {
-            font-size: 1.7rem;
+            font-size: 1.3rem;
             color: white;
             font-family: "Montserrat-Bold";
+            max-width: 150px;
             margin: 0px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -123,7 +136,7 @@
       background-color: rgba(0, 0, 0, 0.2);
       margin-top: 17px;
       border-radius: 0.3rem;
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 576px) {
         & {
           flex-direction: column;
         }
@@ -136,7 +149,7 @@
         color: hsla(0, 0%, 100%, 0.65);
 
         i {
-          font-size: 1.7rem;
+          font-size: 1.5rem;
           margin: 0;
         }
 
@@ -151,6 +164,123 @@
           color: white;
           font-size: 1rem;
           margin: 0px;
+        }
+      }
+    }
+
+    .match-history-container {
+      margin-top: 17px;
+      display: flex;
+      flex-direction: column;
+
+      .match-history-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.13);
+        color: hsla(0, 0%, 100%, 0.65);
+        font-size: 0.97rem;
+        font-family: "Montserrat-Regular";
+        padding: 15px 12px 15px 12px;
+        p {
+          margin: 0;
+          font-weight: 600;
+        }
+      }
+      .table-responsive {
+        scrollbar-color: rgba(0, 0, 0, 0.45) transparent !important;
+        scrollbar-width: thin !important;
+
+        table {
+          max-height: 700px;
+
+          overflow-y: auto;
+          border-collapse: collapse;
+
+          tbody {
+            .game-table-row {
+              height: 3.7rem;
+
+              td {
+                background-color: rgba(0, 0, 0, 0.2);
+                color: hsla(0, 0%, 100%, 0.65);
+                font-family: "Montserrat-Regular";
+              }
+
+              .game-time {
+                padding-top: 1.37rem;
+                padding-left: 0.7rem;
+                padding-right: 0.1rem;
+                div {
+                  display: flex;
+                  white-space: nowrap;
+                  justify-content: center;
+                  align-items: center;
+                }
+              }
+
+              .match-result {
+                padding-top: 1.37rem;
+                color: #769656;
+                div {
+                  display: flex;
+                  flex-direction: column;
+                  white-space: nowrap;
+                  align-items: flex-start;
+                  font-family: "Montserrat-Bold";
+                }
+              }
+
+              .players-name {
+                div {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+
+                  p {
+                    max-width: 20rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    margin: 0;
+                    text-align: left;
+
+                    .fa-minus-square {
+                      color: var(--danger);
+                    }
+                    .fa-plus-square {
+                      color: #769656;
+                    }
+                  }
+                }
+              }
+
+              .match-date {
+                padding-top: 1.37rem;
+                div {
+                  display: flex;
+                  white-space: nowrap;
+                  flex-direction: column;
+                  align-items: flex-end;
+                }
+              }
+            }
+          }
+
+          thead {
+            background-color: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.9rem;
+            font-family: "Montserrat-Regular";
+            font-weight: normal;
+
+            th {
+              text-align: left;
+            }
+            .date-head {
+              text-align: right;
+            }
+          }
         }
       }
     }

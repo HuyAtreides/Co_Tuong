@@ -14,6 +14,10 @@ passport.use(
     },
     async (accessToken, _, profile, done) => {
       try {
+        if (profile.photos[0]) {
+          const largePhoto = profile.photos[0].value.replace("s96-c", "s200-c");
+          profile.photos[0].value = largePhoto;
+        }
         const user = await USERDAO.createNewUser(profile);
         return done(null, user);
       } catch (err) {
