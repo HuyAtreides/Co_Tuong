@@ -82,20 +82,26 @@ class USERDAO {
     }
   }
 
-  static async updateMatchHistory(socket, result) {
+  static async updateMatchHistory(socket, result, reason) {
     const player = socket.player;
     const opponent = socket.opponent;
     const time = socket.time;
+    const match = {
+      opponent: opponent.playername,
+      result: result,
+      date: new Date(),
+      reason: reason,
+      time: time,
+    };
     try {
       await users.updateOne(
         { username: player.playername },
         {
           $push: {
             matches: {
-              opponent: opponent.playername,
-              result: result,
-              date: new Date(),
-              time: time,
+              $each: [match],
+              $slice: 17,
+              $sort: { date: -1 },
             },
           },
         }

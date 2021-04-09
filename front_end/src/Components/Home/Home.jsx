@@ -3,6 +3,7 @@ import "./Home.scss";
 import { Table, Row, Col, Spinner, Container } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, Redirect, useParams } from "react-router-dom";
+import FindPlayers from "./FindPlayers/FindPlayers.jsx";
 import ProfileHeader from "./ProfileHeader/ProfileHeader.jsx";
 import ProfileInfo from "./ProfileInfo/ProfileInfo.jsx";
 import MatchHistory from "./MatchHistory/MatchHistory.jsx";
@@ -20,15 +21,13 @@ const Home = () => {
   );
 
   useEffect(async () => {
-    if (!isAuthenticated) {
-      setWaitForResponse(true);
-      const { user } = await callAPI("GET", "api/user");
-      setWaitForResponse(false);
-      if (user) {
-        dispatch({ type: "setPlayerInfo", value: user });
-        dispatch({ type: "setIsAuthenticated", value: true });
-      } else setRedirect(true);
-    }
+    setWaitForResponse(true);
+    const { user } = await callAPI("GET", "api/user");
+    setWaitForResponse(false);
+    if (user) {
+      dispatch({ type: "setPlayerInfo", value: user });
+      dispatch({ type: "setIsAuthenticated", value: true });
+    } else setRedirect(true);
   }, []);
 
   if (!isAuthenticated && redirect) return <Redirect to="/" />;
@@ -47,7 +46,10 @@ const Home = () => {
         />
       ) : (
         <>
-          <NavBar setWaitForResponse={setWaitForResponse} home={true} />
+          <NavBar
+            setWaitForResponse={setWaitForResponse}
+            setRedirect={setRedirect}
+          />
           <Row className="home-row mt-3">
             <p
               className="upload-pic-err"
@@ -75,7 +77,7 @@ const Home = () => {
               sm={{ span: 11 }}
               className="find-players-container"
             >
-              <div className="find-players">Col-2</div>
+              <FindPlayers />
             </Col>
           </Row>
         </>

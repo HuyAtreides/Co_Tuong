@@ -1,7 +1,7 @@
 .home-row {
   justify-content: center !important;
   align-items: flex-start;
-  min-width: 347px;
+  min-width: 330px;
 
   .upload-pic-err {
     position: absolute;
@@ -28,9 +28,6 @@
       & {
         margin-top: 15px;
       }
-    }
-    .find-players {
-      background-color: rgba(0, 0, 0, 0.2);
     }
   }
 }

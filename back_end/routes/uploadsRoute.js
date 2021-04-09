@@ -35,7 +35,7 @@ router.get("/profile_pictures/:filename", (req, res) => {
   });
 
   readStream.on("error", function (err) {
-    res.status(500).end(err.message);
+    res.status(404).end(err.message);
   });
 });
 

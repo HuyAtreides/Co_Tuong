@@ -252,7 +252,7 @@ class EventHandlers {
           EventHandlers.cancelAllInvites(io, senderSocket, null);
           EventHandlers.declineAllInvites(io, senderSocket, socket.id);
           EventHandlers.declineAllInvites(io, socket, senderSocketID);
-          EventHandlers.handleFoundMatch(socket, senderSocket, time);
+          EventHandlers.handleFoundMatch(senderSocket, socket, time);
         }
       } catch (err) {
         console.log(err);
@@ -279,9 +279,9 @@ class EventHandlers {
         socket.gameFinished = true;
         io.to(socket.opponentID).emit("opponentLeftGame");
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
-        USERDAO.updateMatchHistory(socket, "Lost");
+        USERDAO.updateMatchHistory(socket, "Lost", "Game Abandoned");
         if (opponentSocket && !opponentSocket.gameFinished) {
-          USERDAO.updateMatchHistory(opponentSocket, "Won");
+          USERDAO.updateMatchHistory(opponentSocket, "Won", "Game Abandoned");
           opponentSocket.gameFinished = true;
         }
       }
@@ -325,11 +325,12 @@ class EventHandlers {
       } else io.to(socket.opponentID).emit("draw", result, null);
       USERDAO.updateMatchHistory(
         socket,
-        result === "Draw" ? result : result === "Won" ? "Lost" : "Won"
+        result === "Draw" ? result : result === "Won" ? "Lost" : "Won",
+        reason
       );
       if (opponentSocket && !opponentSocket.gameFinished) {
         opponentSocket.gameFinished = true;
-        USERDAO.updateMatchHistory(opponentSocket, result);
+        USERDAO.updateMatchHistory(opponentSocket, result, reason);
       }
     });
   }

@@ -46,8 +46,8 @@ const Game = () => {
 
   const handleResign = () => {
     const playerInfo = store.getState().appState.playerInfo;
-    handleGameOver("Lose", `${playerInfo.username} Resign`);
-    socket.emit("gameFinish", ["Won", `${playerInfo.username} Resign`]);
+    handleGameOver("Lose", `${playerInfo.username} Resigned`);
+    socket.emit("gameFinish", ["Won", `${playerInfo.username} Resigned`]);
   };
 
   useEffect(() => {

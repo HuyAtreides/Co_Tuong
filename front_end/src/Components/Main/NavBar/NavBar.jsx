@@ -24,6 +24,7 @@ const NavBar = (props) => {
     await callAPI("GET", "api/logout", null);
     dispatch({ type: "setIsAuthenticated", value: false });
     dispatch({ type: "setPlayerInfo", value: null });
+    if (props.setRedirect) props.setRedirect(true);
     socket.disconnect();
   };
 
@@ -38,7 +39,7 @@ const NavBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="nav">
-          {props.home ? (
+          {props.setRedirect ? (
             <Link to="/" className="link nav-link">
               Play
             </Link>
@@ -52,7 +53,7 @@ const NavBar = (props) => {
             }`}
             className="link nav-link"
             style={{
-              display: props.home ? "none" : "inline",
+              display: props.setRedirect ? "none" : "inline",
             }}
           >
             {isAuthenticated && isAuthenticated !== "guest"

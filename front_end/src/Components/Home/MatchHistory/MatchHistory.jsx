@@ -31,7 +31,11 @@ const MatchHistory = (props) => {
             <tr>
               <th></th>
               <th>Players</th>
+              <th></th>
+              <th></th>
+              <th></th>
               <th>Result</th>
+              <th>Reason</th>
               <th className="date-head">Date</th>
             </tr>
           </thead>

@@ -33,8 +33,10 @@ const VerifyEmail = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (waitForResponse || waitForSendingCode) return;
     if (!verificationCode) setInvalidCodeMess("Please fill in this field");
     else if (!invalidCodeMess) {
+      setError(null);
       setWaitForResponse(true);
       const { message, ok, user } = await callAPI(
         "POST",
@@ -49,13 +51,14 @@ const VerifyEmail = () => {
       else if (user) {
         setVerified(true);
         dispatch({ type: "setPlayerInfo", value: user });
-      } else if (+codeRef.current !== +verificationCode)
+      } else if (message === "Incorrect Code")
         setInvalidCodeMess("Incorrect Code");
       else setError(message);
     }
   };
 
   const sendVerificationCode = async () => {
+    if (waitForResponse || waitForSendingCode) return;
     if (!resend) setResend(true);
     setWaitForSendingCode(true);
     setError("");
@@ -75,8 +78,9 @@ const VerifyEmail = () => {
       <h1>Xiangqi</h1>
       <Row className="justify-content-center">
         <Col
-          md={{ span: 3 }}
-          xs={{ span: 10 }}
+          lg={{ span: 3 }}
+          md={{ span: 4 }}
+          xs={{ span: 8 }}
           className="login-component d-flex flex-column  align-items-center"
         >
           {error ? <p className="error-message">{error}</p> : null}
@@ -92,6 +96,7 @@ const VerifyEmail = () => {
                   isInvalid={invalidCodeMess !== ""}
                   onChange={handleVerificationCodeChange}
                   value={verificationCode}
+                  disabled={waitForResponse || waitForSendingCode}
                   placeholder="Verification Code"
                 />
                 <Form.Control.Feedback

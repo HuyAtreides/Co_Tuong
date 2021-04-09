@@ -2,6 +2,7 @@
   margin-top: 17px;
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   #verify-email-note {
     text-align: center;
@@ -40,14 +41,10 @@
     scrollbar-width: thin !important;
 
     table {
-      max-height: 700px;
-
-      overflow-y: auto;
       border-collapse: collapse;
 
       tbody {
         .game-table-row {
-          height: 3.7rem;
           border-bottom: 1.7px solid hsla(0, 0%, 100%, 0.1);
           td {
             background-color: rgba(0, 0, 0, 0.2);
@@ -77,6 +74,10 @@
               align-items: flex-start;
               font-family: "Montserrat-Bold";
             }
+          }
+
+          .reason {
+            font-family: "Montserrat-Regular" !important;
           }
 
           .players-name {
@@ -127,6 +128,7 @@
         font-weight: normal;
 
         th {
+          width: 30px;
           text-align: left;
         }
         .date-head {

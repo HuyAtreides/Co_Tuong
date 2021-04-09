@@ -4,14 +4,13 @@ const renderMatchHistory = (playerInfo) => {
   return matches.map((value, index) => {
     const option = { year: "numeric", month: "long", day: "numeric" };
     const date = new Date(value.date).toLocaleDateString("us-US", option);
-    console.log(matches);
     return (
       <tr className="game-table-row" key={`match-${index}`}>
         <td className="game-time">
           <div className="match-history-value">
             {" "}
             <i className="fas fa-clock" style={{ color: "#769656" }}></i>
-            {value.time + "min"}
+            {value.time + " min"}
           </div>
         </td>
         <td className="players-name">
@@ -43,6 +42,9 @@ const renderMatchHistory = (playerInfo) => {
             </p>
           </div>
         </td>
+        <td></td>
+        <td></td>
+        <td></td>
         <td className="match-result">
           <div
             className="match-history-value"
@@ -57,6 +59,9 @@ const renderMatchHistory = (playerInfo) => {
           >
             {value.result}
           </div>
+        </td>
+        <td className="match-result">
+          <div className="match-history-value reason">{value.reason}</div>
         </td>
         <td className="match-date">
           <div>{date}</div>
