@@ -10,21 +10,33 @@ const storage = multer.diskStorage({
   },
 
   filename: (_, file, callback) => {
-    callback(null, file.fieldname + path.extname(file.originalname));
+    callback(
+      null,
+      file.fieldname + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
 const filter = (_, file, callback) => {
   if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
     callback(new Error("Only image files are allowed."), false);
-  }
-  callback(null, true);
+  } else callback(null, true);
 };
 
 router.get("/profile_pictures/:filename", (req, res) => {
   const { filename } = req.params;
-  const stream = fs.createReadStream(`./uploads/profile_pictures/${filename}`);
-  stream.pipe(res);
+  console.log(filename);
+  const readStream = fs.createReadStream(
+    `./uploads/profile_pictures/${filename}`
+  );
+
+  readStream.on("open", function () {
+    readStream.pipe(res);
+  });
+
+  readStream.on("error", function (err) {
+    res.status(500).end(err.message);
+  });
 });
 
 router.post("/:id", (req, res) => {

@@ -1,0 +1,138 @@
+.match-history-container {
+  margin-top: 17px;
+  display: flex;
+  flex-direction: column;
+
+  #verify-email-note {
+    text-align: center;
+    background-color: #608ba7;
+    padding-bottom: 1.5rem;
+    padding-top: 1.5rem;
+    font-family: "Montserrat-Regular";
+    font-size: 17px;
+    color: white;
+
+    a {
+      font-family: "Montserrat-Bold";
+      color: #e6912c;
+      &:hover {
+        color: #0056b3;
+      }
+    }
+  }
+
+  .match-history-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.13);
+    color: hsla(0, 0%, 100%, 0.65);
+    font-size: 0.97rem;
+    font-family: "Montserrat-Regular";
+    padding: 15px 12px 15px 12px;
+    p {
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+  .table-responsive {
+    scrollbar-color: rgba(0, 0, 0, 0.45) transparent !important;
+    scrollbar-width: thin !important;
+
+    table {
+      max-height: 700px;
+
+      overflow-y: auto;
+      border-collapse: collapse;
+
+      tbody {
+        .game-table-row {
+          height: 3.7rem;
+          border-bottom: 1.7px solid hsla(0, 0%, 100%, 0.1);
+          td {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: hsla(0, 0%, 100%, 0.65);
+            font-family: "Montserrat-Regular";
+          }
+
+          .game-time {
+            padding-top: 1.37rem;
+            padding-left: 0.7rem;
+            padding-right: 0.1rem;
+            div {
+              display: flex;
+              white-space: nowrap;
+              justify-content: center;
+              align-items: center;
+            }
+          }
+
+          .match-result {
+            padding-top: 1.37rem;
+
+            div {
+              display: flex;
+              flex-direction: column;
+              white-space: nowrap;
+              align-items: flex-start;
+              font-family: "Montserrat-Bold";
+            }
+          }
+
+          .players-name {
+            div {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+
+              p {
+                max-width: 20rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin: 0;
+                text-align: left;
+
+                .fa-equals {
+                  color: hsla(0, 0%, 100%, 0.4);
+                }
+
+                .fa-minus-square {
+                  color: var(--danger);
+                }
+                .fa-plus-square {
+                  color: #769656;
+                }
+              }
+            }
+          }
+
+          .match-date {
+            padding-top: 1.37rem;
+            div {
+              display: flex;
+              white-space: nowrap;
+              flex-direction: column;
+              align-items: flex-end;
+            }
+          }
+        }
+      }
+
+      thead {
+        background-color: rgba(0, 0, 0, 0.4);
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.9rem;
+        font-family: "Montserrat-Regular";
+        font-weight: normal;
+
+        th {
+          text-align: left;
+        }
+        .date-head {
+          text-align: right;
+        }
+      }
+    }
+  }
+}

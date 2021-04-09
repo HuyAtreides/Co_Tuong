@@ -4,6 +4,7 @@ import SignIn from "../SignIn/SignIn.jsx";
 import Main from "../Main/Main.jsx";
 import Signup from "../Signup/Signup.jsx";
 import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
+import Home from "../Home/Home.jsx";
 import {
   SocketContext,
   SetMoveTimerContext,
@@ -32,7 +33,7 @@ function App() {
               <VerifyEmail />
             </Route>
             <Route path="/home">
-              <Main home={true} />
+              <Home />
             </Route>
             <Route path="/">
               <Main />

@@ -11,8 +11,6 @@ import { AuthenticateUserContext, SocketContext } from "../App/context";
 import { Redirect } from "react-router-dom";
 import Warning from "./Warning/Warning.jsx";
 import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
-import Home from "../Home/Home.jsx";
-import { useParams } from "react-router-dom";
 
 const Main = (props) => {
   const dispatch = useDispatch();
@@ -24,7 +22,6 @@ const Main = (props) => {
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
   const lang = useSelector((state) => state.appState.lang);
-  const { username } = useParams();
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
@@ -106,7 +103,6 @@ const Main = (props) => {
   }, []);
 
   if (loginError) return <Redirect to="/signin" />;
-  if (!isAuthenticated && props.home) return <Redirect to="/" />;
 
   return (
     <Container fluid className={waitForResponse ? "loading" : ""}>
@@ -123,13 +119,7 @@ const Main = (props) => {
       ) : (
         <div>
           <NavBar setWaitForResponse={setWaitForResponse} />
-          {props.home && isAuthenticated ? (
-            <Home usename={username} />
-          ) : isAuthenticated ? (
-            <Game />
-          ) : (
-            <EntryComponent />
-          )}
+          {isAuthenticated ? <Game /> : <EntryComponent />}
         </div>
       )}
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (

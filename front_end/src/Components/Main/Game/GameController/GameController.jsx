@@ -44,7 +44,6 @@ const GameController = (props) => {
   const handleSelectTime = (event) => {
     const selectedTime = +event.currentTarget.getAttribute("value");
     dispatch({ type: "setTime", value: selectedTime });
-    socket.emit("setTimeAndSide", selectedTime, side[1]);
     props.handleToggle();
   };
 
@@ -55,12 +54,10 @@ const GameController = (props) => {
       socket.emit("setTimeAndSide", +time, "black");
     } else {
       dispatch({ type: "switchSide", value: ["black", "red"] });
-      socket.emit("setTimeAndSide", +time, "red");
     }
   };
 
   useEffect(() => {
-    socket.emit("setTimeAndSide", +time, side[1]);
     socket.on("timeout", () => {
       dispatch({
         type: "setFindingMatch",

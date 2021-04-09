@@ -38,6 +38,11 @@ const NavBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="nav">
+          {props.home ? (
+            <Link to="/" className="link nav-link">
+              Play
+            </Link>
+          ) : null}
           <Link
             target={
               isAuthenticated && isAuthenticated !== "guest" ? "_self" : "_self"
@@ -46,6 +51,9 @@ const NavBar = (props) => {
               isAuthenticated && isAuthenticated !== "guest" ? "home" : "signin"
             }`}
             className="link nav-link"
+            style={{
+              display: props.home ? "none" : "inline",
+            }}
           >
             {isAuthenticated && isAuthenticated !== "guest"
               ? "Home"

@@ -1,0 +1,123 @@
+.profile-header {
+  display: flex;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  .change-pic-area {
+    height: 7.7rem;
+    width: 7.7rem;
+    position: relative;
+    background-color: #4b4847;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .spinner-border {
+      border: 0.3rem solid hsla(0, 0%, 100%, 0.2);
+      border-top-color: hsla(0, 0%, 100%, 0.65);
+    }
+
+    &:hover {
+      .change-pic {
+        display: block;
+      }
+    }
+
+    @media screen and (max-width: 1200px) {
+      & {
+        height: 5.7rem;
+        width: 5.7rem;
+      }
+    }
+
+    .change-pic {
+      position: absolute;
+      bottom: 0;
+      font-size: 0.97rem;
+      display: none;
+      background-color: hsla(0, 0%, 100%, 0.8);
+      width: 100%;
+      color: #3a729c;
+      opacity: 0.8;
+      transition: opacity 0.1s;
+
+      @media screen and (max-width: 1200px) {
+        & {
+          font-size: 0.8rem;
+        }
+      }
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    #pic-input {
+      display: none;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .user-profile-info {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+
+    @media screen and (max-width: 576px) {
+      & {
+        justify-content: flex-start;
+      }
+      .edit-profile-container {
+        margin-left: 7px;
+      }
+    }
+
+    .user-name-lastname {
+      display: flex;
+      flex-direction: column;
+      margin-left: 10px;
+
+      .user-name {
+        font-size: 1.3rem;
+        color: white;
+        font-family: "Montserrat-Bold";
+        max-width: 150px;
+        margin: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: left;
+      }
+
+      .user-full-name {
+        font-size: 1rem;
+        font-family: "Montserrat-Regular";
+        color: hsla(0, 0%, 100%, 0.65);
+        word-break: break-word;
+        margin: 0px;
+        text-align: left;
+      }
+    }
+  }
+
+  .edit-profile-container {
+    margin-right: 10px;
+    padding-top: 5px;
+    opacity: 0.5;
+    a {
+      font-family: "Montserrat-Regular";
+      color: hsla(0, 0%, 100%, 0.65);
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .fa-edit {
+      margin-right: 0;
+    }
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

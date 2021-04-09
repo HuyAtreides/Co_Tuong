@@ -281,7 +281,7 @@ class EventHandlers {
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
         USERDAO.updateMatchHistory(socket, "Lost");
         if (opponentSocket && !opponentSocket.gameFinished) {
-          USERDAO.updateMatchHistory(socket, "Won");
+          USERDAO.updateMatchHistory(opponentSocket, "Won");
           opponentSocket.gameFinished = true;
         }
       }
@@ -304,7 +304,6 @@ class EventHandlers {
     socket.on("exitGame", async () => {
       io.to(socket.opponentID).emit("opponentLeftGame");
       socket.opponentID = undefined;
-      socket.time = undefined;
     });
   }
 
@@ -330,7 +329,7 @@ class EventHandlers {
       );
       if (opponentSocket && !opponentSocket.gameFinished) {
         opponentSocket.gameFinished = true;
-        USERDAO.updateMatchHistory(socket, result);
+        USERDAO.updateMatchHistory(opponentSocket, result);
       }
     });
   }

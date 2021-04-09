@@ -72,6 +72,7 @@ const Login = () => {
   const handleLogin = async (event) => {
     try {
       event.preventDefault();
+      if (waitForResponse || waitForServer) return;
       setError("");
       const missingField = handleMissingField();
       if (!missingField && !invalidPasswordMess && !invalidUsernameMess) {
@@ -98,6 +99,7 @@ const Login = () => {
 
   const handleLoginAsGuest = async () => {
     try {
+      if (waitForResponse || waitForServer) return;
       setError("");
       if (isAuthenticated === "guest") setSuccessfullyLogin(true);
       else {
@@ -154,8 +156,8 @@ const Login = () => {
       ) : (
         <Row className="justify-content-center">
           <Col
-            md={{ span: 6 }}
-            sm={{ span: 6 }}
+            md={{ span: 7 }}
+            sm={{ span: 7 }}
             xs={{ span: 10 }}
             className="login-component d-flex flex-column  align-items-center"
           >
@@ -198,18 +200,14 @@ const Login = () => {
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
-              <Button type="submit" disabled={waitForResponse || waitForServer}>
+              <Button type="submit">
                 {waitForResponse ? (
                   <Spinner animation="border" variant="dark" />
                 ) : (
                   "Log In"
                 )}
               </Button>
-              <Button
-                className="log-in-as-guest"
-                onClick={handleLoginAsGuest}
-                disabled={waitForResponse || waitForServer}
-              >
+              <Button className="log-in-as-guest" onClick={handleLoginAsGuest}>
                 {waitForServer ? (
                   <Spinner animation="border" variant="dark" />
                 ) : (

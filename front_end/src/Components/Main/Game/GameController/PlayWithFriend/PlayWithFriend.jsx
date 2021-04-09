@@ -19,6 +19,8 @@ const PlayWithFriend = (props) => {
   const copyButton = useRef(null);
   const [inviteLink, setInviteLink] = useState("");
   const [invitedPlayer, setInvitedPlayer] = useState(null);
+  const time = useSelector((state) => state.gameState.time);
+  const side = useSelector((state) => state.boardState.side);
 
   const [showText, setShowText] = useState(false);
 
@@ -94,7 +96,13 @@ const PlayWithFriend = (props) => {
               return;
             }
             setInvitedPlayer(players[0]);
-            socket.emit("sendInvite", players[0].socketID, players[0].username);
+            socket.emit("setTimeAndSide", time, side[1], () => {
+              socket.emit(
+                "sendInvite",
+                players[0].socketID,
+                players[0].username
+              );
+            });
           } else handleCanotSendInvite(`${players[0].username} isn't online`);
         } else handleCanotSendInvite("user not found");
       }
@@ -109,8 +117,10 @@ const PlayWithFriend = (props) => {
   };
 
   const handleGenerateInviteLink = () => {
-    socket.emit("generateInviteLink", (inviteLink) => {
-      setInviteLink(inviteLink);
+    socket.emit("setTimeAndSide", time, side[1], () => {
+      socket.emit("generateInviteLink", (inviteLink) => {
+        setInviteLink(inviteLink);
+      });
     });
   };
 

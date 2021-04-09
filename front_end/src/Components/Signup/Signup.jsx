@@ -120,6 +120,7 @@ const Signup = () => {
   const handleSignUp = async (event) => {
     try {
       event.preventDefault();
+      if (waitForResponse) return;
       setError("");
       const missingField = handleMissingField();
       if (
@@ -189,8 +190,8 @@ const Signup = () => {
       ) : (
         <Row className="justify-content-center">
           <Col
-            md={{ span: 6 }}
-            sm={{ span: 6 }}
+            md={{ span: 7 }}
+            sm={{ span: 7 }}
             xs={{ span: 10 }}
             className="login-component d-flex flex-column  align-items-center"
           >

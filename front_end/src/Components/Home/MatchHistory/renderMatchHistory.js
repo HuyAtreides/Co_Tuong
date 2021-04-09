@@ -1,9 +1,10 @@
 //hsla(0, 0%, 100%, 0.4)
-const renderMatchHistory = (playername, matches) => {
+const renderMatchHistory = (playerInfo) => {
+  const [playername, matches] = [playerInfo.username, playerInfo.matches];
   return matches.map((value, index) => {
     const option = { year: "numeric", month: "long", day: "numeric" };
     const date = new Date(value.date).toLocaleDateString("us-US", option);
-
+    console.log(matches);
     return (
       <tr className="game-table-row" key={`match-${index}`}>
         <td className="game-time">

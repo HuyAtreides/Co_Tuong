@@ -6,7 +6,8 @@ const verifyEmail = require("./verifyEmail.js");
 const handleIncorrectCode = async (req, res) => {
   try {
     const { username } = req.body;
-    const failedVerifyAttempt = await USERDAO.udpateFailedVerifyAttempt(
+
+    const failedVerifyAttempt = await USERDAO.updateFailedVerifyAttempt(
       username
     );
     if (failedVerifyAttempt === 5) {
