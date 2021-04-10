@@ -2,8 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import "./ProfileInfo.scss";
 
-const ProfileInfo = (props) => {
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
+const ProfileInfo = ({ playerInfo }) => {
   const option = { year: "numeric", month: "long", day: "numeric" };
   const lang = useSelector((state) => state.appState.lang);
   const joinDate = new Date(playerInfo.join).toLocaleDateString(

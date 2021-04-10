@@ -71,6 +71,7 @@
               width: 100%;
               display: flex;
               height: auto;
+              margin-top: -6px;
               justify-content: space-between;
 
               p {
@@ -132,5 +133,14 @@
 
       background-color: transparent;
     }
+  }
+}
+
+#tooltip {
+  .arrow::before {
+    border-top-color: var(--danger);
+  }
+  .tooltip-inner {
+    background-color: var(--danger);
   }
 }

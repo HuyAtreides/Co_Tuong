@@ -36,13 +36,7 @@ const Signup = () => {
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
-    if (
-      /[^_a-z0-9ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ ]/i.test(
-        value
-      ) ||
-      value.length < 3 ||
-      value.length > 20
-    ) {
+    if (/[^_a-z0-9-]/i.test(value) || value.length < 3 || value.length > 20) {
       setInvalidUsernameMess(
         "Username must be between 3-20 characters long and use only Latin letters and numbers"
       );

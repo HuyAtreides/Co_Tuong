@@ -1,44 +1,65 @@
 import React, { useState } from "react";
+import callAPI from "../../App/callAPI.js";
+import { useSelector } from "react-redux";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import renderMembersList from "./renderMembersList.js";
 import "./FindMembers.scss";
 
-const FindPlayer = (props) => {
+const FindPlayer = ({ playerInfo }) => {
   const [value, setValue] = useState("");
+  const [members, setMembers] = useState([]);
+  const [errorMess, setErrorMess] = useState(null);
 
-  const handleOnChange = (event) => {
-    event.preventDefault();
-    const value = event.currentTarget.value;
-    setValue(value);
+  const replaceSpecialCharacters = (str) => {
+    return str.replace(/[^0-9a-zA-Z-]+/g, "");
   };
+
+  const handleOnChange = async (event) => {
+    event.preventDefault();
+    try {
+      const value = event.currentTarget.value;
+      setValue(value);
+      if (value) {
+        const { players } = await callAPI("POST", "api/players", {
+          playername: replaceSpecialCharacters(value),
+        });
+        const reCheck = document.querySelector("#member-name-input").value;
+        if (!players) return;
+        const username = playerInfo.username;
+        if (reCheck) setMembers(renderMembersList(players, username));
+      } else setMembers([]);
+    } catch (err) {
+      setErrorMess(err.message);
+      setTimeout(() => {
+        setErrorMess(null);
+      }, 1000);
+    }
+  };
+
+  const renderTooltip = (props) => (
+    <Tooltip {...props} id="tooltip">
+      {errorMess}
+    </Tooltip>
+  );
 
   return (
     <div className="find-players">
       <p className="members-title">Members</p>
       <div className="search-area">
-        <input
-          placeholder="Search Members..."
-          value={value}
-          onChange={handleOnChange}
-        />
+        <OverlayTrigger
+          placement="top"
+          overlay={renderTooltip}
+          show={errorMess !== null}
+        >
+          <input
+            placeholder="Search Members..."
+            value={value}
+            onChange={handleOnChange}
+            id="member-name-input"
+          />
+        </OverlayTrigger>
         <i className="fas fa-search"></i>
-        <ul className="members-list">
-          {/* <li className="member">
-            <Link className="member-profile-link" to="/home" target="_blank">
-              <div>
-                <img src="https://betacssjs.chesscomfiles.com/bundles/web/images/black_400.918cdaa6.png" />
-              </div>
-              <div className="member-info">
-                <div className="name-and-state">
-                  <p className="member-name"> Huy</p>
-                  <p className="member-state">Online</p>
-                </div>
-                <div className="join-date-and-name">
-                  <p>Phan Gia Huy</p>
-                  <p>Join: 10 April, 2021</p>
-                </div>
-              </div>
-            </Link>
-          </li> */}
-        </ul>
+        <ul className="members-list">{members}</ul>
       </div>
     </div>
   );

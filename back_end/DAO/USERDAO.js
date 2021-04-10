@@ -40,7 +40,14 @@ class USERDAO {
       const regex = new RegExp(`${playername}`, "i");
       const result = await users.find({ username: exact ? playername : regex });
       const players = await result
-        .project({ username: 1, photo: 1, socketID: 1 })
+        .project({
+          username: 1,
+          photo: 1,
+          socketID: 1,
+          name: 1,
+          join: 1,
+          guest: 1,
+        })
         .toArray();
       return players;
     } catch (err) {
@@ -71,17 +78,6 @@ class USERDAO {
     }
   }
 
-  static async updateUserInGame(username, isInGame) {
-    try {
-      await users.findOneAndUpdate(
-        { username: username },
-        { $set: { inGame: isInGame } }
-      );
-    } catch (err) {
-      throw new Error(err.toString());
-    }
-  }
-
   static async updateMatchHistory(socket, result, reason) {
     const player = socket.player;
     const opponent = socket.opponent;
@@ -100,7 +96,7 @@ class USERDAO {
           $push: {
             matches: {
               $each: [match],
-              $slice: 17,
+              $slice: 20,
               $sort: { date: -1 },
             },
           },
@@ -178,7 +174,7 @@ class USERDAO {
           ? profile.displayName + count
           : profile.displayName;
         const result = await users.insertOne({
-          username: username,
+          username: nonAccentVietnamese(username),
           provider: provider,
           userID: id,
           email: {

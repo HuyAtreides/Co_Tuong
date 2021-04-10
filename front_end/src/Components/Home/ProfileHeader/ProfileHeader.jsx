@@ -5,10 +5,9 @@ import { Link } from "react-router-dom";
 import callAPI from "../../App/callAPI.js";
 import { useDispatch, useSelector } from "react-redux";
 
-const ProfileHeader = (props) => {
+const ProfileHeader = ({ playerInfo, setError, viewOthersProfile }) => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const dispatch = useDispatch();
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const firstname = playerInfo.name.firstname;
   const lastname = playerInfo.name.lastname;
   const playerFullName =
@@ -36,17 +35,17 @@ const ProfileHeader = (props) => {
       if (user) {
         dispatch({ type: "setPlayerInfo", value: user });
       } else if (message) {
-        props.setError(message);
+        setError(message);
       }
     } catch (err) {
-      props.setError("Looks like there was an error. Please refresh.");
+      setError("Looks like there was an error. Please refresh.");
     }
   };
 
   return (
     <div className="profile-header">
       <div className="change-pic-area">
-        {!waitForResponse ? (
+        {!waitForResponse && !viewOthersProfile ? (
           <button className="change-pic" onClick={handleChangeProfilePic}>
             <i className="fas fa-camera"></i>Change
           </button>
@@ -70,9 +69,11 @@ const ProfileHeader = (props) => {
           <p className="user-full-name">{playerFullName}</p>
         </div>
         <div className="edit-profile-container">
-          <Link to="">
-            <i className="fas fa-edit"></i> Edit
-          </Link>
+          {!viewOthersProfile ? (
+            <Link to="">
+              <i className="fas fa-edit"></i> Edit
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>

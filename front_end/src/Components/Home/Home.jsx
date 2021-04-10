@@ -17,29 +17,32 @@ const Home = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
-  const isAuthenticated = useSelector(
-    (state) => state.appState.isAuthenticated
-  );
+  const [user, setUser] = useState(null);
 
   useEffect(async () => {
     try {
       if (loginError) return;
-      const { user } = await callAPI("GET", "api/user");
-      if (user) {
-        dispatch({ type: "setPlayerInfo", value: user });
-        dispatch({ type: "setIsAuthenticated", value: true });
-      } else setRedirect(true);
+      let response;
+      if (!name) response = await callAPI("GET", "api/user");
+      else
+        response = await callAPI("POST", "api/user", {
+          username: name,
+        });
+      const { user, message } = response;
+      if (user) setUser(user);
+      else if (message) dispatch({ type: "setLoginError", value: message });
+      else if (!user) setRedirect(true);
     } catch (err) {
       dispatch({ type: "setLoginError", value: err.message });
     }
   }, []);
 
-  if (!isAuthenticated && redirect) return <Redirect to="/" />;
+  if (redirect) return <Redirect to="/" />;
   if (loginError) return <Redirect to="/signin" />;
 
   return (
-    <Container fluid className={waitForResponse ? "loading" : ""}>
-      {waitForResponse || !isAuthenticated ? (
+    <Container fluid className={waitForResponse || !user ? "loading" : ""}>
+      {waitForResponse || !user ? (
         <Spinner
           animation="border"
           variant="secondary"
@@ -69,21 +72,29 @@ const Home = () => {
               {error}
             </p>
             <Col
-              md={{ span: 8 }}
+              lg={{ span: 8 }}
+              md={{ span: 9 }}
               sm={{ span: 11 }}
               className="profile-info-container"
             >
-              <ProfileHeader setError={setError} />
-              <ProfileInfo />
-              <MatchHistory />
+              <ProfileHeader
+                setError={setError}
+                playerInfo={user}
+                viewOthersProfile={Boolean(name)}
+              />
+              <ProfileInfo playerInfo={user} />
+              <MatchHistory
+                playerInfo={user}
+                viewOthersProfile={Boolean(name)}
+              />
             </Col>
             <Col
-              lg={{ span: 3 }}
-              md={{ span: 8 }}
+              lg={{ span: 4 }}
+              md={{ span: 9 }}
               sm={{ span: 11 }}
               className="find-players-container"
             >
-              <FindMembers />
+              <FindMembers playerInfo={user} />
             </Col>
           </Row>
         </>

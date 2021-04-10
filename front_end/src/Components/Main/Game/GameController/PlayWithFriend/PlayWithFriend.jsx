@@ -31,10 +31,7 @@ const PlayWithFriend = (props) => {
   };
 
   const replaceSpecialCharacters = (str) => {
-    return str.replace(
-      /[^0-9a-zA-Z_ÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ -]+/g,
-      ""
-    );
+    return str.replace(/[^0-9a-zA-Z_-]+/g, "");
   };
 
   const handleOnChange = async (event) => {

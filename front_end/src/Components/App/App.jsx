@@ -32,6 +32,9 @@ function App() {
             <Route path="/verify-email">
               <VerifyEmail />
             </Route>
+            <Route path="/home/:name">
+              <Home />
+            </Route>
             <Route path="/home">
               <Home />
             </Route>

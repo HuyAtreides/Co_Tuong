@@ -10,7 +10,7 @@ function nonAccentVietnamese(str) {
   str = str.replace(/đ/g, "d");
   str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
   str = str.replace(/\u02C6|\u0306|\u031B/g, "");
-  return str;
+  return str.replace(/\s+/g, "");
 }
 
 module.exports = nonAccentVietnamese;

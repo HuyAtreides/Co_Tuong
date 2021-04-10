@@ -1,12 +1,10 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import renderMatchHistory from "./renderMatchHistory.js";
 import "./MatchHistory.scss";
 
-const MatchHistory = (props) => {
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
+const MatchHistory = ({ playerInfo, viewOthersProfile }) => {
   const [won, lost, draw] = playerInfo.matches.reduce(
     (acc, value) => {
       if (value.result === "Won") acc[0] += 1;
@@ -20,7 +18,7 @@ const MatchHistory = (props) => {
   return (
     <div className="match-history-container">
       <div className="match-history-title">
-        <p>Matches History</p>
+        <p>Match History(Last 20 Played)</p>
         <p>{`${won > 10000 ? "10000+" : won}W/${
           lost > 10000 ? "10000+" : lost
         }L/${draw > 10000 ? "10000+" : draw}D`}</p>
@@ -43,8 +41,14 @@ const MatchHistory = (props) => {
         </Table>
       ) : (
         <p id="verify-email-note">
-          You need to verify your email to view you matches history. Please
-          click <Link to="/verify-email">here</Link> to verify your email.
+          {viewOthersProfile ? (
+            "User's match history isn't available."
+          ) : (
+            <>
+              You need to verify your email to view your match history. Please
+              click <Link to="/verify-email">here</Link> to verify your email.
+            </>
+          )}
         </p>
       )}
     </div>
