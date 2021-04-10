@@ -3,7 +3,7 @@ import "./Home.scss";
 import { Table, Row, Col, Spinner, Container } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, Redirect, useParams } from "react-router-dom";
-import FindPlayers from "./FindPlayers/FindPlayers.jsx";
+import FindMembers from "./FindMembers/FindMembers.jsx";
 import ProfileHeader from "./ProfileHeader/ProfileHeader.jsx";
 import ProfileInfo from "./ProfileInfo/ProfileInfo.jsx";
 import MatchHistory from "./MatchHistory/MatchHistory.jsx";
@@ -16,21 +16,26 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [redirect, setRedirect] = useState(false);
+  const loginError = useSelector((state) => state.appState.loginError);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
 
   useEffect(async () => {
-    setWaitForResponse(true);
-    const { user } = await callAPI("GET", "api/user");
-    setWaitForResponse(false);
-    if (user) {
-      dispatch({ type: "setPlayerInfo", value: user });
-      dispatch({ type: "setIsAuthenticated", value: true });
-    } else setRedirect(true);
+    try {
+      if (loginError) return;
+      const { user } = await callAPI("GET", "api/user");
+      if (user) {
+        dispatch({ type: "setPlayerInfo", value: user });
+        dispatch({ type: "setIsAuthenticated", value: true });
+      } else setRedirect(true);
+    } catch (err) {
+      dispatch({ type: "setLoginError", value: err.message });
+    }
   }, []);
 
   if (!isAuthenticated && redirect) return <Redirect to="/" />;
+  if (loginError) return <Redirect to="/signin" />;
 
   return (
     <Container fluid className={waitForResponse ? "loading" : ""}>
@@ -73,11 +78,12 @@ const Home = () => {
               <MatchHistory />
             </Col>
             <Col
-              md={{ span: 3 }}
+              lg={{ span: 3 }}
+              md={{ span: 8 }}
               sm={{ span: 11 }}
               className="find-players-container"
             >
-              <FindPlayers />
+              <FindMembers />
             </Col>
           </Row>
         </>

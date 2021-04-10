@@ -151,6 +151,7 @@ const Login = () => {
             width: `${window.innerWidth / 5}px`,
             height: `${window.innerWidth / 5}px`,
             borderWidth: "9px",
+            marginTop: "17px",
           }}
         />
       ) : (

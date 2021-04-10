@@ -28,6 +28,7 @@ const Game = () => {
     const opponentInfo = store.getState().gameState.opponentInfo;
     const playerInfo = store.getState().appState.playerInfo;
     dispatch({ type: "setGameResult", value: result });
+    dispatch({ type: "setReceiveDrawOffer", value: false });
     dispatch({
       type: "setMessage",
       value: {

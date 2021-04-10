@@ -274,16 +274,16 @@ class EventHandlers {
 
   static registerDisconnectHandlers(io, socket) {
     const handleGameFinish = () => {
+      const opponentSocket = io.sockets.get(socket.opponentID);
       if (socket.opponentID && !socket.gameFinished) {
-        const opponentSocket = io.sockets.get(socket.opponentID);
         socket.gameFinished = true;
         io.to(socket.opponentID).emit("opponentLeftGame");
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
         USERDAO.updateMatchHistory(socket, "Lost", "Game Abandoned");
-        if (opponentSocket && !opponentSocket.gameFinished) {
-          USERDAO.updateMatchHistory(opponentSocket, "Won", "Game Abandoned");
-          opponentSocket.gameFinished = true;
-        }
+      }
+      if (opponentSocket && !opponentSocket.gameFinished) {
+        USERDAO.updateMatchHistory(opponentSocket, "Won", "Game Abandoned");
+        opponentSocket.gameFinished = true;
       }
     };
 
@@ -316,18 +316,17 @@ class EventHandlers {
   static registerGameFinishHandlers(io, socket) {
     socket.on("gameFinish", (gameResult) => {
       const opponentSocket = io.sockets.get(socket.opponentID);
-      if (socket.gameFinished) return;
-      let [result, reason] = ["Draw", "Game Draw By Agreement"];
-      socket.gameFinished = true;
-      if (gameResult !== "Draw") {
-        [result, reason] = gameResult;
-        io.to(socket.opponentID).emit("gameOver", result, reason);
-      } else io.to(socket.opponentID).emit("draw", result, null);
-      USERDAO.updateMatchHistory(
-        socket,
-        result === "Draw" ? result : result === "Won" ? "Lost" : "Won",
-        reason
-      );
+      if (!socket.gameFinished) {
+        let [result, reason] = ["Draw", "Game Draw By Agreement"];
+        socket.gameFinished = true;
+        if (gameResult !== "Draw") {
+          [result, reason] = gameResult;
+          io.to(socket.opponentID).emit("gameOver", result, reason);
+        } else io.to(socket.opponentID).emit("draw", result, null);
+        const matchResult =
+          result === "Draw" ? result : result === "Won" ? "Lost" : "Won";
+        USERDAO.updateMatchHistory(socket, matchResult, reason);
+      }
       if (opponentSocket && !opponentSocket.gameFinished) {
         opponentSocket.gameFinished = true;
         USERDAO.updateMatchHistory(opponentSocket, result, reason);

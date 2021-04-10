@@ -39,35 +39,7 @@ const MatchHistory = (props) => {
               <th className="date-head">Date</th>
             </tr>
           </thead>
-          <tbody>
-            {renderMatchHistory(playerInfo)}
-            {/* <tr className="game-table-row">
-            <td className="game-time">
-              <div className="match-history-value">
-                {" "}
-                <i className="fas fa-clock" style={{ color: "#769656" }}></i>
-                10 min
-              </div>
-            </td>
-            <td className="players-name">
-              <div className="match-history-value">
-                <p>
-                  <i className="fas fa-plus-square"></i>Phan Gia Huy
-                </p>
-                <p>
-                  <i className="fas fa-minus-square"></i>Nguyen Hoang Thien
-                  Truong An
-                </p>
-              </div>
-            </td>
-            <td className="match-result">
-              <div className="match-history-value">Won</div>
-            </td>
-            <td className="match-date">
-              <div>{joinDate}</div>
-            </td>
-          </tr> */}
-          </tbody>
+          <tbody>{renderMatchHistory(playerInfo)}</tbody>
         </Table>
       ) : (
         <p id="verify-email-note">
