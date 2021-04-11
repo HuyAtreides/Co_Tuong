@@ -17,6 +17,7 @@ const Home = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const [user, setUser] = useState(null);
 
   useEffect(async () => {
@@ -31,7 +32,10 @@ const Home = () => {
       const { user, message } = response;
       if (user) setUser(user);
       else if (message) dispatch({ type: "setLoginError", value: message });
-      else if (!user) setRedirect(true);
+      else if (!user) {
+        if (playerInfo) setUser(playerInfo);
+        else setRedirect(true);
+      }
     } catch (err) {
       dispatch({ type: "setLoginError", value: err.message });
     }
@@ -46,11 +50,7 @@ const Home = () => {
         <Spinner
           animation="border"
           variant="secondary"
-          style={{
-            width: `${window.innerWidth / 5}px`,
-            height: `${window.innerWidth / 5}px`,
-            borderWidth: "9px",
-          }}
+          className="home-spinner"
         />
       ) : (
         <>

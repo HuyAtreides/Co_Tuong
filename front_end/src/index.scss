@@ -12,6 +12,14 @@ html {
     color: #312e2b;
     #root {
       height: 100%;
+      text-align: center;
+
+      .main-spinner {
+        width: 30vw;
+        height: 30vw;
+        border-width: 9px;
+        margin-top: 77px;
+      }
     }
   }
 }

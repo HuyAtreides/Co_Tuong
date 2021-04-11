@@ -30,9 +30,8 @@ const Signup = () => {
   const [firstname, setFirstname] = useState("");
   const [invalidFirstname, setInvalidFirstname] = useState("");
   const [invalidLastname, setInvalidLastname] = useState("");
-  const [checkingSession, setCheckingSession] = useState(false);
+
   const [lastname, setLastname] = useState("");
-  const [successfullyLogin, setSuccessfullyLogin] = useState(false);
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
@@ -149,179 +148,145 @@ const Signup = () => {
     }
   };
 
-  useEffect(async () => {
-    try {
-      if (isAuthenticated) return;
-      setCheckingSession(true);
-      const { user, message, ok } = await callAPI("GET", "api/user", null);
-      setCheckingSession(false);
-      if (user) {
-        authenticateUser(dispatch, user);
-      } else handleError(ok, message);
-    } catch (err) {
-      handleError(false, err.toString());
-    }
-  }, [isAuthenticated]);
-
   if (isAuthenticated) {
     if (isAuthenticated !== "guest") return <Redirect to="/" />;
-    else if (successfullyLogin) return <Redirect to="/" />;
   }
 
   return (
     <Container fluid>
-      <h1>Xiangqi</h1>
-      {checkingSession ? (
-        <Spinner
-          animation="border"
-          variant="secondary"
-          style={{
-            width: `${window.innerWidth / 5}px`,
-            height: `${window.innerWidth / 5}px`,
-            borderWidth: "9px",
-            marginTop: "17x",
-          }}
-        />
-      ) : (
-        <Row className="justify-content-center">
-          <Col
-            md={{ span: 7 }}
-            sm={{ span: 7 }}
-            xs={{ span: 10 }}
-            className="login-component d-flex flex-column  align-items-center"
-          >
-            {error ? <p className="error-message">{error}</p> : null}
-            <Form onSubmit={handleSignUp} method="POST">
-              <Form.Group controlId="username">
-                <Form.Label style={{ float: "left" }}>Username</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="text"
-                    isInvalid={invalidUsernameMess !== ""}
-                    onChange={handleUsernameChange}
-                    value={username}
-                    disabled={waitForResponse}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    style={{ textAlign: "left" }}
-                  >
-                    {invalidUsernameMess}
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
+      <h1>Xiangqi</h1>(
+      <Row className="justify-content-center">
+        <Col
+          md={{ span: 7 }}
+          sm={{ span: 7 }}
+          xs={{ span: 10 }}
+          className="login-component d-flex flex-column  align-items-center"
+        >
+          {error ? <p className="error-message">{error}</p> : null}
+          <Form onSubmit={handleSignUp} method="POST">
+            <Form.Group controlId="username">
+              <Form.Label style={{ float: "left" }}>Username</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="text"
+                  isInvalid={invalidUsernameMess !== ""}
+                  onChange={handleUsernameChange}
+                  value={username}
+                  disabled={waitForResponse}
+                />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidUsernameMess}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
 
-              <Form.Group controlId="firstname">
-                <Form.Label style={{ float: "left" }}>Firstname</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="text"
-                    isInvalid={invalidFirstname !== ""}
-                    onChange={handleFirstnameChange}
-                    value={firstname}
-                    disabled={waitForResponse}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    style={{ textAlign: "left" }}
-                  >
-                    {invalidFirstname}
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
+            <Form.Group controlId="firstname">
+              <Form.Label style={{ float: "left" }}>Firstname</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="text"
+                  isInvalid={invalidFirstname !== ""}
+                  onChange={handleFirstnameChange}
+                  value={firstname}
+                  disabled={waitForResponse}
+                />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidFirstname}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
 
-              <Form.Group controlId="lastname">
-                <Form.Label style={{ float: "left" }}>Lastname</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="text"
-                    isInvalid={invalidLastname !== ""}
-                    onChange={handleLastnameChange}
-                    value={lastname}
-                    disabled={waitForResponse}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    style={{ textAlign: "left" }}
-                  >
-                    {invalidLastname}
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
+            <Form.Group controlId="lastname">
+              <Form.Label style={{ float: "left" }}>Lastname</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="text"
+                  isInvalid={invalidLastname !== ""}
+                  onChange={handleLastnameChange}
+                  value={lastname}
+                  disabled={waitForResponse}
+                />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidLastname}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
 
-              <Form.Group controlId="email">
-                <Form.Label style={{ float: "left" }}>Email</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="text"
-                    isInvalid={invalidEmailMess !== ""}
-                    onChange={handleEmailChange}
-                    value={email}
-                    disabled={waitForResponse}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    style={{ textAlign: "left" }}
-                  >
-                    {invalidEmailMess}
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
-              <Form.Group controlId="password">
-                <Form.Label style={{ float: "left" }}>Password</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="password"
-                    isInvalid={invalidPasswordMess !== ""}
-                    onChange={handlePasswordChange}
-                    value={password}
-                    disabled={waitForResponse}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    style={{ textAlign: "left" }}
-                  >
-                    {invalidPasswordMess}
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
+            <Form.Group controlId="email">
+              <Form.Label style={{ float: "left" }}>Email</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="text"
+                  isInvalid={invalidEmailMess !== ""}
+                  onChange={handleEmailChange}
+                  value={email}
+                  disabled={waitForResponse}
+                />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidEmailMess}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+            <Form.Group controlId="password">
+              <Form.Label style={{ float: "left" }}>Password</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="password"
+                  isInvalid={invalidPasswordMess !== ""}
+                  onChange={handlePasswordChange}
+                  value={password}
+                  disabled={waitForResponse}
+                />
+                <Form.Control.Feedback
+                  type="invalid"
+                  style={{ textAlign: "left" }}
+                >
+                  {invalidPasswordMess}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
 
-              <Button type="submit">
-                {waitForResponse ? (
-                  <Spinner animation="border" variant="dark" />
-                ) : (
-                  "Submit"
-                )}
-              </Button>
-            </Form>
-            <p className="seperator">
-              <span></span>
-              <span className="seperator-text">or connect with</span>
-              <span></span>
-            </p>
-            <div className="social-login">
-              <a
-                className="google"
-                href="http://localhost:8080/api/auth/google"
-              >
-                <i className="fab fa-google"></i> Google
-              </a>
-              <a
-                className="facebook"
-                href="http://localhost:8080/api/auth/facebook"
-              >
-                <i className="fab fa-facebook "></i> Facebook
-              </a>
-              <a
-                className="github"
-                href="http://localhost:8080/api/auth/github"
-              >
-                <i className="fab fa-github "></i> Github
-              </a>
-            </div>
-          </Col>
-        </Row>
-      )}
+            <Button type="submit">
+              {waitForResponse ? (
+                <Spinner animation="border" variant="dark" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </Form>
+          <p className="seperator">
+            <span></span>
+            <span className="seperator-text">or connect with</span>
+            <span></span>
+          </p>
+          <div className="social-login">
+            <a className="google" href="http://localhost:8080/api/auth/google">
+              <i className="fab fa-google"></i> Google
+            </a>
+            <a
+              className="facebook"
+              href="http://localhost:8080/api/auth/facebook"
+            >
+              <i className="fab fa-facebook "></i> Facebook
+            </a>
+            <a className="github" href="http://localhost:8080/api/auth/github">
+              <i className="fab fa-github "></i> Github
+            </a>
+          </div>
+        </Col>
+      </Row>
     </Container>
   );
 };

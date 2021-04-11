@@ -4,7 +4,8 @@ svg {
   background-repeat: no-repeat;
   margin-top: 7px;
   margin-bottom: 7px;
-  image {
-    z-index: 1000 !important;
+
+  circle {
+    fill: rgba(0, 0, 0, 0.5);
   }
 }

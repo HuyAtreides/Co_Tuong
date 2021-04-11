@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import SignIn from "../SignIn/SignIn.jsx";
 import Main from "../Main/Main.jsx";
 import Signup from "../Signup/Signup.jsx";
 import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
 import Home from "../Home/Home.jsx";
+import useFetchData from "./useFetchData.js";
+import { Spinner } from "react-bootstrap";
 import {
   SocketContext,
   SetMoveTimerContext,
@@ -17,6 +19,17 @@ import useHandleRoutingWhilePlaying from "./useHandleRoutingWhilePlaying.js";
 
 function App() {
   useHandleRoutingWhilePlaying(socket, setMoveTimer);
+
+  const [waitForResponse, setWaitForResponse] = useFetchData();
+
+  if (waitForResponse)
+    return (
+      <Spinner
+        animation="border"
+        variant="secondary"
+        className="main-spinner"
+      />
+    );
 
   return (
     <SocketContext.Provider value={socket}>
@@ -39,7 +52,7 @@ function App() {
               <Home />
             </Route>
             <Route path="/">
-              <Main />
+              <Main setWaitForResponse={setWaitForResponse} />
             </Route>
           </Switch>
         </AuthenticateUserContext.Provider>

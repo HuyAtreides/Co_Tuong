@@ -5,9 +5,7 @@ import { Container } from "react-bootstrap";
 import "./Main.scss";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import Game from "./Game/Game.jsx";
-import { Spinner } from "react-bootstrap";
-import callAPI from "../App/callAPI.js";
-import { AuthenticateUserContext, SocketContext } from "../App/context";
+import { SocketContext } from "../App/context";
 import { Redirect } from "react-router-dom";
 import Warning from "./Warning/Warning.jsx";
 import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
@@ -15,8 +13,6 @@ import VerifyEmailNote from "./VerifyEmailNote/VerifyEmailNote.jsx";
 const Main = (props) => {
   const dispatch = useDispatch();
   const [connectionError, setConnectionError] = useState(null);
-  const [waitForResponse, setWaitForResponse] = useState(false);
-  const authenticateUser = useContext(AuthenticateUserContext);
   const socket = useContext(SocketContext);
   const store = useStore();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
@@ -25,25 +21,6 @@ const Main = (props) => {
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
-
-  useEffect(async () => {
-    try {
-      if (!isAuthenticated) {
-        setWaitForResponse(true);
-        const { user, message, opponentID } = await callAPI(
-          "GET",
-          "api/user",
-          null
-        );
-        if (user) {
-          authenticateUser(dispatch, user, opponentID);
-        } else if (message) dispatch({ type: "setLoginError", value: message });
-        setWaitForResponse(false);
-      }
-    } catch (err) {
-      dispatch({ type: "setLoginError", value: err.message });
-    }
-  }, [isAuthenticated]);
 
   useEffect(() => {
     document.querySelector("title").innerText =
@@ -105,23 +82,12 @@ const Main = (props) => {
   if (loginError) return <Redirect to="/signin" />;
 
   return (
-    <Container fluid className={waitForResponse ? "loading" : ""}>
-      {waitForResponse ? (
-        <Spinner
-          animation="border"
-          variant="secondary"
-          style={{
-            width: `${window.innerWidth / 5}px`,
-            height: `${window.innerWidth / 5}px`,
-            borderWidth: "9px",
-          }}
-        />
-      ) : (
-        <div>
-          <NavBar setWaitForResponse={setWaitForResponse} />
-          {isAuthenticated ? <Game /> : <EntryComponent />}
-        </div>
-      )}
+    <Container fluid>
+      <div>
+        <NavBar setWaitForResponse={props.setWaitForResponse} />
+        {isAuthenticated ? <Game /> : <EntryComponent />}
+      </div>
+
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
         <VerifyEmailNote />
       ) : null}

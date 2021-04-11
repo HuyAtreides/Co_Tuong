@@ -31,8 +31,10 @@ class Piece {
       return move[0] === moveRow && move[1] === moveCol;
     });
     if (valid && existMove) {
-      const generalTranslate = this.putGeneralInDanger(newRow, newCol, board);
-      if (generalTranslate) return generalTranslate;
+      if (!this.moveHint) {
+        const generalTranslate = this.putGeneralInDanger(newRow, newCol, board);
+        if (generalTranslate) return generalTranslate;
+      }
       return true;
     }
     return false;
@@ -61,6 +63,30 @@ class Piece {
       } else if (isValid) return isValid;
     }
     return false;
+  }
+
+  showMoveHints(mode, board) {
+    if (mode === "off") {
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 9; j++) {
+          if (board[i][j] === false) board[i][j] = 0;
+          else if (board[i][j]) board[i][j].canBeCaptured = false;
+        }
+      }
+      return;
+    }
+    const [curRow, curCol] = this.position;
+    for (let move of this.moves) {
+      const [newRow, newCol] = [curRow + move[0], curCol + move[1]];
+      this.moveHint = true;
+      const moveResult = this.canMoveToNewPosition(newRow, newCol, board);
+      this.moveHint = false;
+      if (moveResult) {
+        if (moveResult === "capture") {
+          board[newRow][newCol].canBeCaptured = true;
+        } else board[newRow][newCol] = false;
+      }
+    }
   }
 
   countPiecesBetween(newRow, newCol, board) {

@@ -5,6 +5,7 @@ import { useSelector, useDispatch, useStore } from "react-redux";
 import getSVGLocation from "./getSVGLocation.js";
 import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
 import PieceClass from "../../../../pieces/piece.js";
+import MoveHint from "./MoveHint/MoveHint.jsx";
 
 function Board() {
   const dispatch = useDispatch();
@@ -36,9 +37,12 @@ function Board() {
       if (currentPiece) {
         const [curRow, curCol] = currentPiece.position;
         if (row !== curRow || curCol !== col) {
+          currentPiece.showMoveHints("off", board);
           dispatch({ type: "setGetClicked", value: false });
         }
       }
+      board[row][col].showMoveHints("on", board);
+      dispatch({ type: "setBoard", value: [...board] });
       dispatch({ type: "setTargetDisplay", value: "inline" });
       dispatch({ type: "setDraggable", value: true });
       dispatch({ type: "setTargetTranslate", value: translate });
@@ -73,10 +77,11 @@ function Board() {
 
   const updateCurrentPiece = (moveResult) => {
     if ((moveResult && !/translate/.test(moveResult)) || getClicked) {
+      currentPiece.showMoveHints("off", board);
       dispatch({ type: "setTargetDisplay", value: "none" });
       dispatch({ type: "setCurrentPiece", value: null });
       dispatch({ type: "setGetClicked", value: false });
-    } else {
+    } else if (!/translate/.test(moveResult)) {
       dispatch({ type: "setGetClicked", value: true });
     }
   };
@@ -122,6 +127,7 @@ function Board() {
     if (turnToMove && canMove && !/translate/.test(canMove))
       moveResult = currentPiece.setPosition(canMove, newRow, newCol);
     updateBoard(moveResult, [curRow, curCol]);
+    currentPiece.showMoveHints("off", board);
     dispatch({ type: "setTargetDisplay", value: "none" });
     dispatch({ type: "setCurrentPiece", value: null });
     dispatch({ type: "setBoard", value: [...board] });
@@ -240,6 +246,7 @@ function Board() {
         style={{ display: targetDisplay }}
         transform={targetTranslate}
       ></image>
+
       <rect
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
@@ -248,6 +255,8 @@ function Board() {
         fill="brown"
       ></rect>
       <Piece board={board} handleMouseDown={handleMouseDown} />
+
+      <MoveHint board={board} boardWidth={boardSize[0]} />
     </svg>
   );
 }

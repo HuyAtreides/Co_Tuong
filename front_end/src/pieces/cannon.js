@@ -17,8 +17,9 @@ class Cannon extends Piece {
         if (!board[newRow][newCol].side) {
           if (this.countPiecesBetween(newRow, newCol, board) === 0) return true;
         } else if (board[newRow][newCol].side !== board[curRow][curCol].side)
-          if (this.countPiecesBetween(newRow, newCol, board) === 2)
+          if (this.countPiecesBetween(newRow, newCol, board) === 2) {
             return "capture";
+          }
       } else if (isValid) return isValid;
     }
     return false;
