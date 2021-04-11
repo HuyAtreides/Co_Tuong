@@ -316,8 +316,8 @@ class EventHandlers {
   static registerGameFinishHandlers(io, socket) {
     socket.on("gameFinish", (gameResult) => {
       const opponentSocket = io.sockets.get(socket.opponentID);
+      let [result, reason] = ["Draw", "Game Draw By Agreement"];
       if (!socket.gameFinished) {
-        let [result, reason] = ["Draw", "Game Draw By Agreement"];
         socket.gameFinished = true;
         if (gameResult !== "Draw") {
           [result, reason] = gameResult;

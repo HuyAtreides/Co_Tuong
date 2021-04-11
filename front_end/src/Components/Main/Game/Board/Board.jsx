@@ -81,7 +81,7 @@ function Board() {
       dispatch({ type: "setTargetDisplay", value: "none" });
       dispatch({ type: "setCurrentPiece", value: null });
       dispatch({ type: "setGetClicked", value: false });
-    } else if (!/translate/.test(moveResult)) {
+    } else {
       dispatch({ type: "setGetClicked", value: true });
     }
   };
@@ -246,17 +246,16 @@ function Board() {
         style={{ display: targetDisplay }}
         transform={targetTranslate}
       ></image>
+      <MoveHint board={board} boardWidth={boardSize[0]} />
+      <Piece board={board} handleMouseDown={handleMouseDown} side={side} />
 
-      <rect
+      <image
+        href="/images/Legal_Capture_Icon/legal_capture.png"
+        transform={warningTranslate}
+        style={{ display: warningDisplay, opacity: "0.6" }}
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
-        style={{ display: warningDisplay }}
-        transform={warningTranslate}
-        fill="brown"
-      ></rect>
-      <Piece board={board} handleMouseDown={handleMouseDown} />
-
-      <MoveHint board={board} boardWidth={boardSize[0]} />
+      ></image>
     </svg>
   );
 }

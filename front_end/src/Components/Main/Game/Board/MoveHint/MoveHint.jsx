@@ -19,7 +19,6 @@ const MoveHint = ({ board, boardWidth }) => {
         canCaptureHints.push(
           <image
             href="/images/Legal_Capture_Icon/legal_capture.png"
-            style={{ opacity: "0.6" }}
             key={`capture-hint-${canCaptureHints.length}`}
             transform={board[i][j].translate}
             width={board[i][j].width - 3}

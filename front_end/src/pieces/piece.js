@@ -1,5 +1,3 @@
-import { socket } from "../Components/App/context.js";
-
 class Piece {
   constructor(width, row, col, name, choosenSide) {
     this.width = width;
@@ -173,8 +171,9 @@ class Piece {
     const [curRow, curCol] = this.position;
     this.setPosition(null, newRow, newCol);
     const tmp = board[curRow][curCol];
-    if (board[newRow][newCol])
+    if (board[newRow][newCol]) {
       dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
+    }
     board[curRow][curCol] = 0;
     board[newRow][newCol] = tmp;
     dispatch({ type: "setBoard", value: [...board] });
@@ -189,6 +188,7 @@ class Piece {
   }
 
   setTransform([xB, yB], board, dispatch) {
+    if (board && board[yB][xB]) this.DOMNode.style.display = "none";
     const translate = `translate(${xB * this.width}, ${yB * this.width})`;
     this.DOMNode.setAttribute("transform", translate);
     if (board) {
