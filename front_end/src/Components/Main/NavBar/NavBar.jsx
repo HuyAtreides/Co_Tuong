@@ -11,10 +11,22 @@ const NavBar = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
   const lang = useSelector((state) => state.appState.lang);
+  const playerInfo = useSelector((state) => state.appState.playerInfo);
+
   const handleSetLang = (event) => {
     const selectedLang = event.currentTarget.text;
     dispatch({ type: "setLang", value: selectedLang });
+    callAPI("POST", "api/setLang", {
+      username: playerInfo.username,
+      choosenLang: selectedLang,
+    });
   };
+
+  useEffect(() => {
+    document.querySelector("title").innerText =
+      lang === "English" ? "Xiangqi" : "Cờ Tướng";
+  }, [lang]);
+
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );

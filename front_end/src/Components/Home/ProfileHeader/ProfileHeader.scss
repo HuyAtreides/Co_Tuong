@@ -10,6 +10,15 @@
       flex-direction: column;
       justify-content: space-evenly;
     }
+
+    .user-profile-info {
+      width: 45%;
+      align-items: center;
+    }
+
+    .setting-profile-info {
+      width: auto !important;
+    }
   }
 
   .change-pic-area {

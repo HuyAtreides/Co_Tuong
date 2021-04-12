@@ -5,15 +5,7 @@ import renderMatchHistory from "./renderMatchHistory.js";
 import "./MatchHistory.scss";
 
 const MatchHistory = ({ playerInfo, viewOthersProfile }) => {
-  const [won, lost, draw] = playerInfo.matches.reduce(
-    (acc, value) => {
-      if (value.result === "Won") acc[0] += 1;
-      else if (value.result === "Draw") acc[2] += 1;
-      else acc[1] += 1;
-      return acc;
-    },
-    [0, 0, 0]
-  );
+  const { won, lost, draw } = playerInfo.totalGames;
 
   return (
     <div className="match-history-container">

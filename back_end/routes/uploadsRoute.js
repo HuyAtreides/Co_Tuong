@@ -25,7 +25,6 @@ const filter = (_, file, callback) => {
 
 router.get("/profile_pictures/:filename", (req, res) => {
   const { filename } = req.params;
-  console.log(filename);
   const readStream = fs.createReadStream(
     `./uploads/profile_pictures/${filename}`
   );

@@ -13,6 +13,14 @@ class USERDAO {
     }
   }
 
+  static async updateUserLang(username, lang) {
+    try {
+      await users.updateOne({ username: username }, { $set: { lang: lang } });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
   static async findUserByEmail(email) {
     try {
       const user = await users.findOne({
@@ -99,6 +107,11 @@ class USERDAO {
               $slice: 20,
               $sort: { date: -1 },
             },
+          },
+          $inc: {
+            "totalGames.won": result === "Won" ? 1 : 0,
+            "totalGames.lost": result === "Lost" ? 1 : 0,
+            "totalGames.draw": result === "Draw" ? 1 : 0,
           },
         }
       );
@@ -191,6 +204,7 @@ class USERDAO {
             lastname: name && name.givenName ? name.givenName : null,
           },
           lang: "English",
+          totalGames: { lost: 0, won: 0, draw: 0 },
           lastOnline: new Date(),
           join: new Date(),
           matches: [],
@@ -216,6 +230,7 @@ class USERDAO {
         photo: `/user_profile_pic/${nonAccentVietnamese(
           username[0]
         ).toUpperCase()}.svg`,
+        totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],
         lastOnline: new Date(),
         join: new Date(),

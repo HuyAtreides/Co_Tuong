@@ -5,6 +5,8 @@ import "./ProfileInfo.scss";
 const ProfileInfo = ({ playerInfo }) => {
   const option = { year: "numeric", month: "long", day: "numeric" };
   const lang = useSelector((state) => state.appState.lang);
+  const { won, draw, lost } = playerInfo.totalGames;
+  const totalMatches = won + draw + lost;
   const joinDate = new Date(playerInfo.join).toLocaleDateString(
     "us-US",
     option
@@ -31,9 +33,7 @@ const ProfileInfo = ({ playerInfo }) => {
         <i className="fas fa-chess-board "></i>
         <p className="item-title">Games</p>
         <p className="item-value">
-          {playerInfo.matches.length > 1000000
-            ? "1000000+"
-            : playerInfo.matches.length}
+          {totalMatches > 1000000 ? "1000000+" : totalMatches}
         </p>
       </div>
     </div>

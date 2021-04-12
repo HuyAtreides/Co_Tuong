@@ -17,15 +17,9 @@ const Main = (props) => {
   const store = useStore();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
-  const lang = useSelector((state) => state.appState.lang);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
-
-  useEffect(() => {
-    document.querySelector("title").innerText =
-      lang === "English" ? "Xiangqi" : "Cờ Tướng";
-  }, [lang]);
 
   useEffect(() => {
     socket.on("connect_error", (err) => {
