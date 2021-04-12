@@ -277,7 +277,6 @@ class EventHandlers {
       const opponentSocket = io.sockets.get(socket.opponentID);
       if (socket.opponentID && !socket.gameFinished) {
         socket.gameFinished = true;
-        io.to(socket.opponentID).emit("opponentLeftGame");
         io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
         USERDAO.updateMatchHistory(socket, "Lost", "Game Abandoned");
       }
@@ -294,7 +293,7 @@ class EventHandlers {
       handleGameFinish();
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);
-
+      io.to(socket.opponentID).emit("opponentLeftGame");
       if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
       else {
         USERDAO.setSocketID(socket.player.playername, null, false);

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const renderMemberLists = (members, username) => {
   const option = { year: "numeric", month: "long", day: "numeric" };
   return members.map((member, index) => {
-    if (members.guest || member.username === username) return null;
+    if (member.guest || member.username === username) return null;
     const { lastname, firstname } = member.name;
     const fullname =
       (firstname ? firstname : "") + " " + (lastname ? lastname : "");

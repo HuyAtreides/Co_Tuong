@@ -61,6 +61,7 @@ const Signup = () => {
 
   const handleFirstnameChange = (event) => {
     const value = event.target.value;
+    setInvalidFirstname("");
     setFirstname(value);
   };
   const handleLastnameChange = (event) => {
@@ -70,7 +71,7 @@ const Signup = () => {
         value[0]
       )
     )
-      setInvalidLastname("First character must be latin letter");
+      setInvalidLastname("First character must be a latin letter");
     else setInvalidLastname("");
     setLastname(value);
   };
@@ -165,7 +166,7 @@ const Signup = () => {
           {error ? <p className="error-message">{error}</p> : null}
           <Form onSubmit={handleSignUp} method="POST">
             <Form.Group controlId="username">
-              <Form.Label style={{ float: "left" }}>Username</Form.Label>
+              <Form.Label>Username</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
@@ -174,17 +175,14 @@ const Signup = () => {
                   value={username}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidUsernameMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
             <Form.Group controlId="firstname">
-              <Form.Label style={{ float: "left" }}>Firstname</Form.Label>
+              <Form.Label>Firstname</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
@@ -193,17 +191,14 @@ const Signup = () => {
                   value={firstname}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidFirstname}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
             <Form.Group controlId="lastname">
-              <Form.Label style={{ float: "left" }}>Lastname</Form.Label>
+              <Form.Label>Lastname</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
@@ -212,35 +207,29 @@ const Signup = () => {
                   value={lastname}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidLastname}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
             <Form.Group controlId="email">
-              <Form.Label style={{ float: "left" }}>Email</Form.Label>
+              <Form.Label>Email</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  type="text"
+                  type="email"
                   isInvalid={invalidEmailMess !== ""}
                   onChange={handleEmailChange}
                   value={email}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidEmailMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
             <Form.Group controlId="password">
-              <Form.Label style={{ float: "left" }}>Password</Form.Label>
+              <Form.Label>Password</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="password"
@@ -249,16 +238,13 @@ const Signup = () => {
                   value={password}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidPasswordMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
-            <Button type="submit">
+            <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
               ) : (

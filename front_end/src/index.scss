@@ -1,5 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 @import "~bootstrap/scss/bootstrap.scss";
+
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("./Fonts/Montserrat-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("./Fonts/Montserrat-Regular.ttf");
+}
+
 html {
   height: 100%;
   font-size: 100%;
@@ -14,9 +25,9 @@ html {
       height: 100%;
       text-align: center;
 
-      .main-spinner {
-        width: 30vw;
-        height: 30vw;
+      .spinner {
+        width: 27vw;
+        height: 27vw;
         border-width: 9px;
         margin-top: 77px;
       }

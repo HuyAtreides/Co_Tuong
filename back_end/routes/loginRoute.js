@@ -35,7 +35,7 @@ passport.use(
     try {
       const user = await USERDAO.findUser(username);
       if (user === null)
-        return done(null, false, { message: "Incorrect Username" });
+        return done(null, false, { message: "Incorrect Username Or Email" });
       if (user.password === undefined)
         return done(null, false, { message: "Incorrect Password" });
       if (user.failedLoginAttempt === 5)

@@ -10,11 +10,10 @@ import MatchHistory from "./MatchHistory/MatchHistory.jsx";
 import NavBar from "../Main/NavBar/NavBar.jsx";
 import callAPI from "../App/callAPI.js";
 
-const Home = () => {
+const Home = (props) => {
   const dispatch = useDispatch();
   const { name } = useParams();
   const [error, setError] = useState(null);
-  const [waitForResponse, setWaitForResponse] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
@@ -45,17 +44,13 @@ const Home = () => {
   if (loginError) return <Redirect to="/signin" />;
 
   return (
-    <Container fluid className={waitForResponse || !user ? "loading" : ""}>
-      {waitForResponse || !user ? (
-        <Spinner
-          animation="border"
-          variant="secondary"
-          className="home-spinner"
-        />
+    <Container fluid className={!user ? "loading" : ""}>
+      {!user ? (
+        <Spinner animation="border" variant="secondary" className="spinner" />
       ) : (
         <>
           <NavBar
-            setWaitForResponse={setWaitForResponse}
+            setWaitForResponse={props.setWaitForResponse}
             setRedirect={setRedirect}
           />
           <Row className="home-row mt-3">

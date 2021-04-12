@@ -6,6 +6,7 @@ import Signup from "../Signup/Signup.jsx";
 import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
 import Home from "../Home/Home.jsx";
 import useFetchData from "./useFetchData.js";
+import Settings from "../Settings/Settings.jsx";
 import { Spinner } from "react-bootstrap";
 import {
   SocketContext,
@@ -24,11 +25,7 @@ function App() {
 
   if (waitForResponse)
     return (
-      <Spinner
-        animation="border"
-        variant="secondary"
-        className="main-spinner"
-      />
+      <Spinner animation="border" variant="secondary" className="spinner" />
     );
 
   return (
@@ -49,7 +46,10 @@ function App() {
               <Home />
             </Route>
             <Route path="/home">
-              <Home />
+              <Home setWaitForResponse={setWaitForResponse} />
+            </Route>
+            <Route path="/settings">
+              <Settings setWaitForResponse={setWaitForResponse} />
             </Route>
             <Route path="/">
               <Main setWaitForResponse={setWaitForResponse} />

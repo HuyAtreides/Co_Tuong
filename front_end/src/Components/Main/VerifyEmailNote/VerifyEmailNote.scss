@@ -1,14 +1,5 @@
-@font-face {
-  font-family: "Montserrat-Regular";
-  src: url("../../../Fonts/Montserrat-Regular.ttf");
-}
-
-@font-face {
-  font-family: "Montserrat-Bold";
-  src: url("../../../Fonts/Montserrat-Bold.ttf");
-}
 .verify-email-note {
-  position: absolute;
+  position: fixed;
   top: 3rem;
   width: 100%;
   display: flex;

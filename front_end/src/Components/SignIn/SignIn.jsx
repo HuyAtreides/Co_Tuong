@@ -146,10 +146,7 @@ const Login = () => {
                   value={username}
                   disabled={waitForResponse || waitForServer}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidUsernameMess}
                 </Form.Control.Feedback>
               </InputGroup>
@@ -165,15 +162,12 @@ const Login = () => {
                   value={password}
                   disabled={waitForResponse || waitForServer}
                 />
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ textAlign: "left" }}
-                >
+                <Form.Control.Feedback type="invalid">
                   {invalidPasswordMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
-            <Button type="submit">
+            <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
               ) : (

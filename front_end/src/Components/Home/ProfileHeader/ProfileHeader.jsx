@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Spinner } from "react-bootstrap";
+import { Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import "./ProfileHeader.scss";
 import { Link } from "react-router-dom";
 import callAPI from "../../App/callAPI.js";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-const ProfileHeader = ({ playerInfo, setError, viewOthersProfile }) => {
+const ProfileHeader = (props) => {
+  const { playerInfo, setError, viewOthersProfile, setting } = props;
   const [waitForResponse, setWaitForResponse] = useState(false);
   const dispatch = useDispatch();
   const firstname = playerInfo.name.firstname;
@@ -44,7 +45,7 @@ const ProfileHeader = ({ playerInfo, setError, viewOthersProfile }) => {
 
   return (
     <div className="profile-header">
-      <div className="change-pic-area">
+      <div className={`change-pic-area ${setting ? "setting-img" : ""}`}>
         {!waitForResponse && !viewOthersProfile ? (
           <button className="change-pic" onClick={handleChangeProfilePic}>
             <i className="fas fa-camera"></i>Change
@@ -63,14 +64,34 @@ const ProfileHeader = ({ playerInfo, setError, viewOthersProfile }) => {
           <Spinner animation="border" variant="secondary" />
         )}
       </div>
-      <div className="user-profile-info">
+      <div
+        className={`user-profile-info ${setting ? "setting-profile-info" : ""}`}
+      >
         <div className="user-name-lastname">
-          <p className="user-name">{playerInfo.username}</p>
-          <p className="user-full-name">{playerFullName}</p>
+          <OverlayTrigger
+            placement="top"
+            overlay={(props) => (
+              <Tooltip id="profile-name-tooltip" {...props}>
+                {playerInfo.username}
+              </Tooltip>
+            )}
+          >
+            <p className="user-name">{playerInfo.username}</p>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="top"
+            overlay={(props) => (
+              <Tooltip id="profile-name-tooltip" {...props}>
+                {playerFullName}
+              </Tooltip>
+            )}
+          >
+            <p className="user-full-name">{playerFullName}</p>
+          </OverlayTrigger>
         </div>
         <div className="edit-profile-container">
-          {!viewOthersProfile ? (
-            <Link to="">
+          {!viewOthersProfile && !setting ? (
+            <Link to="/settings">
               <i className="fas fa-edit"></i> Edit
             </Link>
           ) : null}

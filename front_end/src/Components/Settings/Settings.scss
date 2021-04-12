@@ -1,0 +1,44 @@
+.settings-container {
+  min-width: 347px !important;
+  .setting-profile-info {
+    .user-name-lastname {
+      .user-name {
+        font-size: 1.6rem !important;
+        max-width: 250px !important;
+      }
+      .user-full-name {
+        max-width: 250px !important;
+        font-size: 1.3rem !important;
+      }
+    }
+  }
+
+  .setting-img {
+    height: 9.7rem !important;
+    width: 9.7rem !important;
+
+    .change-pic {
+      font-size: 1.1rem !important;
+    }
+
+    @media screen and (max-width: 1200px) {
+      & {
+        height: 7.7rem !important;
+        width: 7.7rem !important;
+      }
+      .change-pic {
+        font-size: 1rem !important;
+      }
+    }
+  }
+
+  .settings-form {
+    border-radius: 0.2rem;
+    background-color: white;
+
+    .form-label {
+      font-weight: normal;
+      color: #312e2b;
+    }
+  }
+}
