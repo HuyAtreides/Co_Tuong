@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const USERDAO = require("../DAO/USERDAO.js");
-const bcrypt = require("bcrypt");
 
 const checkEmail = async (req, res, next) => {
   try {
     const { email } = req.body;
+    if (!email) return next();
     const user = await USERDAO.findUserByEmail(email);
     if (user) {
       return res.json({ message: "Email has been used" });
@@ -19,6 +19,7 @@ const checkEmail = async (req, res, next) => {
 const checkUsername = async (req, res, next) => {
   try {
     const { username } = req.body;
+    if (!username) return next();
     const user = await USERDAO.findUserByUsername(username);
     if (user) {
       return res.json({ message: "Username isn't available" });
@@ -43,6 +44,16 @@ router.post("/", checkEmail, checkUsername, async (req, res) => {
         return res.json({ user: user, message: null, opponentID: opponentID });
       });
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/settings", checkUsername, checkEmail, async (req, res) => {
+  try {
+    const { changes, user } = req.body;
+    const { newUserProfile } = await USERDAO.updateUserProfile(changes, user);
+    res.json({ user: newUserProfile, message: null });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

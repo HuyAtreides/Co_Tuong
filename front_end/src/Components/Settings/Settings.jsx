@@ -1,32 +1,82 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { Form, Container, Row, Col, InputGroup } from "react-bootstrap";
+import {
+  Form,
+  Container,
+  Row,
+  Col,
+  InputGroup,
+  Spinner,
+  Button,
+} from "react-bootstrap";
 import NavBar from "../Main/NavBar/NavBar.jsx";
 import "./Settings.scss";
+import callAPI from "../App/callAPI.js";
+import useValidateInput from "../Signup/useValidateInput.js";
 import ProfileHeader from "../Home/ProfileHeader/ProfileHeader.jsx";
 
 const Settings = ({ setWaitForResponse }) => {
+  const dispatch = useDispatch();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
-  const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState();
-  const [email, setEmail] = useState();
-  const [lastname, setLastname] = useState();
-  const [firstname, setFirstname] = useState();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [buttonText, setButtonText] = useState("Save");
+  const [uploadErr, setUploadErr] = useState(null);
+  const [waitForServer, setWaitForServer] = useState(false);
+  const validateInput = useValidateInput(false);
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+  const getChanges = () => {
+    const changes = {};
+    if (playerInfo.username !== validateInput.username)
+      changes["username"] = validateInput.username;
+    if (playerInfo.email.value !== validateInput.email) {
+      changes["email"] = { value: validateInput.email, verified: false };
+    }
+    if (playerInfo.name.lastname !== validateInput.lastname) {
+      changes["name.lastname"] = validateInput.lastname;
+    }
+    if (playerInfo.name.firstname !== validateInput.firstname) {
+      changes["name.firstname"] = validateInput.firstname;
+    }
+    if (validateInput.password) changes["password"] = validateInput.password;
+    return changes;
+  };
+
+  const handleSaveChange = async (event) => {
+    try {
+      event.preventDefault();
+      if (waitForServer) return;
+      setUploadErr("");
+      const { password, confirmPassword } = validateInput;
+      if (password && password !== confirmPassword) {
+        validateInput.setConfirmPasswordMess("Password doesn't match");
+        return;
+      }
+      const changes = getChanges();
+      setWaitForServer(true);
+      const { user, message, ok } = await callAPI(
+        "POST",
+        "api/signup/settings",
+        {
+          changes: changes,
+          username: validateInput.username,
+          email: validateInput.email,
+          user: playerInfo.username,
+        }
+      );
+      setWaitForServer(false);
+      if (user) dispatch({ type: "setPlayerInfo", value: user });
+      else if (message) validateInput.handleError(ok, message);
+    } catch (err) {
+      setUploadErr(err.message);
+    }
   };
 
   useEffect(() => {
     if (playerInfo) {
-      setUsername(playerInfo.username);
-      setEmail(playerInfo.email.value);
-      setLastname(playerInfo.name.lastname);
-      setFirstname(playerInfo.name.firstname);
+      validateInput.setUsername(playerInfo.username);
+      validateInput.setEmail(playerInfo.email.value);
+      validateInput.setLastname(playerInfo.name.lastname);
+      validateInput.setFirstname(playerInfo.name.firstname);
     }
   }, []);
 
@@ -38,31 +88,45 @@ const Settings = ({ setWaitForResponse }) => {
       <Row className="home-row mt-3">
         <p
           className="upload-pic-err"
-          style={{ display: error ? "block" : " none" }}
+          style={{
+            display: uploadErr || validateInput.error ? "block" : " none",
+          }}
         >
           <i
             className="fas fa-times"
             onClick={() => {
-              setError(null);
+              validateInput.setError(null);
+              setUploadErr(null);
             }}
           ></i>
-          {error}
+          {uploadErr && validateInput.error}
         </p>
-        <Col xs={{ span: 10 }} md={{ span: 7 }}>
+        <Col xs={{ span: 11 }} md={{ span: 7 }}>
           <ProfileHeader
-            setError={setError}
+            setError={setUploadErr}
             setting={true}
             playerInfo={playerInfo}
           />
-          <Form className="mt-3 mb-3 settings-form" method="POST">
+          <Form
+            className="mt-3 mb-3 settings-form"
+            method="POST"
+            onSubmit={handleSaveChange}
+          >
             <Form.Group as={Row} className="mt-4">
               <Form.Label column sm={2}>
                 Username
               </Form.Label>
               <Col sm={10}>
                 <InputGroup hasValidation>
-                  <Form.Control type="text" value={username} />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                  <Form.Control
+                    type="text"
+                    value={validateInput.username}
+                    onChange={validateInput.handleUsernameChange}
+                    isInvalid={validateInput.invalidUsernameMess !== ""}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validateInput.invalidUsernameMess}
+                  </Form.Control.Feedback>
                 </InputGroup>
               </Col>
             </Form.Group>
@@ -72,8 +136,15 @@ const Settings = ({ setWaitForResponse }) => {
               </Form.Label>
               <Col sm={10}>
                 <InputGroup hasValidation>
-                  <Form.Control type="email" value={email} />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                  <Form.Control
+                    type="email"
+                    value={validateInput.email}
+                    onChange={validateInput.handleEmailChange}
+                    isInvalid={validateInput.invalidEmailMess !== ""}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validateInput.invalidEmailMess}
+                  </Form.Control.Feedback>
                 </InputGroup>
               </Col>
             </Form.Group>
@@ -82,10 +153,11 @@ const Settings = ({ setWaitForResponse }) => {
                 Firstname
               </Form.Label>
               <Col sm={10}>
-                <InputGroup hasValidation>
-                  <Form.Control type="text" value={firstname} />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
-                </InputGroup>
+                <Form.Control
+                  type="text"
+                  value={validateInput.firstname}
+                  onChange={validateInput.handleFirstnameChange}
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mt-4">
@@ -93,10 +165,11 @@ const Settings = ({ setWaitForResponse }) => {
                 Lastname
               </Form.Label>
               <Col sm={10}>
-                <InputGroup hasValidation>
-                  <Form.Control type="text" value={lastname} />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
-                </InputGroup>
+                <Form.Control
+                  type="text"
+                  value={validateInput.lastname}
+                  onChange={validateInput.handleLastnameChange}
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mt-4">
@@ -106,19 +179,28 @@ const Settings = ({ setWaitForResponse }) => {
               <Col sm={10}>
                 <InputGroup hasValidation className="password-group">
                   <Form.Control
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={handlePasswordChange}
+                    type={validateInput.showPassword ? "text" : "password"}
+                    value={validateInput.password}
+                    onChange={validateInput.handlePasswordChange}
                   />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">
+                    {validateInput.invalidPasswordMess}
+                  </Form.Control.Feedback>
                   <button
                     className="toggle-password"
                     type="button"
+                    style={{
+                      display: validateInput.invalidPasswordMess
+                        ? "none"
+                        : "inline",
+                    }}
                     onClick={() => {
-                      setShowPassword(!showPassword);
+                      validateInput.setShowPassword(
+                        !validateInput.showPassword
+                      );
                     }}
                   >
-                    {showPassword ? "Hide" : "Show"}
+                    {validateInput.showPassword ? "Hide" : "Show"}
                   </button>
                 </InputGroup>
               </Col>
@@ -129,11 +211,26 @@ const Settings = ({ setWaitForResponse }) => {
               </Form.Label>
               <Col sm={10}>
                 <InputGroup hasValidation>
-                  <Form.Control type="password" value={confirmPassword} />
-                  <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                  <Form.Control
+                    type="password"
+                    value={validateInput.confirmPassword}
+                    onChange={validateInput.handleConfirmPasswordChange}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validateInput.confirmPasswordMess}
+                  </Form.Control.Feedback>
                 </InputGroup>
               </Col>
             </Form.Group>
+            <Col>
+              <Button type="submit" className="submit-form-button">
+                {waitForServer ? (
+                  <Spinner animation="border" variant="dark" />
+                ) : (
+                  { buttonText }
+                )}
+              </Button>
+            </Col>
           </Form>
         </Col>
       </Row>

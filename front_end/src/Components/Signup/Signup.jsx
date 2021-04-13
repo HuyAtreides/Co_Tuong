@@ -36,8 +36,6 @@ const Signup = () => {
     firstname,
     email,
     invalidEmailMess,
-    invalidFirstname,
-    invalidLastname,
     invalidPasswordMess,
     invalidUsernameMess,
     error,
@@ -55,13 +53,15 @@ const Signup = () => {
       if (waitForResponse) return;
       setError("");
       const missingField = handleMissingField();
+      if (confirmPassword !== password) {
+        setConfirmPasswordMess("Password doesn't match");
+        return;
+      }
       if (
         !missingField &&
         !invalidEmailMess &&
         !invalidPasswordMess &&
         !invalidUsernameMess &&
-        !invalidFirstname &&
-        !invalidLastname &&
         !confirmPasswordMess
       ) {
         setWaitForResponse(true);
@@ -122,34 +122,22 @@ const Signup = () => {
 
             <Form.Group controlId="firstname">
               <Form.Label>Firstname</Form.Label>
-              <InputGroup hasValidation>
-                <Form.Control
-                  type="text"
-                  isInvalid={invalidFirstname !== ""}
-                  onChange={handleFirstnameChange}
-                  value={firstname}
-                  disabled={waitForResponse}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {invalidFirstname}
-                </Form.Control.Feedback>
-              </InputGroup>
+              <Form.Control
+                type="text"
+                onChange={handleFirstnameChange}
+                value={firstname}
+                disabled={waitForResponse}
+              />
             </Form.Group>
 
             <Form.Group controlId="lastname">
               <Form.Label>Lastname</Form.Label>
-              <InputGroup hasValidation>
-                <Form.Control
-                  type="text"
-                  isInvalid={invalidLastname !== ""}
-                  onChange={handleLastnameChange}
-                  value={lastname}
-                  disabled={waitForResponse}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {invalidLastname}
-                </Form.Control.Feedback>
-              </InputGroup>
+              <Form.Control
+                type="text"
+                onChange={handleLastnameChange}
+                value={lastname}
+                disabled={waitForResponse}
+              />
             </Form.Group>
 
             <Form.Group controlId="email">
@@ -183,6 +171,7 @@ const Signup = () => {
                 <button
                   className="toggle-password"
                   type="button"
+                  style={{ display: invalidPasswordMess ? "none" : "inline" }}
                   onClick={() => {
                     setShowPassword(!showPassword);
                   }}

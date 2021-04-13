@@ -124,7 +124,7 @@ class USERDAO {
     try {
       await users.deleteOne({ username: guestName });
     } catch (err) {
-      console.log(err.toString());
+      console.log(err.message);
     }
   }
 
@@ -227,9 +227,7 @@ class USERDAO {
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: `/user_profile_pic/${nonAccentVietnamese(
-          username[0]
-        ).toUpperCase()}.svg`,
+        photo: `/user_profile_pic/${username[0]}.svg`,
         totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],
         lastOnline: new Date(),
@@ -272,6 +270,23 @@ class USERDAO {
       return result.value;
     } catch (err) {
       throw new Error(err.toString());
+    }
+  }
+
+  static async updateUserProfile(changes, username) {
+    try {
+      if (changes.password)
+        changes.password = await bcrypt.hash(changes.password, 10);
+      const user = await users.findOneAndUpdate(
+        { username: username },
+        {
+          $set: changes,
+        },
+        { returnOriginal: false }
+      );
+      return user;
+    } catch (err) {
+      throw new Error(err.message);
     }
   }
 

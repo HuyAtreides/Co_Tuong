@@ -9,8 +9,6 @@ const useValidateInput = (isSignIn) => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [invalidFirstname, setInvalidFirstname] = useState("");
-  const [invalidLastname, setInvalidLastname] = useState("");
   const [lastname, setLastname] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordMess, setConfirmPasswordMess] = useState("");
@@ -55,18 +53,10 @@ const useValidateInput = (isSignIn) => {
 
   const handleFirstnameChange = (event) => {
     const value = event.target.value;
-    setInvalidFirstname("");
     setFirstname(value);
   };
   const handleLastnameChange = (event) => {
     const value = event.target.value;
-    if (
-      /[^a-zA-ZÁáÀàẢảÃãẠạĂăẮắẰằẲẳẴẵẶặÂâẤấẦầẨẩẪẫẬậĐđÉéÈèẺẻẼẽẸẹÊêẾếỀềỂểỄễỆệÍíÌìỈỉĨĩỊịÓóÒòỎỏÕõỌọÔôỐốỒồỔổỖỗỘộƠơỚớỜờỞởỠỡỢợÚúÙùỦủŨũỤụƯưỨứỪừỬửỮữỰựÝýỲỳỶỷỸỹỴỵ]/.test(
-        value[0]
-      )
-    )
-      setInvalidLastname("First character must be a latin letter");
-    else setInvalidLastname("");
     setLastname(value);
   };
 
@@ -80,14 +70,7 @@ const useValidateInput = (isSignIn) => {
       count += 1;
       setInvalidPasswordMess("Please fill out this field");
     }
-    if (!firstname && !isSignIn) {
-      count += 1;
-      setInvalidFirstname("Please fill out this field");
-    }
-    if (!lastname && !isSignIn) {
-      count += 1;
-      setInvalidLastname("Please fill out this field");
-    }
+
     if (!email && !isSignIn) {
       count += 1;
       setInvalidEmailMess("Please fill out this field");
@@ -123,13 +106,15 @@ const useValidateInput = (isSignIn) => {
     showPassword,
     setShowPassword,
     username,
+    setUsername,
+    setEmail,
+    setLastname,
+    setFirstname,
     email,
     password,
     lastname,
     firstname,
     invalidEmailMess,
-    invalidFirstname,
-    invalidLastname,
     invalidPasswordMess,
     invalidUsernameMess,
     error,
