@@ -108,7 +108,7 @@ const VerifyEmail = () => {
               </InputGroup>
             </Form.Group>
 
-            <Button type="submit">
+            <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
               ) : (
@@ -118,6 +118,7 @@ const VerifyEmail = () => {
             <Button
               onClick={sendVerificationCode}
               style={{ marginTop: "10px" }}
+              className="submit-form-button"
             >
               {waitForSendingCode ? (
                 <Spinner animation="border" variant="dark" />
