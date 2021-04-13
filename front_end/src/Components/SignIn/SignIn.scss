@@ -67,6 +67,22 @@ form {
     font-size: 15px;
   }
 
+  .password-group {
+    position: relative;
+
+    .toggle-password {
+      position: absolute;
+      right: 0.3rem;
+      top: 23%;
+      z-index: 1000;
+      padding: 0 !important;
+      font-family: "Montserrat-Bold";
+      font-size: 0.9rem;
+      color: #007bff;
+      background-color: transparent;
+    }
+  }
+
   .invalid-feedback {
     text-align: left;
   }

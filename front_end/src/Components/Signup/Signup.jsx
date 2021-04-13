@@ -41,7 +41,13 @@ const Signup = () => {
     invalidPasswordMess,
     invalidUsernameMess,
     error,
-  } = useValidateInput();
+    showPassword,
+    setShowPassword,
+    confirmPassword,
+    handleConfirmPasswordChange,
+    confirmPasswordMess,
+    setConfirmPasswordMess,
+  } = useValidateInput(false);
 
   const handleSignUp = async (event) => {
     try {
@@ -55,7 +61,8 @@ const Signup = () => {
         !invalidPasswordMess &&
         !invalidUsernameMess &&
         !invalidFirstname &&
-        !invalidLastname
+        !invalidLastname &&
+        !confirmPasswordMess
       ) {
         setWaitForResponse(true);
         setError(null);
@@ -162,9 +169,9 @@ const Signup = () => {
             </Form.Group>
             <Form.Group controlId="password">
               <Form.Label>Password</Form.Label>
-              <InputGroup hasValidation>
+              <InputGroup hasValidation className="password-group">
                 <Form.Control
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   isInvalid={invalidPasswordMess !== ""}
                   onChange={handlePasswordChange}
                   value={password}
@@ -173,9 +180,32 @@ const Signup = () => {
                 <Form.Control.Feedback type="invalid">
                   {invalidPasswordMess}
                 </Form.Control.Feedback>
+                <button
+                  className="toggle-password"
+                  type="button"
+                  onClick={() => {
+                    setShowPassword(!showPassword);
+                  }}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </InputGroup>
             </Form.Group>
-
+            <Form.Group>
+              <Form.Label>Confirm Password</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="password"
+                  isInvalid={confirmPasswordMess !== ""}
+                  disabled={waitForResponse}
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {confirmPasswordMess}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
             <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />

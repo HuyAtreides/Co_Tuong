@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AuthenticateUserContext } from "../App/context.js";
 import callAPI from "../App/callAPI.js";
+import useValidateInput from "../Signup/useValidateInput.js";
 import {
   Container,
   Form,
@@ -18,55 +19,25 @@ const Login = () => {
   const dispatch = useDispatch();
   const authenticateUser = useContext(AuthenticateUserContext);
   const [successfullyLogin, setSuccessfullyLogin] = useState(false);
-  const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
-  const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
-  const [error, setError] = useState(false);
   const [waitForResponse, setWaitForResponse] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [waitForServer, setWaitForServer] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
 
-  const handleUsernameChange = (event) => {
-    const value = event.target.value;
-    setInvalidUsernameMess("");
-    setUsername(value);
-  };
-
-  const handlePasswordChange = (event) => {
-    const value = event.target.value;
-    if (value.length < 6) {
-      setInvalidPasswordMess("Password must be atlest 6 characters");
-    } else setInvalidPasswordMess("");
-    setPassword(value);
-  };
-
-  const handleMissingField = () => {
-    let count = 0;
-    if (!username) {
-      count += 1;
-      setInvalidUsernameMess("Please fill out this field");
-    }
-    if (!password) {
-      count += 1;
-      setInvalidPasswordMess("Please fill out this field");
-    }
-    return count !== 0;
-  };
-
-  const handleError = (ok, message) => {
-    if (!ok) {
-      setError(message);
-    } else if (/Password/.test(message)) {
-      setInvalidPasswordMess(message);
-    } else if (/Username/.test(message)) {
-      setInvalidUsernameMess(message);
-    } else setError(message);
-    dispatch({ type: "setLoginError", value: null });
-  };
+  const {
+    setError,
+    error,
+    username,
+    password,
+    handleError,
+    handleUsernameChange,
+    handlePasswordChange,
+    invalidPasswordMess,
+    invalidUsernameMess,
+    handleMissingField,
+  } = useValidateInput(true);
 
   const handleLogin = async (event) => {
     try {

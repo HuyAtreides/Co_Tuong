@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useValidateInput = () => {
+const useValidateInput = (isSignIn) => {
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidEmailMess, setInvalidEmailMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
@@ -12,10 +12,24 @@ const useValidateInput = () => {
   const [invalidFirstname, setInvalidFirstname] = useState("");
   const [invalidLastname, setInvalidLastname] = useState("");
   const [lastname, setLastname] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordMess, setConfirmPasswordMess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleConfirmPasswordChange = (event) => {
+    const value = event.currentTarget.value;
+    if (value !== password || password === "") {
+      setConfirmPasswordMess("Password doesn't match");
+    } else setConfirmPasswordMess("");
+    setConfirmPassword(value);
+  };
 
   const handleUsernameChange = (event) => {
     const value = event.target.value;
-    if (/[^_a-z0-9-]/i.test(value) || value.length < 3 || value.length > 20) {
+    if (
+      !isSignIn &&
+      (/[^_a-z0-9-]/i.test(value) || value.length < 3 || value.length > 20)
+    ) {
       setInvalidUsernameMess(
         "Username must be between 3-20 characters long and use only Latin letters and numbers"
       );
@@ -25,7 +39,7 @@ const useValidateInput = () => {
 
   const handlePasswordChange = (event) => {
     const value = event.target.value;
-    if (value.length < 6) {
+    if (!isSignIn && value.length < 6) {
       setInvalidPasswordMess("Password must be atlest 6 characters");
     } else setInvalidPasswordMess("");
     setPassword(value);
@@ -66,15 +80,15 @@ const useValidateInput = () => {
       count += 1;
       setInvalidPasswordMess("Please fill out this field");
     }
-    if (!firstname) {
+    if (!firstname && !isSignIn) {
       count += 1;
       setInvalidFirstname("Please fill out this field");
     }
-    if (!lastname) {
+    if (!lastname && !isSignIn) {
       count += 1;
       setInvalidLastname("Please fill out this field");
     }
-    if (!email) {
+    if (!email && !isSignIn) {
       count += 1;
       setInvalidEmailMess("Please fill out this field");
     }
@@ -84,11 +98,12 @@ const useValidateInput = () => {
   const handleError = (ok, message) => {
     if (!ok) {
       setError(message);
-    } else if (/Email/.test(message)) {
+    } else if (/Email/.test(message) && !isSignIn) {
       setInvalidEmailMess(message);
     } else if (/User/.test(message)) {
       setInvalidUsernameMess(message);
-    } else setError(message);
+    } else if (/Password/.test(message)) setInvalidPasswordMess(message);
+    else setError(message);
   };
 
   return {
@@ -100,6 +115,13 @@ const useValidateInput = () => {
     handleMissingField,
     handleUsernameChange,
     handlePasswordChange,
+    confirmPassword,
+    setConfirmPassword,
+    handleConfirmPasswordChange,
+    confirmPasswordMess,
+    setConfirmPasswordMess,
+    showPassword,
+    setShowPassword,
     username,
     email,
     password,

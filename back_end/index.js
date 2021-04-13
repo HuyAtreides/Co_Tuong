@@ -18,10 +18,10 @@ MongoClient.connect(uri, {
         console.log(`listening on port ${PORT}`);
       });
     } catch (err) {
-      console.log(err.toString());
-      process.exit(1);
+      console.log(err.message);
     }
   })
   .catch((err) => {
-    console.log(err);
+    console.log(err.message);
+    process.exit(1);
   });
