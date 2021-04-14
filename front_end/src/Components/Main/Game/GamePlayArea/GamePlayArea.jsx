@@ -87,9 +87,13 @@ const GamePlayArea = (props) => {
               )}
             >
               <p className="user-name">
-                <Link to="/home" target="_blank">
-                  {playerInfo.username}
-                </Link>
+                {!playerInfo.guest ? (
+                  <Link to="/home" target="_blank">
+                    {playerInfo.username}
+                  </Link>
+                ) : (
+                  playerInfo.username
+                )}
               </p>
             </OverlayTrigger>
           </div>

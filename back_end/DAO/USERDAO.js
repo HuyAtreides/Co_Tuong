@@ -130,15 +130,10 @@ class USERDAO {
 
   static async insertGuest() {
     try {
-      const cursor = await users.find({ guest: true });
-      const guests = await cursor.sort("number", -1).toArray();
-      const num = guests[0] ? guests[0].number + 1 : 1;
-      const guestName = "Guest" + num;
       const result = await users.insertOne({
-        username: guestName,
+        username: "Guest" + Date.now(),
         name: { lastname: null, firstname: null },
         guest: true,
-        number: num,
         photo: "images/Pieces/general-black.png",
       });
       return result.ops[0];

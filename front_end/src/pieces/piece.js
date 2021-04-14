@@ -187,10 +187,11 @@ class Piece {
     } else this.moveDiagonal([newRow, newCol], board, dispatch);
   }
 
-  setTransform([xB, yB], board, dispatch) {
+  setTransform([xB, yB], board, dispatch, finished) {
     const translate = `translate(${xB * this.width}, ${yB * this.width})`;
-    this.DOMNode.setAttribute("transform", translate);
-    if (board) {
+    this.translate = translate;
+    dispatch({ type: "setBoard", value: [...board] });
+    if (finished) {
       this.modifyBoard(board, [yB, xB], dispatch);
     }
   }
@@ -198,14 +199,17 @@ class Piece {
   moveVertical([yB, xB], board, dispatch) {
     const [yA, xA] = this.position;
     let step = 0;
+    let start;
 
-    const animate = () => {
+    const animate = (timestamp) => {
+      if (start === undefined) start = timestamp;
+      const timeElapsed = timestamp - start;
+      step = ((yB - yA) / 270) * timeElapsed;
       if (Math.abs(step) < Math.abs(yB - yA)) {
-        step += (yB - yA) / (0.25 * 60);
-        this.setTransform([xA, yA + step], null, null);
+        this.setTransform([xA, yA + step], board, dispatch);
         window.requestAnimationFrame(animate);
       } else if (Math.abs(step) >= Math.abs(yB - yA)) {
-        this.setTransform([xB, yB], board, dispatch);
+        this.setTransform([xB, yB], board, dispatch, true);
       }
     };
 
@@ -215,15 +219,18 @@ class Piece {
   moveDiagonal([yB, xB], board, dispatch) {
     const [yA, xA] = this.position;
     let step = 0;
+    let start;
 
-    const animate = () => {
+    const animate = (timestamp) => {
+      if (start === undefined) start = timestamp;
+      const timeElapsed = timestamp - start;
+      step = ((xB - xA) / 270) * timeElapsed;
       if (Math.abs(step) < Math.abs(xB - xA)) {
-        step += (xB - xA) / (0.25 * 60);
         let y = (step / (xB - xA)) * (yB - yA) + yA;
-        this.setTransform([xA + step, y], null, null);
+        this.setTransform([xA + step, y], board, dispatch);
         window.requestAnimationFrame(animate);
       } else if (Math.abs(step) >= Math.abs(xB - xA)) {
-        this.setTransform([xB, yB], board, dispatch);
+        this.setTransform([xB, yB], board, dispatch, true);
       }
     };
 
