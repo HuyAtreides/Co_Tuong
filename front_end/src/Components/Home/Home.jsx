@@ -17,6 +17,7 @@ const Home = (props) => {
   const [redirect, setRedirect] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
+  const [waitForResponse, setWaitForResponse] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(async () => {
@@ -42,58 +43,53 @@ const Home = (props) => {
 
   if (redirect) return <Redirect to="/" />;
   if (loginError) return <Redirect to="/signin" />;
+  if (!user || waitForResponse)
+    return (
+      <Spinner animation="border" variant="secondary" className="spinner" />
+    );
 
   return (
-    <Container fluid className={!user ? "loading" : ""}>
-      {!user ? (
-        <Spinner animation="border" variant="secondary" className="spinner" />
-      ) : (
-        <>
-          <NavBar
-            setWaitForResponse={props.setWaitForResponse}
-            setRedirect={setRedirect}
+    <Container fluid>
+      <NavBar
+        setWaitForResponse={setWaitForResponse}
+        setRedirect={setRedirect}
+      />
+      <Row className="home-row mt-3">
+        <p
+          className="upload-pic-err"
+          style={{ display: error ? "block" : " none" }}
+        >
+          <i
+            className="fas fa-times"
+            onClick={() => {
+              setError(null);
+            }}
+          ></i>
+          {error}
+        </p>
+        <Col
+          lg={{ span: 8 }}
+          md={{ span: 9 }}
+          sm={{ span: 11 }}
+          className="profile-info-container"
+        >
+          <ProfileHeader
+            setError={setError}
+            playerInfo={user}
+            viewOthersProfile={Boolean(name)}
           />
-          <Row className="home-row mt-3">
-            <p
-              className="upload-pic-err"
-              style={{ display: error ? "block" : " none" }}
-            >
-              <i
-                className="fas fa-times"
-                onClick={() => {
-                  setError(null);
-                }}
-              ></i>
-              {error}
-            </p>
-            <Col
-              lg={{ span: 8 }}
-              md={{ span: 9 }}
-              sm={{ span: 11 }}
-              className="profile-info-container"
-            >
-              <ProfileHeader
-                setError={setError}
-                playerInfo={user}
-                viewOthersProfile={Boolean(name)}
-              />
-              <ProfileInfo playerInfo={user} />
-              <MatchHistory
-                playerInfo={user}
-                viewOthersProfile={Boolean(name)}
-              />
-            </Col>
-            <Col
-              lg={{ span: 4 }}
-              md={{ span: 9 }}
-              sm={{ span: 11 }}
-              className="find-players-container"
-            >
-              <FindMembers playerInfo={user} />
-            </Col>
-          </Row>
-        </>
-      )}
+          <ProfileInfo playerInfo={user} />
+          <MatchHistory playerInfo={user} viewOthersProfile={Boolean(name)} />
+        </Col>
+        <Col
+          lg={{ span: 4 }}
+          md={{ span: 9 }}
+          sm={{ span: 11 }}
+          className="find-players-container"
+        >
+          <FindMembers playerInfo={user} />
+        </Col>
+      </Row>
     </Container>
   );
 };

@@ -113,7 +113,7 @@ function Board() {
     const svg = svgRef.current;
     const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
     if (x >= 0 && x < boardSize[0] && y >= 0 && y < boardSize[1] && draggable) {
-      currentPiece.move(x, y, board);
+      currentPiece.move(x, y);
       dispatch({ type: "setBoard", value: [...board] });
     }
   };
@@ -247,7 +247,12 @@ function Board() {
         transform={targetTranslate}
       ></image>
       <MoveHint board={board} boardWidth={boardSize[0]} />
-      <Piece board={board} handleMouseDown={handleMouseDown} side={side} />
+      <Piece
+        board={board}
+        handleMouseDown={handleMouseDown}
+        side={side}
+        turnToMove={turnToMove}
+      />
 
       <image
         href="/images/Legal_Capture_Icon/legal_capture.png"

@@ -8,12 +8,11 @@ const useFetchData = () => {
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
-  const [waitForResponse, setWaitForResponse] = useState(false);
+  const [waitForResponse, setWaitForResponse] = useState(true);
 
   useEffect(async () => {
     try {
       if (!isAuthenticated) {
-        setWaitForResponse(true);
         const { user, message, opponentID } = await callAPI(
           "GET",
           "api/user",
@@ -24,7 +23,7 @@ const useFetchData = () => {
           authenticateUser(dispatch, user, opponentID);
         } else if (message) dispatch({ type: "setLoginError", value: message });
         setWaitForResponse(false);
-      }
+      } else setWaitForResponse(false);
     } catch (err) {
       dispatch({ type: "setLoginError", value: err.message });
     }

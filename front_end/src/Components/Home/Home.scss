@@ -4,9 +4,10 @@
   min-width: 330px;
 
   .upload-pic-err {
-    position: absolute;
+    position: fixed;
     top: 3%;
     width: 100%;
+    z-index: 10000;
     background-color: var(--danger);
     color: white;
     font-size: 0.9rem;

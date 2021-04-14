@@ -35,7 +35,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { correct, username } = req.body;
-      const user = await USERDAO.findUser(username);
+      const user = await USERDAO.findUserByUsername(username);
       if (user.failedVerifyAttempt === 5)
         return res.json({
           message:

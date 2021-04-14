@@ -53,6 +53,11 @@
         white-space: nowrap;
         scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
         scrollbar-width: thin;
+
+        a {
+          text-decoration: none;
+          color: hsla(0, 0%, 100%, 0.65);
+        }
       }
     }
   }

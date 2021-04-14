@@ -25,8 +25,9 @@ const appendPiece = ({ board, handleMouseDown }, pieces, choosenSide) => {
 function Piece(props) {
   const pieces = [];
   const side = props.side;
-  appendPiece(props, pieces, side[0]);
-  appendPiece(props, pieces, side[1]);
+  const turnToMove = props.turnToMove;
+  appendPiece(props, pieces, turnToMove ? side[0] : side[1]);
+  appendPiece(props, pieces, turnToMove ? side[1] : side[0]);
 
   return <>{pieces}</>;
 }

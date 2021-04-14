@@ -91,8 +91,9 @@ const Login = () => {
 
   if (loginError) handleError(false, loginError);
   else if (isAuthenticated) {
-    if (isAuthenticated !== "guest") return <Redirect to="/" />;
-    else if (successfullyLogin) return <Redirect to="/" />;
+    if (isAuthenticated !== "guest") {
+      return <Redirect to="/" />;
+    } else if (successfullyLogin) return <Redirect to="/" />;
   }
 
   return (

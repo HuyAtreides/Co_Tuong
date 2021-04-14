@@ -52,7 +52,7 @@ router.get("/callback", checkingSession, (req, res, next) => {
 });
 
 router.use((err, req, res, next) => {
-  req.session.loginError = err.message;
+  req.session.loginError = "Something Wrong Happend. Please Try Again";
   req.session.save((err) => {
     return res.redirect("http://localhost:3000");
   });

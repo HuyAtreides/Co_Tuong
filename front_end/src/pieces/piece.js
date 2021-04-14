@@ -188,7 +188,6 @@ class Piece {
   }
 
   setTransform([xB, yB], board, dispatch) {
-    if (board && board[yB][xB]) this.DOMNode.style.display = "none";
     const translate = `translate(${xB * this.width}, ${yB * this.width})`;
     this.DOMNode.setAttribute("transform", translate);
     if (board) {

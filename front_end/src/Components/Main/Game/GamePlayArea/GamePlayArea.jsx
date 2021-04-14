@@ -4,6 +4,7 @@ import Timer from "../Timer/Timer.jsx";
 import Board from "../Board/Board";
 import "./GamePlayArea.scss";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import GameResult from "./GameResult/GameResult.jsx";
 import Pause from "./Pause/Pause.jsx";
 
@@ -41,7 +42,15 @@ const GamePlayArea = (props) => {
               </Tooltip>
             )}
           >
-            <p className="user-name">{opponentInfo.playername}</p>
+            <p className="user-name">
+              {foundMatch ? (
+                <Link to={`/home/${opponentInfo.playername}`} target="_blank">
+                  {opponentInfo.playername}
+                </Link>
+              ) : (
+                opponentInfo.playername
+              )}
+            </p>
           </OverlayTrigger>
         </div>
         <div className="captured-pieces">
@@ -77,7 +86,11 @@ const GamePlayArea = (props) => {
                 </Tooltip>
               )}
             >
-              <p className="user-name">{playerInfo.username}</p>
+              <p className="user-name">
+                <Link to="/home" target="_blank">
+                  {playerInfo.username}
+                </Link>
+              </p>
             </OverlayTrigger>
           </div>
         </div>

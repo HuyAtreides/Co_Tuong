@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Redirect } from "react-router-dom";
+import useFetchData from "../App/useFetchData.js";
 import {
   Form,
   Container,
@@ -16,27 +17,24 @@ import callAPI from "../App/callAPI.js";
 import useValidateInput from "../Signup/useValidateInput.js";
 import ProfileHeader from "../Home/ProfileHeader/ProfileHeader.jsx";
 
-const Settings = ({ setWaitForResponse }) => {
+const Settings = () => {
   const dispatch = useDispatch();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const [buttonText, setButtonText] = useState("Save");
   const [uploadErr, setUploadErr] = useState(null);
   const [waitForServer, setWaitForServer] = useState(false);
-  const validateInput = useValidateInput(false);
+  const validateInput = useValidateInput(false, true);
+  const [waitForResponse, setWaitForResponse] = useFetchData();
 
   const getChanges = () => {
     const changes = {};
-    if (playerInfo.username !== validateInput.username)
-      changes["username"] = validateInput.username;
-    if (playerInfo.email.value !== validateInput.email) {
-      changes["email"] = { value: validateInput.email, verified: false };
+    const { username, email, lastname, firstname } = validateInput;
+    if (playerInfo.username !== username) changes["username"] = username;
+    if (playerInfo.email.value !== email) {
+      changes["email"] = { value: email, verified: false };
     }
-    if (playerInfo.name.lastname !== validateInput.lastname) {
-      changes["name.lastname"] = validateInput.lastname;
-    }
-    if (playerInfo.name.firstname !== validateInput.firstname) {
-      changes["name.firstname"] = validateInput.firstname;
-    }
+    changes["name.lastname"] = lastname;
+    changes["name.firstname"] = firstname;
     if (validateInput.password) changes["password"] = validateInput.password;
     return changes;
   };
@@ -46,27 +44,44 @@ const Settings = ({ setWaitForResponse }) => {
       event.preventDefault();
       if (waitForServer) return;
       setUploadErr("");
+      validateInput.setError(null);
       const { password, confirmPassword } = validateInput;
-      if (password && password !== confirmPassword) {
+      const missingField = validateInput.handleMissingField(
+        !playerInfo.email.value
+      );
+      if (password !== confirmPassword) {
         validateInput.setConfirmPasswordMess("Password doesn't match");
         return;
       }
-      const changes = getChanges();
-      setWaitForServer(true);
-      const { user, message, ok } = await callAPI(
-        "POST",
-        "api/signup/settings",
-        {
-          changes: changes,
-          username: validateInput.username,
-          email: validateInput.email,
-          user: playerInfo.username,
-        }
-      );
-      setWaitForServer(false);
-      if (user) dispatch({ type: "setPlayerInfo", value: user });
-      else if (message) validateInput.handleError(ok, message);
+      if (
+        !missingField &&
+        !validateInput.invalidEmailMess &&
+        !validateInput.invalidPasswordMess &&
+        !validateInput.invalidUsernameMess &&
+        !validateInput.confirmPasswordMess
+      ) {
+        const changes = getChanges();
+        setWaitForServer(true);
+        const { user, message, ok } = await callAPI(
+          "POST",
+          "api/signup/settings",
+          {
+            changes: changes,
+            currentPassword: validateInput.currentPassword,
+            user: playerInfo.username,
+          }
+        );
+        setWaitForServer(false);
+        if (user) {
+          dispatch({ type: "setPlayerInfo", value: user });
+          setButtonText("Your settings have been saved.");
+          setTimeout(() => {
+            setButtonText("Save");
+          }, 1000);
+        } else if (message) validateInput.handleError(ok, message);
+      }
     } catch (err) {
+      setWaitForServer(false);
       setUploadErr(err.message);
     }
   };
@@ -81,6 +96,11 @@ const Settings = ({ setWaitForResponse }) => {
   }, []);
 
   if (!playerInfo) return <Redirect to="/" />;
+
+  if (waitForResponse)
+    return (
+      <Spinner animation="border" variant="secondary" className="spinner" />
+    );
 
   return (
     <Container fluid className="settings-container">
@@ -99,7 +119,7 @@ const Settings = ({ setWaitForResponse }) => {
               setUploadErr(null);
             }}
           ></i>
-          {uploadErr && validateInput.error}
+          {uploadErr ? uploadErr : validateInput.error}
         </p>
         <Col xs={{ span: 11 }} md={{ span: 7 }}>
           <ProfileHeader
@@ -172,15 +192,36 @@ const Settings = ({ setWaitForResponse }) => {
                 />
               </Col>
             </Form.Group>
+
             <Form.Group as={Row} className="mt-4">
               <Form.Label column sm={2}>
-                Password
+                Current Password
+              </Form.Label>
+              <Col sm={10}>
+                <InputGroup hasValidation>
+                  <Form.Control
+                    type="password"
+                    value={validateInput.currentPassword}
+                    onChange={validateInput.handleCurrentPasswordChange}
+                    isInvalid={validateInput.invalidCurrentPassword !== ""}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validateInput.invalidCurrentPassword}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mt-4">
+              <Form.Label column sm={2}>
+                New Password
               </Form.Label>
               <Col sm={10}>
                 <InputGroup hasValidation className="password-group">
                   <Form.Control
                     type={validateInput.showPassword ? "text" : "password"}
                     value={validateInput.password}
+                    isInvalid={validateInput.invalidPasswordMess !== ""}
                     onChange={validateInput.handlePasswordChange}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -205,9 +246,10 @@ const Settings = ({ setWaitForResponse }) => {
                 </InputGroup>
               </Col>
             </Form.Group>
+
             <Form.Group as={Row} className="mt-4">
               <Form.Label column sm={2}>
-                Confirm Password
+                Confirm New Password
               </Form.Label>
               <Col sm={10}>
                 <InputGroup hasValidation>
@@ -215,6 +257,7 @@ const Settings = ({ setWaitForResponse }) => {
                     type="password"
                     value={validateInput.confirmPassword}
                     onChange={validateInput.handleConfirmPasswordChange}
+                    isInvalid={validateInput.confirmPasswordMess !== ""}
                   />
                   <Form.Control.Feedback type="invalid">
                     {validateInput.confirmPasswordMess}
@@ -222,12 +265,12 @@ const Settings = ({ setWaitForResponse }) => {
                 </InputGroup>
               </Col>
             </Form.Group>
-            <Col>
+            <Col className="mt-4">
               <Button type="submit" className="submit-form-button">
                 {waitForServer ? (
                   <Spinner animation="border" variant="dark" />
                 ) : (
-                  { buttonText }
+                  buttonText
                 )}
               </Button>
             </Col>

@@ -12,12 +12,18 @@
     }
 
     .user-profile-info {
-      width: 45%;
-      align-items: center;
+      width: 65%;
+      .user-name .user-name-lastname {
+        max-width: 150px;
+      }
     }
 
     .setting-profile-info {
       width: auto !important;
+    }
+
+    #other-profile {
+      justify-content: center !important;
     }
   }
 
@@ -105,6 +111,9 @@
         font-size: 1rem;
         font-family: "Montserrat-Regular";
         color: hsla(0, 0%, 100%, 0.65);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         word-break: break-word;
         max-width: 200px;
         margin: 0px;

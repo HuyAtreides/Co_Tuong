@@ -53,12 +53,10 @@ router.get("/callback", checkingSession, (req, res, next) => {
 });
 
 router.use((err, req, res, next) => {
-  if (
-    err.message &&
-    err.message.toLowerCase() === "this authorization code has been used"
-  )
-    return res.redirect("http://localhost:8080/api/auth/facebook");
-  return res.redirect("htpp://localhost:3000/");
+  req.session.loginError = "Something Wrong Happend. Please Try Again";
+  req.session.save((err) => {
+    return res.redirect("http://localhost:3000");
+  });
 });
 
 module.exports = router;

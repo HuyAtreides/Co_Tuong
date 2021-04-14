@@ -200,8 +200,8 @@ class USERDAO {
                 username[0]
               ).toUpperCase()}.svg`,
           name: {
-            firstname: name && name.familyName ? name.familyName : null,
-            lastname: name && name.givenName ? name.givenName : null,
+            firstname: name && name.familyName ? name.familyName : "",
+            lastname: name && name.givenName ? name.givenName : "",
           },
           lang: "English",
           totalGames: { lost: 0, won: 0, draw: 0 },
@@ -277,14 +277,14 @@ class USERDAO {
     try {
       if (changes.password)
         changes.password = await bcrypt.hash(changes.password, 10);
-      const user = await users.findOneAndUpdate(
+      const result = await users.findOneAndUpdate(
         { username: username },
         {
           $set: changes,
         },
         { returnOriginal: false }
       );
-      return user;
+      return result.value;
     } catch (err) {
       throw new Error(err.message);
     }

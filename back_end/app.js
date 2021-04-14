@@ -13,7 +13,7 @@ const uploadsRoutes = require("./routes/uploadsRoute.js");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
-    maxAge: 60000,
+    maxAge: 259200000,
   },
   resave: false,
   saveUninitialized: false,

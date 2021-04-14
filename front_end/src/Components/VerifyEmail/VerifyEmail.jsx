@@ -62,9 +62,10 @@ const VerifyEmail = () => {
     if (!resend) setResend(true);
     setWaitForSendingCode(true);
     setError("");
+    const lastname = playerInfo.name.lastname;
     const { message, code, ok } = await callAPI("POST", "api/verify-email", {
       email: playerInfo.email.value,
-      lastname: playerInfo.name.lastname,
+      lastname: lastname ? lastname : playerInfo.username,
     });
     setWaitForSendingCode(false);
     if (!ok) setError(message);

@@ -16,7 +16,8 @@ const VerifyEmailNote = () => {
     >
       <p>
         Look Like you haven't verified your email. Please click{" "}
-        <Link to="/verify-email">here</Link> to verify your email.
+        <Link to="/verify-email">here</Link> to verify your email or{" "}
+        <Link to="/settings">here</Link> to change your email.
       </p>
       <i className="fas fa-times hide-note" onClick={handleHideNote}></i>
     </div>

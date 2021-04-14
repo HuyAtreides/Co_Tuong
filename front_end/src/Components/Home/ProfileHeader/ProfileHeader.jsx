@@ -11,8 +11,7 @@ const ProfileHeader = (props) => {
   const dispatch = useDispatch();
   const firstname = playerInfo.name.firstname;
   const lastname = playerInfo.name.lastname;
-  const playerFullName =
-    (!firstname ? "" : firstname) + " " + (!lastname ? "" : lastname);
+  const playerFullName = firstname + " " + lastname;
 
   const handleChangeProfilePic = () => {
     const inputElement = document.querySelector("#pic-input");
@@ -65,6 +64,7 @@ const ProfileHeader = (props) => {
         )}
       </div>
       <div
+        id={viewOthersProfile ? "other-profile" : ""}
         className={`user-profile-info ${setting ? "setting-profile-info" : ""}`}
       >
         <div className="user-name-lastname">

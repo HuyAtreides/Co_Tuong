@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import EntryComponent from "./EntryComponent/EntryComponent.jsx";
 import NavBar from "./NavBar/NavBar.jsx";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
+import useFetchData from "../App/useFetchData.js";
 import "./Main.scss";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import Game from "./Game/Game.jsx";
@@ -20,6 +21,7 @@ const Main = (props) => {
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
+  const [waitForResponse, setWaitForResponse] = useFetchData();
 
   useEffect(() => {
     socket.on("connect_error", (err) => {
@@ -74,11 +76,15 @@ const Main = (props) => {
   }, []);
 
   if (loginError) return <Redirect to="/signin" />;
+  if (waitForResponse)
+    return (
+      <Spinner animation="border" variant="secondary" className="spinner" />
+    );
 
   return (
     <Container fluid>
       <div>
-        <NavBar setWaitForResponse={props.setWaitForResponse} />
+        <NavBar setWaitForResponse={setWaitForResponse} />
         {isAuthenticated ? <Game /> : <EntryComponent />}
       </div>
 

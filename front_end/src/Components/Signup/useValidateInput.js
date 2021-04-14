@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useValidateInput = (isSignIn) => {
+const useValidateInput = (isSignIn, settings) => {
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidEmailMess, setInvalidEmailMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
@@ -13,10 +13,18 @@ const useValidateInput = (isSignIn) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordMess, setConfirmPasswordMess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [invalidCurrentPassword, setInvalidCurrentPassword] = useState("");
+
+  const handleCurrentPasswordChange = (event) => {
+    const value = event.currentTarget.value;
+    setInvalidCurrentPassword("");
+    setCurrentPassword(value);
+  };
 
   const handleConfirmPasswordChange = (event) => {
     const value = event.currentTarget.value;
-    if (value !== password || password === "") {
+    if (value !== password) {
       setConfirmPasswordMess("Password doesn't match");
     } else setConfirmPasswordMess("");
     setConfirmPassword(value);
@@ -26,6 +34,7 @@ const useValidateInput = (isSignIn) => {
     const value = event.target.value;
     if (
       !isSignIn &&
+      value &&
       (/[^_a-z0-9-]/i.test(value) || value.length < 3 || value.length > 20)
     ) {
       setInvalidUsernameMess(
@@ -37,9 +46,11 @@ const useValidateInput = (isSignIn) => {
 
   const handlePasswordChange = (event) => {
     const value = event.target.value;
-    if (!isSignIn && value.length < 6) {
+    if (!isSignIn && value && value.length < 6) {
       setInvalidPasswordMess("Password must be atlest 6 characters");
     } else setInvalidPasswordMess("");
+    setInvalidCurrentPassword("");
+    setConfirmPasswordMess("");
     setPassword(value);
   };
 
@@ -60,18 +71,22 @@ const useValidateInput = (isSignIn) => {
     setLastname(value);
   };
 
-  const handleMissingField = () => {
+  const handleMissingField = (dontHaveEmail) => {
     let count = 0;
     if (!username) {
       count += 1;
       setInvalidUsernameMess("Please fill out this field");
     }
-    if (!password) {
+    if (!password && !settings) {
       count += 1;
       setInvalidPasswordMess("Please fill out this field");
     }
+    if (!currentPassword && settings && password) {
+      count += 1;
+      setInvalidCurrentPassword("Please fill out this field");
+    }
 
-    if (!email && !isSignIn) {
+    if (!email && !isSignIn && !dontHaveEmail) {
       count += 1;
       setInvalidEmailMess("Please fill out this field");
     }
@@ -85,8 +100,10 @@ const useValidateInput = (isSignIn) => {
       setInvalidEmailMess(message);
     } else if (/User/.test(message)) {
       setInvalidUsernameMess(message);
-    } else if (/Password/.test(message)) setInvalidPasswordMess(message);
-    else setError(message);
+    } else if (/Password/.test(message)) {
+      if (settings) setInvalidCurrentPassword(message);
+      else setInvalidPasswordMess(message);
+    } else setError(message);
   };
 
   return {
@@ -118,6 +135,9 @@ const useValidateInput = (isSignIn) => {
     invalidPasswordMess,
     invalidUsernameMess,
     error,
+    handleCurrentPasswordChange,
+    currentPassword,
+    invalidCurrentPassword,
   };
 };
 

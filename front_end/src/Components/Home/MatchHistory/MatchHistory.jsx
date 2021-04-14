@@ -38,7 +38,8 @@ const MatchHistory = ({ playerInfo, viewOthersProfile }) => {
           ) : (
             <>
               You need to verify your email to view your match history. Please
-              click <Link to="/verify-email">here</Link> to verify your email.
+              click <Link to="/verify-email">here</Link> to verify your email or{" "}
+              <Link to="/settings">here</Link> to change your email.
             </>
           )}
         </p>
