@@ -3,7 +3,7 @@ import { SocketContext } from "../../../App/context.js";
 import renderInvites from "./renderInvites.js";
 import "./Invites.scss";
 
-const Invites = () => {
+const Invites = ({ lang }) => {
   const [invites, setInvites] = useState([]);
   const socket = useContext(SocketContext);
 
@@ -78,7 +78,7 @@ const Invites = () => {
 
   return (
     <ul className="invites-list">
-      {renderInvites(invites, handleAccept, handleDecline)}
+      {renderInvites(invites, handleAccept, handleDecline, lang)}
     </ul>
   );
 };

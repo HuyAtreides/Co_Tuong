@@ -16,10 +16,11 @@ const NavBar = (props) => {
   const handleSetLang = (event) => {
     const selectedLang = event.currentTarget.text;
     dispatch({ type: "setLang", value: selectedLang });
-    callAPI("POST", "api/setLang", {
-      username: playerInfo.username,
-      choosenLang: selectedLang,
-    });
+    if (playerInfo)
+      callAPI("POST", "api/setLang", {
+        username: playerInfo.username,
+        choosenLang: selectedLang,
+      });
   };
 
   useEffect(() => {
@@ -42,10 +43,10 @@ const NavBar = (props) => {
 
   return (
     <Navbar expand="md" className="nav-bar">
-      <Invites />
+      <Invites lang={lang} />
       <Navbar.Brand>
         <Link to="/" className="link-brand">
-          Xiangqi
+          {lang === "English" ? "Xiangqi" : "Cờ Tướng"}
         </Link>
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -53,7 +54,7 @@ const NavBar = (props) => {
         <Nav className="nav">
           {props.setRedirect ? (
             <Link to="/" className="link nav-link">
-              Play
+              {lang === "English" ? "Play" : "Chơi"}
             </Link>
           ) : null}
           <Link
@@ -69,8 +70,12 @@ const NavBar = (props) => {
             }}
           >
             {isAuthenticated && isAuthenticated !== "guest"
-              ? "Home"
-              : "Sign In"}
+              ? lang === "English"
+                ? "Home"
+                : "Trang Chủ"
+              : lang === "English"
+              ? "Sign In"
+              : "Đăng Nhập"}
           </Link>
           <button
             className="link nav-link logout"
@@ -82,7 +87,7 @@ const NavBar = (props) => {
                   : "none",
             }}
           >
-            Log Out
+            {lang === "English" ? "Log Out" : "Đăng Xuất"}
           </button>
           <Link
             to="/signup"
@@ -94,7 +99,7 @@ const NavBar = (props) => {
                   : "inline",
             }}
           >
-            Sign Up
+            {lang === "English" ? "Sign Up" : "Đăng Ký"}
           </Link>
           <NavDropdown title={lang} id="basic-nav-dropdown">
             <NavDropdown.Item onClick={handleSetLang}>

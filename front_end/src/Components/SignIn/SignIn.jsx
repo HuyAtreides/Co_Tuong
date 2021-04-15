@@ -22,6 +22,7 @@ const Login = () => {
   const [waitForResponse, setWaitForResponse] = useState(false);
   const [waitForServer, setWaitForServer] = useState(false);
   const loginError = useSelector((state) => state.appState.loginError);
+  const lang = useSelector((state) => state.appState.lang);
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
@@ -37,7 +38,7 @@ const Login = () => {
     invalidPasswordMess,
     invalidUsernameMess,
     handleMissingField,
-  } = useValidateInput(true);
+  } = useValidateInput(true, false, lang);
 
   const handleLogin = async (event) => {
     try {
@@ -98,7 +99,7 @@ const Login = () => {
 
   return (
     <Container fluid>
-      <h1>Xiangqi</h1>
+      <h1>{lang === "English" ? "Xiangqi" : "Cờ Tướng"}</h1>
       <Row className="justify-content-center">
         <Col
           md={{ span: 7 }}
@@ -113,7 +114,11 @@ const Login = () => {
                 <Form.Control
                   type="text"
                   isInvalid={invalidUsernameMess !== ""}
-                  placeholder="Username or Email"
+                  placeholder={
+                    lang === "English"
+                      ? "Username or Email"
+                      : "Tên tài khoản hoặc Email"
+                  }
                   onChange={handleUsernameChange}
                   value={username}
                   disabled={waitForResponse || waitForServer}
@@ -129,7 +134,7 @@ const Login = () => {
                 <Form.Control
                   type="password"
                   isInvalid={invalidPasswordMess !== ""}
-                  placeholder="Password"
+                  placeholder={lang === "Engish" ? "Password" : "Mật Khẩu"}
                   onChange={handlePasswordChange}
                   value={password}
                   disabled={waitForResponse || waitForServer}
@@ -142,21 +147,27 @@ const Login = () => {
             <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
-              ) : (
+              ) : lang === "English" ? (
                 "Log In"
+              ) : (
+                "Đăng Nhập"
               )}
             </Button>
             <Button className="log-in-as-guest" onClick={handleLoginAsGuest}>
               {waitForServer ? (
                 <Spinner animation="border" variant="dark" />
-              ) : (
+              ) : lang === "English" ? (
                 "Log In As Guest"
+              ) : (
+                "Khách"
               )}
             </Button>
           </Form>
           <p className="seperator">
             <span></span>
-            <span className="seperator-text">or connect with</span>
+            <span className="seperator-text">
+              {lang === "English" ? "or connect with" : "hoặc đăng nhập với"}
+            </span>
             <span></span>
           </p>
           <div className="social-login">
@@ -174,7 +185,9 @@ const Login = () => {
             </a>
           </div>
           <div className="sign-up-area">
-            <Link to="/signup">Sign Up</Link>
+            <Link to="/signup">
+              {lang === "English" ? "Sign Up" : "Đăng Ký"}
+            </Link>
           </div>
         </Col>
       </Row>

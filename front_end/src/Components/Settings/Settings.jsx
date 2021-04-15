@@ -20,10 +20,13 @@ import ProfileHeader from "../Home/ProfileHeader/ProfileHeader.jsx";
 const Settings = () => {
   const dispatch = useDispatch();
   const playerInfo = useSelector((state) => state.appState.playerInfo);
-  const [buttonText, setButtonText] = useState("Save");
+  const lang = useSelector((state) => state.appState.lang);
+  const [buttonText, setButtonText] = useState(
+    lang === "English" ? "Save" : "Lưu"
+  );
   const [uploadErr, setUploadErr] = useState(null);
   const [waitForServer, setWaitForServer] = useState(false);
-  const validateInput = useValidateInput(false, true);
+  const validateInput = useValidateInput(false, true, lang);
   const [waitForResponse, setWaitForResponse] = useFetchData();
 
   const getChanges = () => {
@@ -50,7 +53,9 @@ const Settings = () => {
         !playerInfo.email.value
       );
       if (password !== confirmPassword) {
-        validateInput.setConfirmPasswordMess("Password doesn't match");
+        validateInput.setConfirmPasswordMess(
+          lang === "English" ? "Password doesn't match" : "Mật khẩu không khớp"
+        );
         return;
       }
       if (
@@ -74,9 +79,13 @@ const Settings = () => {
         setWaitForServer(false);
         if (user) {
           dispatch({ type: "setPlayerInfo", value: user });
-          setButtonText("Your settings have been saved.");
+          setButtonText(
+            lang === "English"
+              ? "Your settings have been saved."
+              : "Thay đổi của bạn đã được lưu"
+          );
           setTimeout(() => {
-            setButtonText("Save");
+            setButtonText(lang === "English" ? "Save" : "Lưu");
           }, 1000);
         } else if (message) validateInput.handleError(ok, message);
       }
@@ -88,10 +97,11 @@ const Settings = () => {
 
   useEffect(() => {
     if (playerInfo) {
-      validateInput.setUsername(playerInfo.username);
-      validateInput.setEmail(playerInfo.email.value);
-      validateInput.setLastname(playerInfo.name.lastname);
-      validateInput.setFirstname(playerInfo.name.firstname);
+      const { username, email, name } = playerInfo;
+      validateInput.setUsername(username ? username : "");
+      validateInput.setEmail(email.value ? email.value : "");
+      validateInput.setLastname(name.lastname ? name.lastname : "");
+      validateInput.setFirstname(name.firstname ? name.firstname : "");
     }
   }, []);
 
@@ -132,11 +142,11 @@ const Settings = () => {
             method="POST"
             onSubmit={handleSaveChange}
           >
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                Username
+                {lang === "English" ? "Username" : "Tên tài khoản"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="text"
@@ -150,11 +160,11 @@ const Settings = () => {
                 </InputGroup>
               </Col>
             </Form.Group>
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
                 Email
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="email"
@@ -168,11 +178,11 @@ const Settings = () => {
                 </InputGroup>
               </Col>
             </Form.Group>
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                Firstname
+                {lang === "English" ? "Firstname" : "Họ"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <Form.Control
                   type="text"
                   value={validateInput.firstname}
@@ -180,11 +190,11 @@ const Settings = () => {
                 />
               </Col>
             </Form.Group>
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                Lastname
+                {lang === "English" ? "Lastname" : "Tên"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <Form.Control
                   type="text"
                   value={validateInput.lastname}
@@ -193,11 +203,11 @@ const Settings = () => {
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                Current Password
+                {lang === "English" ? "Current Password" : "Mật khẩu hiện tại"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="password"
@@ -212,11 +222,11 @@ const Settings = () => {
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                New Password
+                {lang === "English" ? "New Password" : "Mật khẩu mới"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <InputGroup hasValidation className="password-group">
                   <Form.Control
                     type={validateInput.showPassword ? "text" : "password"}
@@ -247,11 +257,13 @@ const Settings = () => {
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} className="mt-4">
+            <Form.Group as={Row} className="mt-4 form-group-row">
               <Form.Label column sm={2}>
-                Confirm New Password
+                {lang === "English"
+                  ? "Confirm New Password"
+                  : "Xác nhận mật khẩu mới"}
               </Form.Label>
-              <Col sm={10}>
+              <Col sm={12} md={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="password"

@@ -22,11 +22,17 @@ const VerifyEmail = () => {
   const [error, setError] = useState("");
   const [waitForSendingCode, setWaitForSendingCode] = useState(false);
   const codeRef = useRef();
+  const lang = useSelector((state) => state.appState.lang);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
 
   const handleVerificationCodeChange = (event) => {
     const value = event.target.value;
-    if (/[^0-9]/.test(value)) setInvalidCodeMess("Invalid verification code");
+    if (/[^0-9]/.test(value))
+      setInvalidCodeMess(
+        lang === "English"
+          ? "Invalid verification code"
+          : "Mã xác nhận không hợp lí"
+      );
     else setInvalidCodeMess("");
     setVerficationCode(value);
   };
@@ -34,7 +40,12 @@ const VerifyEmail = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (waitForResponse || waitForSendingCode) return;
-    if (!verificationCode) setInvalidCodeMess("Please fill in this field");
+    if (!verificationCode)
+      setInvalidCodeMess(
+        lang === "English"
+          ? "Please fill in this field"
+          : "Xin hãy điền thông tin này"
+      );
     else if (!invalidCodeMess) {
       setError(null);
       setWaitForResponse(true);
@@ -52,7 +63,9 @@ const VerifyEmail = () => {
         setVerified(true);
         dispatch({ type: "setPlayerInfo", value: user });
       } else if (message === "Incorrect Code")
-        setInvalidCodeMess("Incorrect Code");
+        setInvalidCodeMess(
+          lang === "English" ? "Incorrect Code" : "Mã xác nhận không chính xác"
+        );
       else setError(message);
     }
   };
@@ -76,7 +89,7 @@ const VerifyEmail = () => {
 
   return (
     <Container fluid>
-      <h1>Xiangqi</h1>
+      <h1>{lang === "English" ? "Xiangqi" : "Cờ Tướng"}</h1>
       <Row className="justify-content-center">
         <Col
           lg={{ span: 3 }}
@@ -88,7 +101,9 @@ const VerifyEmail = () => {
           <Form onSubmit={handleSubmit} method="POST">
             <Form.Group controlId="verificationCode">
               <Form.Label style={{ float: "left" }}>
-                Enter your verification code
+                {lang === "English"
+                  ? "Enter your verification code"
+                  : "Nhập mã xác nhận"}
               </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
@@ -98,7 +113,9 @@ const VerifyEmail = () => {
                   onChange={handleVerificationCodeChange}
                   value={verificationCode}
                   disabled={waitForResponse || waitForSendingCode}
-                  placeholder="Verification Code"
+                  placeholder={
+                    lang === "English" ? "Verification Code" : "Mã Xác Nhận"
+                  }
                 />
                 <Form.Control.Feedback
                   type="invalid"
@@ -112,8 +129,10 @@ const VerifyEmail = () => {
             <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
-              ) : (
+              ) : lang === "English" ? (
                 "Submit"
+              ) : (
+                "Xác Nhận Email"
               )}
             </Button>
             <Button
@@ -124,9 +143,15 @@ const VerifyEmail = () => {
               {waitForSendingCode ? (
                 <Spinner animation="border" variant="dark" />
               ) : resend ? (
-                "Resend Verification Code"
-              ) : (
+                lang === "English" ? (
+                  "Resend Verification Code"
+                ) : (
+                  "Gửi lại Mã Xác Nhận"
+                )
+              ) : lang === "English" ? (
                 "Send Verification Code"
+              ) : (
+                "Gửi Mã Xác Nhận"
               )}
             </Button>
           </Form>

@@ -16,6 +16,7 @@ const Main = (props) => {
   const [connectionError, setConnectionError] = useState(null);
   const socket = useContext(SocketContext);
   const store = useStore();
+  const lang = useSelector((state) => state.appState.lang);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
   const isAuthenticated = useSelector(
@@ -25,13 +26,27 @@ const Main = (props) => {
 
   useEffect(() => {
     socket.on("connect_error", (err) => {
+      let errMess;
+      if (/your account/.test(err))
+        errMess =
+          lang === "English"
+            ? err.message
+            : "Kết nối đã đóng vì tài khoản của bạn được đặng nhập từ nơi khác";
+      else errMess = err.message;
       setConnectionError(err.message);
       socket.close();
     });
 
     socket.on("connect", () => {
-      if (connectionError === "The connection was closed") {
-        setConnectionError("Successfully reconnect");
+      if (
+        connectionError === "The connection was closed" ||
+        connectionError === "Kết nối đã đóng"
+      ) {
+        setConnectionError(
+          lang === "English"
+            ? "Successfully reconnect"
+            : "Kết nối lại thành công"
+        );
         setTimeout(() => {
           setConnectionError(null);
         }, 1000);
@@ -48,13 +63,22 @@ const Main = (props) => {
     socket.on("disconnect", (reason) => {
       const foundMatch = store.getState().gameState.foundMatch;
       if (!foundMatch) {
-        dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+        dispatch({
+          type: "setFindingMatch",
+          value:
+            lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng",
+        });
         setTimeout(() => {
-          dispatch({ type: "setFindingMatch", value: "Play" });
+          dispatch({
+            type: "setFindingMatch",
+            value: lang === "English" ? "Play" : "Chơi",
+          });
         }, 700);
       }
       if (reason !== "io client disconnect") {
-        setConnectionError("The connection was closed");
+        setConnectionError(
+          lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
+        );
         socket.open();
         if (foundMatch) {
           dispatch({ type: "setGameResult", value: undefined });
@@ -63,7 +87,10 @@ const Main = (props) => {
             value: {
               from: "",
               className: "game-message",
-              message: "The connection was closed",
+              message:
+                lang === "English"
+                  ? "Connection Was Closed"
+                  : "Kết nối đã đóng",
             },
           });
         }
@@ -89,7 +116,7 @@ const Main = (props) => {
       </div>
 
       {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
-        <VerifyEmailNote />
+        <VerifyEmailNote lang={lang} />
       ) : null}
       {connectionError ? <Warning connectionError={connectionError} /> : null}
     </Container>

@@ -19,6 +19,7 @@ const Signup = () => {
   const isAuthenticated = useSelector(
     (state) => state.appState.isAuthenticated
   );
+  const lang = useSelector((state) => state.appState.lang);
   const authenticateUser = useContext(AuthenticateUserContext);
   const [waitForResponse, setWaitForResponse] = useState(false);
   const {
@@ -45,7 +46,7 @@ const Signup = () => {
     handleConfirmPasswordChange,
     confirmPasswordMess,
     setConfirmPasswordMess,
-  } = useValidateInput(false);
+  } = useValidateInput(false, false, lang);
 
   const handleSignUp = async (event) => {
     try {
@@ -54,7 +55,9 @@ const Signup = () => {
       setError("");
       const missingField = handleMissingField();
       if (confirmPassword !== password) {
-        setConfirmPasswordMess("Password doesn't match");
+        setConfirmPasswordMess(
+          lang === "English" ? "Password doesn't match" : "Mật khẩu không khớp"
+        );
         return;
       }
       if (
@@ -94,7 +97,7 @@ const Signup = () => {
 
   return (
     <Container fluid>
-      <h1>Xiangqi</h1>(
+      <h1>{lang === "English" ? "Xiangqi" : "Cờ Tướng"}</h1>(
       <Row className="justify-content-center">
         <Col
           md={{ span: 7 }}
@@ -105,7 +108,9 @@ const Signup = () => {
           {error ? <p className="error-message">{error}</p> : null}
           <Form onSubmit={handleSignUp} method="POST">
             <Form.Group controlId="username">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>
+                {lang === "English" ? "Username" : "Tên tài khoản"}
+              </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="text"
@@ -121,7 +126,7 @@ const Signup = () => {
             </Form.Group>
 
             <Form.Group controlId="firstname">
-              <Form.Label>Firstname</Form.Label>
+              <Form.Label>{lang === "English" ? "Firstname" : "Họ"}</Form.Label>
               <Form.Control
                 type="text"
                 onChange={handleFirstnameChange}
@@ -131,7 +136,7 @@ const Signup = () => {
             </Form.Group>
 
             <Form.Group controlId="lastname">
-              <Form.Label>Lastname</Form.Label>
+              <Form.Label>{lang === "English" ? "Lastname" : "tên"}</Form.Label>
               <Form.Control
                 type="text"
                 onChange={handleLastnameChange}
@@ -156,7 +161,9 @@ const Signup = () => {
               </InputGroup>
             </Form.Group>
             <Form.Group controlId="password">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>
+                {lang === "English" ? "Password" : "Mật Khẩu"}
+              </Form.Label>
               <InputGroup hasValidation className="password-group">
                 <Form.Control
                   type={showPassword ? "text" : "password"}
@@ -176,12 +183,20 @@ const Signup = () => {
                     setShowPassword(!showPassword);
                   }}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword
+                    ? lang === "English"
+                      ? "Hide"
+                      : "Ẩn"
+                    : lang === "English"
+                    ? "Show"
+                    : "Hiện"}
                 </button>
               </InputGroup>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Confirm Password</Form.Label>
+              <Form.Label>
+                {lang === "English" ? "Confirm Password" : "Xác nhận mật khẩu"}
+              </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   type="password"
@@ -198,14 +213,18 @@ const Signup = () => {
             <Button type="submit" className="submit-form-button">
               {waitForResponse ? (
                 <Spinner animation="border" variant="dark" />
-              ) : (
+              ) : lang === "English" ? (
                 "Submit"
+              ) : (
+                "Đăng Ký"
               )}
             </Button>
           </Form>
           <p className="seperator">
             <span></span>
-            <span className="seperator-text">or connect with</span>
+            <span className="seperator-text">
+              {lang === "English" ? "or connect with" : "hoặc đăng nhập với"}
+            </span>
             <span></span>
           </p>
           <div className="social-login">

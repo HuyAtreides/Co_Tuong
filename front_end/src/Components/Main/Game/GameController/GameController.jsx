@@ -8,6 +8,7 @@ import PlayWithFriend from "./PlayWithFriend/PlayWithFriend.jsx";
 
 const GameController = (props) => {
   const dispatch = useDispatch();
+  const lang = useSelector((state) => state.appState.lang);
   const [playWithFriendText, setPlayWithFriendText] = useState(
     "Play With Friend"
   );
@@ -20,7 +21,9 @@ const GameController = (props) => {
 
   const handlePlayWithFriend = () => {
     if (!socket.connected) {
-      setPlayWithFriendText("Connection Was Closed");
+      setPlayWithFriendText(
+        lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
+      );
       setTimeout(() => {
         setPlayWithFriendText("Play With Friend");
       }, 700);
@@ -29,7 +32,10 @@ const GameController = (props) => {
 
   const handlePlay = () => {
     if (!socket.connected) {
-      dispatch({ type: "setFindingMatch", value: "Connection Was Closed" });
+      dispatch({
+        type: "setFindingMatch",
+        value: lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng",
+      });
       setTimeout(() => {
         dispatch({ type: "setFindingMatch", value: "Play" });
       }, 700);
@@ -81,12 +87,22 @@ const GameController = (props) => {
     });
 
     socket.on("findMatchCanceled", () => {
-      dispatch({ type: "setFindingMatch", value: "play" });
+      dispatch({ type: "setFindingMatch", value: "Play" });
     });
 
     return () => {
       socket.emit("cancelFindMatch");
     };
+  }, []);
+
+  useEffect(() => {
+    setPlayWithFriendText(
+      lang === "English" ? "Play With Friend" : "Chơi Với Bạn"
+    );
+    dispatch({
+      type: "setFindingMatch",
+      value: lang === "English" ? "Play" : "Chơi",
+    });
   }, []);
 
   return (
@@ -100,7 +116,7 @@ const GameController = (props) => {
               onClick={handleSwitchSide}
               disabled={findingMatch === true || findingMatch === "Waiting..."}
             >
-              Red
+              {lang === "English" ? "Red" : "Đỏ"}
             </Button>
             <Button
               className="black-side"
@@ -108,7 +124,7 @@ const GameController = (props) => {
               onClick={handleSwitchSide}
               disabled={findingMatch === true || findingMatch === "Waiting..."}
             >
-              Black
+              {lang === "English" ? "Black" : "Đen"}
             </Button>
           </div>
           <div className="time-select-container">
@@ -125,22 +141,22 @@ const GameController = (props) => {
               style={{ display: props.timeSelectorDisplay }}
             >
               <Button onClick={handleSelectTime} value="1">
-                1 min
+                1 {lang === "English" ? "min" : "phút"}
               </Button>
               <Button onClick={handleSelectTime} value="3">
-                3 min
+                3 {lang === "English" ? "min" : "phút"}
               </Button>
               <Button onClick={handleSelectTime} value="5">
-                5 min
+                5 {lang === "English" ? "min" : "phút"}
               </Button>
               <Button onClick={handleSelectTime} value="10">
-                10 min
+                10 {lang === "English" ? "min" : "phút"}
               </Button>
               <Button onClick={handleSelectTime} value="15">
-                15 min
+                15 {lang === "English" ? "min" : "phút"}
               </Button>
               <Button onClick={handleSelectTime} value="30">
-                30 min
+                30 {lang === "English" ? "min" : "phút"}
               </Button>
             </div>
           </div>
@@ -154,7 +170,9 @@ const GameController = (props) => {
             {playWithFriendText}
           </Button>
           <Button className="center-board" onClick={props.handleCenterBoard}>
-            {`Center Board: ${props.centerBoard ? "On" : "Off"}`}
+            {lang === "English"
+              ? `Center Board: ${props.centerBoard ? "On" : "Off"}`
+              : `Canh Giữa Bàn Cờ:  ${props.centerBoard ? "Bật" : "Tắt"}`}
           </Button>
         </div>
       ) : (

@@ -18,23 +18,23 @@ const Home = (props) => {
   const loginError = useSelector((state) => state.appState.loginError);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const [waitForResponse, setWaitForResponse] = useState(false);
-  const [user, setUser] = useState(null);
 
   useEffect(async () => {
     try {
       if (loginError) return;
       let response;
+      setWaitForResponse(true);
       if (!name) response = await callAPI("GET", "api/user");
       else
         response = await callAPI("POST", "api/user", {
           username: name,
         });
+      setWaitForResponse(false);
       const { user, message } = response;
-      if (user) setUser(user);
+      if (user) dispatch({ type: "setPlayerInfo", value: user });
       else if (message) dispatch({ type: "setLoginError", value: message });
       else if (!user) {
-        if (playerInfo) setUser(playerInfo);
-        else setRedirect(true);
+        setRedirect(true);
       }
     } catch (err) {
       dispatch({ type: "setLoginError", value: err.message });
@@ -43,7 +43,7 @@ const Home = (props) => {
 
   if (redirect) return <Redirect to="/" />;
   if (loginError) return <Redirect to="/signin" />;
-  if (!user || waitForResponse)
+  if (!playerInfo || waitForResponse)
     return (
       <Spinner animation="border" variant="secondary" className="spinner" />
     );
@@ -75,11 +75,14 @@ const Home = (props) => {
         >
           <ProfileHeader
             setError={setError}
-            playerInfo={user}
+            playerInfo={playerInfo}
             viewOthersProfile={Boolean(name)}
           />
-          <ProfileInfo playerInfo={user} />
-          <MatchHistory playerInfo={user} viewOthersProfile={Boolean(name)} />
+          <ProfileInfo playerInfo={playerInfo} />
+          <MatchHistory
+            playerInfo={playerInfo}
+            viewOthersProfile={Boolean(name)}
+          />
         </Col>
         <Col
           lg={{ span: 4 }}
@@ -87,7 +90,7 @@ const Home = (props) => {
           sm={{ span: 11 }}
           className="find-players-container"
         >
-          <FindMembers playerInfo={user} />
+          <FindMembers playerInfo={playerInfo} />
         </Col>
       </Row>
     </Container>

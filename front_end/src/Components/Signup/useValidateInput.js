@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useValidateInput = (isSignIn, settings) => {
+const useValidateInput = (isSignIn, settings, lang) => {
   const [invalidUsernameMess, setInvalidUsernameMess] = useState("");
   const [invalidEmailMess, setInvalidEmailMess] = useState("");
   const [invalidPasswordMess, setInvalidPasswordMess] = useState("");
@@ -25,7 +25,9 @@ const useValidateInput = (isSignIn, settings) => {
   const handleConfirmPasswordChange = (event) => {
     const value = event.currentTarget.value;
     if (value !== password) {
-      setConfirmPasswordMess("Password doesn't match");
+      setConfirmPasswordMess(
+        lang === "English" ? "Password doesn't match" : "Mật khẩu không khớp"
+      );
     } else setConfirmPasswordMess("");
     setConfirmPassword(value);
   };
@@ -38,7 +40,9 @@ const useValidateInput = (isSignIn, settings) => {
       (/[^_a-z0-9-]/i.test(value) || value.length < 3 || value.length > 20)
     ) {
       setInvalidUsernameMess(
-        "Username must be between 3-20 characters long and use only Latin letters and numbers"
+        lang === "English"
+          ? "Username must be between 3-20 characters long and use only Latin letters and numbers"
+          : "Tên tài khoản phải đó độ dài từ 3-20 và chỉ chứa chữ Latin và số."
       );
     } else setInvalidUsernameMess("");
     setUsername(value);
@@ -47,7 +51,11 @@ const useValidateInput = (isSignIn, settings) => {
   const handlePasswordChange = (event) => {
     const value = event.target.value;
     if (!isSignIn && value && value.length < 6) {
-      setInvalidPasswordMess("Password must be atlest 6 characters");
+      setInvalidPasswordMess(
+        lang === "English"
+          ? "Password must be atlest 6 characters"
+          : "Mật khẩu phải có ít nhật 6 ký tự"
+      );
     } else setInvalidPasswordMess("");
     setInvalidCurrentPassword("");
     setConfirmPasswordMess("");
@@ -57,7 +65,11 @@ const useValidateInput = (isSignIn, settings) => {
   const handleEmailChange = (event) => {
     const value = event.target.value;
     if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.\-]+$/.test(value) || /\.\./.test(value))
-      setInvalidEmailMess("Invalid email address");
+      setInvalidEmailMess(
+        lang === "English"
+          ? "Invalid email address"
+          : "Địa chỉ email không hợp lệ"
+      );
     else setInvalidEmailMess("");
     setEmail(value);
   };
@@ -73,22 +85,26 @@ const useValidateInput = (isSignIn, settings) => {
 
   const handleMissingField = (dontHaveEmail) => {
     let count = 0;
+    const message =
+      lang === "English"
+        ? "Please fill out this field"
+        : "Xin hãy điền thông tin này";
     if (!username) {
       count += 1;
-      setInvalidUsernameMess("Please fill out this field");
+      setInvalidUsernameMess(message);
     }
     if (!password && !settings) {
       count += 1;
-      setInvalidPasswordMess("Please fill out this field");
+      setInvalidPasswordMess(message);
     }
     if (!currentPassword && settings && password) {
       count += 1;
-      setInvalidCurrentPassword("Please fill out this field");
+      setInvalidCurrentPassword(message);
     }
 
     if (!email && !isSignIn && !dontHaveEmail) {
       count += 1;
-      setInvalidEmailMess("Please fill out this field");
+      setInvalidEmailMess(message);
     }
     return count !== 0;
   };
@@ -97,12 +113,18 @@ const useValidateInput = (isSignIn, settings) => {
     if (!ok) {
       setError(message);
     } else if (/Email/.test(message) && !isSignIn) {
-      setInvalidEmailMess(message);
+      setInvalidEmailMess(
+        lang === "English" ? message : "Email đã được sử dụng"
+      );
     } else if (/User/.test(message)) {
-      setInvalidUsernameMess(message);
+      setInvalidUsernameMess(
+        lang === "English" ? message : "Tên tài khoản đã được sử dụng"
+      );
     } else if (/Password/.test(message)) {
-      if (settings) setInvalidCurrentPassword(message);
-      else setInvalidPasswordMess(message);
+      const invalidMess =
+        lang === "English" ? message : "Mật khảu không chính xác";
+      if (settings) setInvalidCurrentPassword(invalidMess);
+      else setInvalidPasswordMess(invalidMess);
     } else setError(message);
   };
 

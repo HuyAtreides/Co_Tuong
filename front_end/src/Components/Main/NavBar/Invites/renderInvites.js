@@ -1,6 +1,6 @@
-import { Button, Tooltip, OverlayTrigger, Overlay } from "react-bootstrap";
+import { Button, Tooltip, OverlayTrigger } from "react-bootstrap";
 
-const renderInvites = (invites, handleAccept, handleDecline) => {
+const renderInvites = (invites, handleAccept, handleDecline, lang) => {
   return invites.map((value, index) => {
     const { playername, photo, time, cancelInvite } = value;
     return (
@@ -19,8 +19,12 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
 
             <span id={cancelInvite ? "cancel-invite" : "invite-text"}>
               {cancelInvite
-                ? " canceled invite"
-                : ` invites you to a game (${time} min)`}
+                ? lang === "English"
+                  ? " canceled invite"
+                  : " hủy lời mời"
+                : lang === "English"
+                ? ` invites you to a game (${time} min)`
+                : ` mời bạn vào trận (${time} phút)`}
             </span>
           </p>
           <div className="btn-container">
@@ -30,7 +34,7 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
               playername={playername}
               disabled={cancelInvite}
             >
-              Accept
+              {lang === "English" ? "Accept" : "Đồng Ý"}
             </Button>
             <Button
               onClick={handleDecline}
@@ -38,7 +42,7 @@ const renderInvites = (invites, handleAccept, handleDecline) => {
               playername={playername}
               disabled={cancelInvite}
             >
-              Decline
+              {lang === "English" ? "Decline" : "Từ Chối"}
             </Button>
           </div>
         </div>

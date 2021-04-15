@@ -15,7 +15,9 @@
       position: relative;
       div {
         width: 25px;
+        height: 25px;
         img {
+          height: 100%;
           width: 100%;
         }
       }
@@ -190,7 +192,9 @@
     cursor: pointer;
     .img-container {
       width: 33px;
+      height: 33px;
       img {
+        height: 100%;
         width: 100%;
       }
     }

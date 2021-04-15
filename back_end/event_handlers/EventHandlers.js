@@ -89,6 +89,7 @@ class EventHandlers {
     socket.gameFinished = false;
     curSocket.gameFinished = false;
     curSocket.time = time;
+    socket.time = time;
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
     socket.emit("foundMatch", player2, socket.firstMove, time);
