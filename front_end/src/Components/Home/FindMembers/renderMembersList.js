@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
 
-const renderMemberLists = (members, username) => {
+const renderMemberLists = (members, username, lang) => {
   const option = { year: "numeric", month: "long", day: "numeric" };
   return members.map((member, index) => {
     if (member.guest || member.username === username) return null;
     const { lastname, firstname } = member.name;
     const fullname =
       (firstname ? firstname : "") + " " + (lastname ? lastname : "");
-    const joinDate = new Date(member.join).toLocaleDateString("us-US", option);
+    const joinDate = new Date(member.join).toLocaleDateString(
+      lang === "English" ? "us-US" : "vi-VI",
+      option
+    );
 
     return (
       <li className="member" key={`member-${index}`}>
@@ -28,7 +31,7 @@ const renderMemberLists = (members, username) => {
             </div>
             <div className="join-date-and-name">
               <p>{fullname}</p>
-              <p>{"Join: " + joinDate}</p>
+              <p>{(lang === "English" ? "Join: " : "Tham Gia: ") + joinDate}</p>
             </div>
           </div>
         </Link>

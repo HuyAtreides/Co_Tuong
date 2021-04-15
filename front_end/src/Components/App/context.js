@@ -9,11 +9,13 @@ const AuthenticateUserContext = React.createContext();
 const authenticateUser = (dispatch, user, opponentID) => {
   if (socket.guest) socket.disconnect();
   socket.guest = user.guest;
+
+  dispatch({ type: "resetBoardState", value: 520 });
+  dispatch({ type: "resetGameState" });
   dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
   dispatch({ type: "setPlayerInfo", value: user });
+
   if (user.lang) dispatch({ type: "setLang", value: user.lang });
-  dispatch({ type: "resetGameState" });
-  dispatch({ type: "resetBoardState", value: 520 });
   socket.auth = {
     player: {
       playername: user.username,

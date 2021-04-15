@@ -1,4 +1,4 @@
-const renderPendingPlayers = (pendingPlayers, cancelInvite) => {
+const renderPendingPlayers = (pendingPlayers, cancelInvite, lang) => {
   return pendingPlayers.map((value, index) => {
     const { username, photo } = value;
     return (
@@ -8,7 +8,13 @@ const renderPendingPlayers = (pendingPlayers, cancelInvite) => {
         </div>
         <p>{username}</p>
         <p className={value.declineInvite ? "decline" : "pending"}>
-          {value.declineInvite ? "Declined" : "Pending..."}
+          {value.declineInvite
+            ? lang === "English"
+              ? "Declined"
+              : "Từ Chối"
+            : lang === "English"
+            ? "Pending..."
+            : "Đang Chờ..."}
         </p>
         <i
           className="fas fa-times"

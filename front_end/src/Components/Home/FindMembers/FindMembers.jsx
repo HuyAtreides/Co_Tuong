@@ -9,7 +9,7 @@ const FindPlayer = ({ playerInfo }) => {
   const [value, setValue] = useState("");
   const [members, setMembers] = useState([]);
   const [errorMess, setErrorMess] = useState(null);
-
+  const lang = useSelector((state) => state.appState.lang);
   const replaceSpecialCharacters = (str) => {
     return str.replace(/[^0-9a-zA-Z-]+/g, "");
   };
@@ -26,7 +26,7 @@ const FindPlayer = ({ playerInfo }) => {
         const reCheck = document.querySelector("#member-name-input").value;
         if (!players) return;
         const username = playerInfo.username;
-        if (reCheck) setMembers(renderMembersList(players, username));
+        if (reCheck) setMembers(renderMembersList(players, username, lang));
       } else setMembers([]);
     } catch (err) {
       setErrorMess(err.message);
@@ -44,7 +44,9 @@ const FindPlayer = ({ playerInfo }) => {
 
   return (
     <div className="find-players">
-      <p className="members-title">Members</p>
+      <p className="members-title">
+        {lang === "English" ? "Members" : "Thành Viên"}
+      </p>
       <div className="search-area">
         <OverlayTrigger
           placement="top"
@@ -52,7 +54,9 @@ const FindPlayer = ({ playerInfo }) => {
           show={errorMess !== null}
         >
           <input
-            placeholder="Search Members..."
+            placeholder={
+              lang === "English" ? "Search Members..." : "Tìm Thành Viên..."
+            }
             value={value}
             onChange={handleOnChange}
             id="member-name-input"

@@ -11,8 +11,10 @@
     position: static;
     max-height: 13rem;
     background-color: #312e2b;
+
     li {
       position: relative;
+      z-index: 10000;
       div {
         width: 25px;
         height: 25px;

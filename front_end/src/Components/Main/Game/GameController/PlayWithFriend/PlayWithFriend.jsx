@@ -7,7 +7,7 @@ import callAPI from "../../../../App/callAPI.js";
 import { SocketContext } from "../../../../App/context.js";
 import { useSelector } from "react-redux";
 
-const PlayWithFriend = (props) => {
+const PlayWithFriend = ({ goBack, lang }) => {
   const [input, setInput] = useState("");
   const [playersList, setPlayersList] = useState([]);
   const [waitForResponse, setWaitForResponse] = useState(false);
@@ -49,7 +49,11 @@ const PlayWithFriend = (props) => {
           setPlayersList(renderPlayersList(players, handleSelectPlayer, name));
       } else setPlayersList([]);
     } catch (_) {
-      handleCanotSendInvite("Something went wrong there. Try again");
+      handleCanotSendInvite(
+        lang === "English"
+          ? "Something went wrong there. Try again"
+          : "Đã xảy ra lỗi. Xin hãy thử lại"
+      );
     }
   };
 
@@ -89,7 +93,11 @@ const PlayWithFriend = (props) => {
         if (players.length && players[0].username !== playerInfo.username) {
           if (players[0].socketID) {
             if (pendingPlayers.length + 1 > 5) {
-              handleCanotSendInvite("You have sent too many invites");
+              handleCanotSendInvite(
+                lang === "English"
+                  ? "You have sent too many invites"
+                  : "Bạn đã gửi quá nhiều lời mời"
+              );
               return;
             }
             setInvitedPlayer(players[0]);
@@ -100,11 +108,23 @@ const PlayWithFriend = (props) => {
                 players[0].username
               );
             });
-          } else handleCanotSendInvite(`${players[0].username} isn't online`);
-        } else handleCanotSendInvite("user not found");
+          } else
+            handleCanotSendInvite(
+              `${players[0].username} ${
+                lang === "English" ? "isn't" : "không"
+              } online`
+            );
+        } else
+          handleCanotSendInvite(
+            lang === "English" ? "user not found" : "không tìm thấy"
+          );
       }
     } catch (_) {
-      handleCanotSendInvite("Something went wrong there. Try again");
+      handleCanotSendInvite(
+        lang === "English"
+          ? "Something went wrong there. Try again"
+          : "Đã xảy ra lỗi. Xin hãy thử lại"
+      );
     }
   };
 
@@ -178,9 +198,9 @@ const PlayWithFriend = (props) => {
 
   return (
     <div className="play-with-friend-container">
-      <i className="fas fa-arrow-left fa-2x" onClick={props.return}></i>
+      <i className="fas fa-arrow-left fa-2x" onClick={goBack}></i>
       <ul className="players-pending players-list">
-        {renderPendingPlayers(pendingPlayers, cancelInvite)}
+        {renderPendingPlayers(pendingPlayers, cancelInvite, lang)}
       </ul>
       <div className="btn-container">
         <form
@@ -192,7 +212,7 @@ const PlayWithFriend = (props) => {
           <input
             id="player-name-search"
             type="text"
-            placeholder="Search..."
+            placeholder={lang === "English" ? "Search..." : "Tìm kiếm..."}
             onInput={handleOnChange}
             value={input}
           />
@@ -208,8 +228,10 @@ const PlayWithFriend = (props) => {
                 variant="info"
                 style={{ width: "1.5rem", height: "1.5rem" }}
               />
-            ) : (
+            ) : lang === "English" ? (
               "Invite"
+            ) : (
+              <>&nbsp;&nbsp;Mời&nbsp;&nbsp;</>
             )}
           </Button>
           <Overlay target={target.current} show={show !== ""}>
@@ -218,7 +240,7 @@ const PlayWithFriend = (props) => {
           <ul className="players-list">{playersList}</ul>
         </form>
         <Button className="invite-link" onClick={handleGenerateInviteLink}>
-          Invite Link
+          {lang === "English" ? "Invite Link" : "Link Mời"}
         </Button>
         <div
           className="link-container"
@@ -236,12 +258,12 @@ const PlayWithFriend = (props) => {
             onClick={handleCopyLink}
             ref={copyButton}
           >
-            Copy
+            {lang === "English" ? "Copy" : "Sao Chép"}
           </button>
           <Overlay placement="top" show={showText} target={copyButton.current}>
             {({ placement, arrowProps, show: _show, popper, ...props }) => (
               <div {...props} className="copied">
-                Copied
+                {lang === "English" ? "Copied" : "Đã Sao Chép"}
               </div>
             )}
           </Overlay>

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import GameResult from "./GameResult/GameResult.jsx";
 import Pause from "./Pause/Pause.jsx";
 
-const GamePlayArea = (props) => {
+const GamePlayArea = ({ lang }) => {
   const opponentTimeLeftToMove = useSelector(
     (state) => state.gameState.opponentTimeLeftToMove
   );
@@ -47,8 +47,10 @@ const GamePlayArea = (props) => {
                 <Link to={`/home/${opponentInfo.playername}`} target="_blank">
                   {opponentInfo.playername}
                 </Link>
-              ) : (
+              ) : lang === "English" ? (
                 opponentInfo.playername
+              ) : (
+                "Đối Thủ"
               )}
             </p>
           </OverlayTrigger>

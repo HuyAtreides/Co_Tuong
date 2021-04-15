@@ -10,6 +10,7 @@ import MoveHint from "./MoveHint/MoveHint.jsx";
 function Board() {
   const dispatch = useDispatch();
   const store = useStore();
+  const lang = useSelector((state) => state.appState.lang);
   const board = useSelector((state) => state.boardState.board);
   const targetDisplay = useSelector((state) => state.boardState.targetDisplay);
   const boardSize = useSelector((state) => state.boardState.boardSize);
@@ -210,16 +211,19 @@ function Board() {
     if (turnToMove && !draggable) {
       const lostReason = PieceClass.isLost(board, side[1]);
       if (lostReason) {
-        const listItemRef = React.createRef();
+        let message = lostReason;
+        if (lang !== "English")
+          message = lostReason === "Checkmate" ? "Chiếu Bí" : "Hết Cờ";
         dispatch({ type: "setGameResult", value: "Lose" });
         dispatch({
           type: "setMessage",
           value: {
             type: "game result message",
-            winner: `${opponentInfo.playername} Won - `,
-            reason: lostReason,
+            winner: `${opponentInfo.playername} ${
+              lang === "English" ? "Won" : "Thắng"
+            } - `,
+            reason: message,
             className: "game-message",
-            ref: listItemRef,
           },
         });
         socket.emit("gameFinish", ["Won", lostReason]);

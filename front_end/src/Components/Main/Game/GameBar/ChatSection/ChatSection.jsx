@@ -11,9 +11,10 @@ const ChatSection = () => {
   const socket = useContext(SocketContext);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef();
+  const lang = useSelector((state) => state.appState.lang);
   const messages = useSelector((state) => state.gameState.messages);
   const [hideChat, setHideChat] = useState(false);
-  const displayMessages = renderMessages(messages);
+  const displayMessages = renderMessages(messages, lang);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
@@ -64,7 +65,7 @@ const ChatSection = () => {
 
   return hideChat ? (
     <Button className="show-chat" onClick={handleShowChat}>
-      Show Chat
+      {lang === "English" ? "Show Chat" : "Hiện Chat"}
       <DrawOffer display="none" />
     </Button>
   ) : (
@@ -83,12 +84,12 @@ const ChatSection = () => {
       <form className="chat-input" onSubmit={handleSendMessage}>
         <input
           type="text"
-          placeholder="Message..."
+          placeholder={lang === "English" ? "Message..." : "Tin Nhắn..."}
           onChange={handleOnChange}
           value={input}
         />
         <Button className="send-btn" type="submit">
-          Send
+          {lang === "English" ? "Send" : "Gửi"}
         </Button>
       </form>
     </div>

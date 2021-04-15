@@ -11,19 +11,22 @@ const GameResult = () => {
   const gameResultDisplay = useSelector(
     (state) => state.gameState.gameResultDisplay
   );
+  const lang = useSelector((state) => state.appState.lang);
   const side = useSelector((state) => state.boardState.side);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
-  let displayGameResult = "Draw";
+  const side1 = side[1].charAt(0).toUpperCase() + side[1].slice(1);
+  const side0 = side[0].charAt(0).toUpperCase() + side[0].slice(1);
+  let displayGameResult = lang == "English" ? "Draw" : "Hòa";
 
   if (gameResult === "Won") {
     displayGameResult = `${
-      side[1].charAt(0).toUpperCase() + side[1].slice(1)
-    } Won`;
+      lang === "English" ? side1 : side1 === "Red" ? "Đỏ" : "Đen"
+    } ${lang === "English" ? "Won" : "Thắng"}`;
   } else if (gameResult === "Lose")
     displayGameResult = `${
-      side[0].charAt(0).toUpperCase() + side[0].slice(1)
-    } Won`;
+      lang === "English" ? side0 : side0 === "Red" ? "Đỏ" : "Đen"
+    } ${lang === "English" ? "Won" : "Thắng"}`;
 
   const handleHideGameResult = () => {
     dispatch({ type: "setGameResultDisplay", value: "none" });

@@ -180,8 +180,7 @@ class Piece {
   }
 
   animateMove([newRow, newCol], board, dispatch) {
-    const [curRow, curCol] = this.position;
-    this.DOMNode = document.querySelector(`#p${curRow}${curCol}`);
+    const curCol = this.position[1];
     if (curCol === newCol) {
       this.moveVertical([newRow, newCol], board, dispatch);
     } else this.moveDiagonal([newRow, newCol], board, dispatch);

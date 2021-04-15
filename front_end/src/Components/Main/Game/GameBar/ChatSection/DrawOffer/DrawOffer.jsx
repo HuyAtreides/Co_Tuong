@@ -10,6 +10,7 @@ import {
 const DrawOffer = (props) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
+  const lang = useSelector((state) => state.appState.lang);
   const setMoveTimer = useContext(SetMoveTimerContext);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
@@ -25,7 +26,7 @@ const DrawOffer = (props) => {
       value: {
         type: "game result message",
         winner: "",
-        reason: "Game Draw By Agreement",
+        reason: lang === "English" ? "Game Draw By Agreement" : "Chấp Nhận Hòa",
         className: "game-message",
       },
     });
@@ -41,18 +42,19 @@ const DrawOffer = (props) => {
   };
 
   const handleDeclineOffer = () => {
+    const mess = lang === "English" ? "Declined A Draw" : "Từ Chối Hòa";
     dispatch({ type: "setReceiveDrawOffer", value: false });
     dispatch({
       type: "setMessage",
       value: {
         from: `${playerInfo.username}`,
-        message: "Declined A Draw",
+        message: mess,
         className: "game-message",
       },
     });
     socket.emit("sendMessage", {
       from: `${playerInfo.username}`,
-      message: "Declined A Draw",
+      message: mess,
       className: "game-message",
     });
   };
@@ -76,14 +78,17 @@ const DrawOffer = (props) => {
   return (
     <li className="draw-offer" style={{ display: props.display }}>
       <p>
-        <span>{opponentInfo.playername}</span> Offer A Draw
+        <span>{opponentInfo.playername}</span>{" "}
+        {lang === "English" ? "Offer A Draw" : "Đề Nghị Hòa"}
       </p>
       <div className="answer">
         <Button className="accept-offer" onClick={handleAcceptOffer}>
-          Accept <i className="fas fa-check"></i>
+          {lang === "English" ? "Accept" : "Đồng Ý"}{" "}
+          <i className="fas fa-check"></i>
         </Button>
         <Button className="decline-offer" onClick={handleDeclineOffer}>
-          Decline <i className="fas fa-times"></i>
+          {lang === "English" ? "Decline" : "Từ Chối"}{" "}
+          <i className="fas fa-times"></i>
         </Button>
       </div>
     </li>

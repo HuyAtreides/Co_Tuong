@@ -3,7 +3,7 @@ import "./Pause.scss";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import { SocketContext, SetMoveTimerContext } from "../../../../App/context.js";
 
-const Timer = (props) => {
+const Timer = ({ lang, pause }) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
@@ -13,7 +13,7 @@ const Timer = (props) => {
   const store = useStore();
   useEffect(() => {
     if (time === 0) {
-      if (/Paused/.test(props.pause)) {
+      if (/Paused/.test(pause)) {
         dispatch({ type: "setPauseTime", value: "timeout" });
         dispatch({ type: "setPause", value: "Timeout" });
         socket.emit("startTimer", true);
@@ -44,7 +44,14 @@ const Timer = (props) => {
 
   return (
     <p className="pause-timer">
-      {/Paused/.test(props.pause) ? "Resume In" : "Game Will Start In"}:{" "}
+      {/Paused/.test(pause)
+        ? lang === "English"
+          ? "Resume In"
+          : "Tiếp Tục Trong"
+        : lang === "English"
+        ? "Game Will Start In"
+        : "Bắt Đầu Trận Trong"}
+      :{" "}
       <span>
         {(minute < 10 ? "0" + minute : minute) +
           ":" +
@@ -56,12 +63,14 @@ const Timer = (props) => {
 
 const Pause = () => {
   const dispatch = useDispatch();
+  const lang = useSelector((state) => state.appState.lang);
   const pause = useSelector((state) => state.gameState.pause);
   const [boardWidth, boardHeight] = useSelector(
     (state) => state.boardState.boardSize
   );
   const store = useStore();
   const socket = useContext(SocketContext);
+  let pauseAnnounce = pause;
 
   useEffect(() => {
     if (/Resumed/.test(pause))
@@ -69,9 +78,11 @@ const Pause = () => {
 
     const handleOpponentPauseOrResumeGame = (pause) => {
       const opponentInfo = store.getState().gameState.opponentInfo;
+      const action = pause ? "Paused" : "Resumed";
+      const actionInVi = pause ? "Dừng" : "Tiếp Tục";
       const message = {
         from: `${opponentInfo.playername}`,
-        message: `${pause ? "Paused" : "Resumed"} Game`,
+        message: lang === "English" ? `${action} Game` : `${actionInVi} Trận`,
         className: "game-message",
       };
       dispatch({ type: "setMessage", value: message });
@@ -108,6 +119,14 @@ const Pause = () => {
   }, [pause]);
 
   if (!pause) return null;
+
+  if (lang !== "English") {
+    const name = pause.split(" ")[0];
+    if (/Paused/.test(pause)) pauseAnnounce = name + " Dừng Trận";
+    else if (/Resumed/.test(pause)) pauseAnnounce = name + " Tiếp Tục Trận";
+    else pauseAnnounce = "Hết Thời Gian Dừng";
+  }
+
   return (
     <div
       className="pause"
@@ -117,8 +136,8 @@ const Pause = () => {
       }}
     >
       <div>
-        <p className="pause-announce">{pause}</p>
-        <Timer pause={pause} />
+        <p className="pause-announce">{pauseAnnounce}</p>
+        <Timer pause={pause} lang={lang} />
       </div>
     </div>
   );

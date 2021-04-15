@@ -13,6 +13,7 @@ const Game = () => {
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
   const [centerBoard, setCenterBoard] = useState(false);
   const socket = useContext(SocketContext);
+  const lang = useSelector((state) => state.appState.lang);
   const store = useStore();
   const setMoveTimer = useContext(SetMoveTimerContext);
 
@@ -37,8 +38,13 @@ const Game = () => {
           result === "Won"
             ? `${playerInfo.username}`
             : `${opponentInfo.playername}`
-        } Won - `,
-        reason: reason,
+        } ${lang === "English" ? "Won" : "Thắng"} - `,
+        reason:
+          lang === "English"
+            ? reason
+            : reason === "Game Abandoned"
+            ? "Trận Đấu Bị Hủy"
+            : "Chiếu Bí",
         className: "game-message",
       },
     });
@@ -67,7 +73,7 @@ const Game = () => {
           type: "setMessage",
           value: {
             from: `${opponentInfo.playername}`,
-            message: "Left The Game",
+            message: lang === "English" ? "Left The Game" : "Đã Rời Trận",
             className: "game-message",
           },
         });
@@ -81,7 +87,7 @@ const Game = () => {
 
   return (
     <Row md={{ cols: 1 }} className="mt-3 pb-3">
-      <GamePlayArea />
+      <GamePlayArea lang={lang} />
       <div
         className="w-100"
         style={{ display: centerBoard ? "block" : "none" }}

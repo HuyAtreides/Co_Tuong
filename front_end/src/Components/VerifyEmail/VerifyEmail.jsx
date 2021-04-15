@@ -31,7 +31,7 @@ const VerifyEmail = () => {
       setInvalidCodeMess(
         lang === "English"
           ? "Invalid verification code"
-          : "Mã xác nhận không hợp lí"
+          : "Mã xác nhận không hợp lệ"
       );
     else setInvalidCodeMess("");
     setVerficationCode(value);

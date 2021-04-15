@@ -10,6 +10,7 @@ const GameBar = (props) => {
   const receiveDrawOffer = useSelector(
     (state) => state.gameState.receiveDrawOffer
   );
+  const lang = useSelector((state) => state.appState.lang);
   const gameResult = useSelector((state) => state.gameState.gameResult);
   const socket = useContext(SocketContext);
   const pause = useSelector((state) => state.gameState.pause);
@@ -17,9 +18,10 @@ const GameBar = (props) => {
 
   const handlePauseOrResume = (event) => {
     const action = event.currentTarget.id;
+    const actionInVi = action === "Pause" ? "Dừng" : "Tiếp Tục";
     const message = {
       from: `${playerInfo.username}`,
-      message: `${action}d Game`,
+      message: lang === "English" ? `${action}d Game` : `${actionInVi} Trận`,
       className: "game-message",
     };
     dispatch({ type: "setMessage", value: message });
@@ -36,7 +38,7 @@ const GameBar = (props) => {
         type: "setMessage",
         value: {
           from: `${playerInfo.username}`,
-          message: "Offered A Draw",
+          message: lang === "English" ? "Offered A Draw" : "Đề Nghị Hòa",
           className: "game-message",
         },
       });
@@ -65,7 +67,7 @@ const GameBar = (props) => {
             onClick={handleOfferDraw}
             disabled={gameResult !== null || pause}
           >
-            &#189; Draw
+            &#189; {lang === "English" ? "Draw" : "Hòa"}
           </Button>
           <Button
             className="black-side resign-btn"
@@ -73,7 +75,8 @@ const GameBar = (props) => {
             onClick={props.handleResign}
             disabled={gameResult !== null || pause}
           >
-            <i className="fas fa-flag"></i> Resign
+            <i className="fas fa-flag"></i>{" "}
+            {lang === "English" ? "Resign" : "Thua"}
           </Button>
         </div>
         <div className="time-select-container">
@@ -84,7 +87,13 @@ const GameBar = (props) => {
             onClick={handlePauseOrResume}
           >
             <i className={`fas fa-${!pause ? "pause" : "play"}`}></i>{" "}
-            {!pause ? "Pause" : "Resume"}
+            {!pause
+              ? lang === "English"
+                ? "Pause"
+                : "Dừng"
+              : lang === "English"
+              ? "Resume"
+              : "Tiếp Tục"}
           </Button>
         </div>
       </div>
@@ -94,10 +103,12 @@ const GameBar = (props) => {
         disabled={gameResult === null}
         onClick={handleExit}
       >
-        Exit Game
+        {lang === "English" ? "Exit Game" : "Rời Trận"}
       </Button>
       <Button className="center-board" onClick={props.handleCenterBoard}>
-        {`Center Board: ${props.centerBoard ? "On" : "Off"}`}
+        {lang === "English"
+          ? `Center Board: ${props.centerBoard ? "On" : "Off"}`
+          : `Canh Giữa Bàn Cờ:  ${props.centerBoard ? "Bật" : "Tắt"}`}
       </Button>
     </Col>
   );

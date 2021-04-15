@@ -3,12 +3,13 @@ import { Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import "./ProfileHeader.scss";
 import { Link } from "react-router-dom";
 import callAPI from "../../App/callAPI.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProfileHeader = (props) => {
   const { playerInfo, setError, viewOthersProfile, setting } = props;
   const [waitForResponse, setWaitForResponse] = useState(false);
   const dispatch = useDispatch();
+  const lang = useSelector((state) => state.appState.lang);
   const firstname = playerInfo.name.firstname;
   const lastname = playerInfo.name.lastname;
   const playerFullName = firstname + " " + lastname;
@@ -35,10 +36,18 @@ const ProfileHeader = (props) => {
       if (user) {
         dispatch({ type: "setPlayerInfo", value: user });
       } else if (message) {
-        setError(message);
+        setError(
+          message === "Only image files are allowed." && lang !== "English"
+            ? "Tập tin không hợp lệ."
+            : message
+        );
       }
     } catch (err) {
-      setError("Looks like there was an error. Please refresh.");
+      setError(
+        lang === "English"
+          ? "Looks like there was an error. Please refresh."
+          : "Đã xảy ra lỗi. Vui lòng tải lại trang."
+      );
     }
   };
 
@@ -47,7 +56,8 @@ const ProfileHeader = (props) => {
       <div className={`change-pic-area ${setting ? "setting-img" : ""}`}>
         {!waitForResponse && !viewOthersProfile ? (
           <button className="change-pic" onClick={handleChangeProfilePic}>
-            <i className="fas fa-camera"></i>Change
+            <i className="fas fa-camera"></i>
+            {lang === "English" ? "Change" : "Thay Đổi"}
           </button>
         ) : null}
         <input
@@ -92,7 +102,8 @@ const ProfileHeader = (props) => {
         <div className="edit-profile-container">
           {!viewOthersProfile && !setting ? (
             <Link to="/settings">
-              <i className="fas fa-edit"></i> Edit
+              <i className="fas fa-edit"></i>{" "}
+              {lang === "English" ? "Edit" : "Chỉnh Sửa"}
             </Link>
           ) : null}
         </div>

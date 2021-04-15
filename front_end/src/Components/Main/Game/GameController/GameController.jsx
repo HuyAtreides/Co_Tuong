@@ -25,7 +25,9 @@ const GameController = (props) => {
         lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
       );
       setTimeout(() => {
-        setPlayWithFriendText("Play With Friend");
+        setPlayWithFriendText(
+          lang === "English" ? "Play With Friend" : "Chơi Với Bạn"
+        );
       }, 700);
     } else setPlayWithFriend(!playWithFriend);
   };
@@ -37,7 +39,10 @@ const GameController = (props) => {
         value: lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng",
       });
       setTimeout(() => {
-        dispatch({ type: "setFindingMatch", value: "Play" });
+        dispatch({
+          type: "setFindingMatch",
+          value: lang === "English" ? "Play" : "Chơi",
+        });
       }, 700);
     } else if (findingMatch !== true) {
       socket.emit("setTimeAndSide", +time, side[1], () => {
@@ -87,7 +92,10 @@ const GameController = (props) => {
     });
 
     socket.on("findMatchCanceled", () => {
-      dispatch({ type: "setFindingMatch", value: "Play" });
+      dispatch({
+        type: "setFindingMatch",
+        value: lang === "English" ? "Play" : "Chơi",
+      });
     });
 
     return () => {
@@ -160,7 +168,11 @@ const GameController = (props) => {
               </Button>
             </div>
           </div>
-          <PlayButton findingMatch={findingMatch} handlePlay={handlePlay} />
+          <PlayButton
+            findingMatch={findingMatch}
+            handlePlay={handlePlay}
+            lang={lang}
+          />
 
           <Button
             className="play-with-friend"
@@ -176,7 +188,7 @@ const GameController = (props) => {
           </Button>
         </div>
       ) : (
-        <PlayWithFriend return={handlePlayWithFriend} />
+        <PlayWithFriend goBack={handlePlayWithFriend} lang={lang} />
       )}
     </Col>
   );

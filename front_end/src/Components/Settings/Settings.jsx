@@ -27,7 +27,7 @@ const Settings = () => {
   const [uploadErr, setUploadErr] = useState(null);
   const [waitForServer, setWaitForServer] = useState(false);
   const validateInput = useValidateInput(false, true, lang);
-  const [waitForResponse, setWaitForResponse] = useFetchData();
+  const [waitForResponse, setWaitForResponse] = useState(false);
 
   const getChanges = () => {
     const changes = {};
@@ -131,7 +131,7 @@ const Settings = () => {
           ></i>
           {uploadErr ? uploadErr : validateInput.error}
         </p>
-        <Col xs={{ span: 11 }} md={{ span: 7 }}>
+        <Col xs={11} md={7}>
           <ProfileHeader
             setError={setUploadErr}
             setting={true}
@@ -143,10 +143,10 @@ const Settings = () => {
             onSubmit={handleSaveChange}
           >
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English" ? "Username" : "Tên tài khoản"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="text"
@@ -161,10 +161,10 @@ const Settings = () => {
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 Email
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="email"
@@ -179,10 +179,10 @@ const Settings = () => {
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English" ? "Firstname" : "Họ"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <Form.Control
                   type="text"
                   value={validateInput.firstname}
@@ -191,10 +191,10 @@ const Settings = () => {
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English" ? "Lastname" : "Tên"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <Form.Control
                   type="text"
                   value={validateInput.lastname}
@@ -204,10 +204,10 @@ const Settings = () => {
             </Form.Group>
 
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English" ? "Current Password" : "Mật khẩu hiện tại"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="password"
@@ -223,10 +223,10 @@ const Settings = () => {
             </Form.Group>
 
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English" ? "New Password" : "Mật khẩu mới"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <InputGroup hasValidation className="password-group">
                   <Form.Control
                     type={validateInput.showPassword ? "text" : "password"}
@@ -258,12 +258,12 @@ const Settings = () => {
             </Form.Group>
 
             <Form.Group as={Row} className="mt-4 form-group-row">
-              <Form.Label column sm={2}>
+              <Form.Label column xs={12} lg={2}>
                 {lang === "English"
                   ? "Confirm New Password"
                   : "Xác nhận mật khẩu mới"}
               </Form.Label>
-              <Col sm={12} md={10}>
+              <Col sm={12} lg={10}>
                 <InputGroup hasValidation>
                   <Form.Control
                     type="password"
