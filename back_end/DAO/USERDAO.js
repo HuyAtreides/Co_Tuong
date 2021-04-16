@@ -148,7 +148,7 @@ class USERDAO {
         { _id: ObjectID(id) },
         {
           $set: {
-            photo: `http://localhost:8080/uploads/profile_pictures/${filename}`,
+            photo: `https://co-tuong-online.herokuapp.com/uploads/profile_pictures/${filename}`,
           },
         },
         { returnOriginal: false }
@@ -222,7 +222,7 @@ class USERDAO {
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: "default",
+        photo: "images/default_img.jpeg",
         totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],
         lastOnline: new Date(),

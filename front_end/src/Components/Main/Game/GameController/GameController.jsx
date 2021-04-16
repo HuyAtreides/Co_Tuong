@@ -98,6 +98,8 @@ const GameController = (props) => {
       });
     });
 
+    socket.emit("eventHandlersRegistered");
+
     return () => {
       socket.emit("cancelFindMatch");
     };

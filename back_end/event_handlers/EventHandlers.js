@@ -262,7 +262,9 @@ class EventHandlers {
 
     socket.on("generateInviteLink", (callback) => {
       socket.useInviteLink = true;
-      const url = "http://localhost:8080/api/play-with-friend/" + socket.id;
+      const url =
+        "https://co-tuong-online.herokuapp.com/api/play-with-friend/" +
+        socket.id;
       callback(url);
     });
   }

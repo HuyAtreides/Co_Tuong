@@ -212,6 +212,7 @@ function Board() {
       const lostReason = PieceClass.isLost(board, side[1]);
       if (lostReason) {
         let message = lostReason;
+        socket.emit("gameFinish", ["Won", lostReason]);
         if (lang !== "English")
           message = lostReason === "Checkmate" ? "Chiếu Bí" : "Hết Cờ";
         dispatch({ type: "setGameResult", value: "Lose" });
@@ -226,7 +227,7 @@ function Board() {
             className: "game-message",
           },
         });
-        socket.emit("gameFinish", ["Won", lostReason]);
+
         setMoveTimer(null, true, dispatch);
         return;
       }

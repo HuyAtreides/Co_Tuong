@@ -34,15 +34,7 @@ const GamePlayArea = ({ lang }) => {
     >
       <div className="player-area">
         <div className="avatar-and-name">
-          {opponentInfo.photo === "default" ? (
-            <Avatar
-              name={opponentInfo.playername}
-              size="40"
-              textSizeRatio={2}
-            />
-          ) : (
-            <img src={opponentInfo.photo} alt="" />
-          )}
+          <img src={opponentInfo.photo} alt="" />
           <OverlayTrigger
             placement="bottom"
             overlay={(props) => (
@@ -88,11 +80,8 @@ const GamePlayArea = ({ lang }) => {
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
-            {playerInfo.photo === "default" ? (
-              <Avatar name={playerInfo.username} size="40" textSizeRatio={2} />
-            ) : (
-              <img src={playerInfo.photo} alt="" />
-            )}
+            <img src={playerInfo.photo} alt="" />
+
             <OverlayTrigger
               placement="top"
               overlay={(props) => (

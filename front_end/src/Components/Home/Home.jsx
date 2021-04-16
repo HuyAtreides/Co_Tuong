@@ -35,7 +35,7 @@ const Home = (props) => {
         dispatch({ type: "setPlayerInfo", value: user });
         if (user.lang) dispatch({ type: "setLang", value: user.lang });
       } else if (message) dispatch({ type: "setLoginError", value: message });
-      else if (!user) {
+      else if (!user && !playerInfo) {
         setRedirect(true);
       }
     } catch (err) {

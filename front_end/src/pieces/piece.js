@@ -180,7 +180,8 @@ class Piece {
   }
 
   animateMove([newRow, newCol], board, dispatch) {
-    const curCol = this.position[1];
+    const [curRow, curCol] = this.position;
+    this.DOMNode = document.querySelector(`#p${curRow}${curCol}`);
     if (curCol === newCol) {
       this.moveVertical([newRow, newCol], board, dispatch);
     } else this.moveDiagonal([newRow, newCol], board, dispatch);
@@ -188,8 +189,7 @@ class Piece {
 
   setTransform([xB, yB], board, dispatch, finished) {
     const translate = `translate(${xB * this.width}, ${yB * this.width})`;
-    this.translate = translate;
-    dispatch({ type: "setBoard", value: [...board] });
+    this.DOMNode.setAttribute("transform", translate);
     if (finished) {
       this.modifyBoard(board, [yB, xB], dispatch);
     }
