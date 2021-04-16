@@ -12,11 +12,8 @@ const callAPI = async (method, endPoint, data, isFile) => {
             },
         body: isFile ? data : JSON.stringify(data),
       };
-      response = await fetch(`http://localhost:8080/${endPoint}`, init);
-    } else
-      response = await fetch(`http://localhost:8080/${endPoint}`, {
-        credentials: "include",
-      });
+      response = await fetch(`/${endPoint}`, init);
+    } else response = await fetch(`/${endPoint}`, { credentials: "include" });
     const responseData = await response.json();
     responseData.ok = response.ok;
     return responseData;

@@ -10,7 +10,8 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "http://localhost:8080/api/auth/github/callback",
+      callbackURL:
+        "https://co-tuong-online.herokuapp.com/api/auth/github/callback",
     },
     async (__, _, profile, done) => {
       try {
@@ -32,11 +33,11 @@ router.get(
 router.get("/callback", checkingSession, (req, res, next) => {
   passport.authenticate("github", (err, user, _) => {
     if (err) next(err);
-    if (!user) return res.redirect("http://localhost:3000");
+    if (!user) return res.redirect("/");
     req.login(user, (err) => {
       if (err) req.session.loginError = err.message;
       req.session.save((err) => {
-        return res.redirect("http://localhost:3000");
+        return res.redirect("/");
       });
     });
   })(req, res, next);
@@ -45,7 +46,7 @@ router.get("/callback", checkingSession, (req, res, next) => {
 router.use((err, req, res, next) => {
   req.session.loginError = "Something Wrong Happend. Please Try Again";
   req.session.save((err) => {
-    return res.redirect("http://localhost:3000");
+    return res.redirect("/");
   });
 });
 

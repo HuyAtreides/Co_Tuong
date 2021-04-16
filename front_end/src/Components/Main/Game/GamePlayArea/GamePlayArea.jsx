@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import GameResult from "./GameResult/GameResult.jsx";
 import Pause from "./Pause/Pause.jsx";
+import Avatar from "react-avatar";
 
 const GamePlayArea = ({ lang }) => {
   const opponentTimeLeftToMove = useSelector(
@@ -33,7 +34,15 @@ const GamePlayArea = ({ lang }) => {
     >
       <div className="player-area">
         <div className="avatar-and-name">
-          <img src={opponentInfo.photo} alt="" />
+          {opponentInfo.photo === "default" ? (
+            <Avatar
+              name={opponentInfo.playername}
+              size="40"
+              textSizeRatio={2}
+            />
+          ) : (
+            <img src={opponentInfo.photo} alt="" />
+          )}
           <OverlayTrigger
             placement="bottom"
             overlay={(props) => (
@@ -79,7 +88,11 @@ const GamePlayArea = ({ lang }) => {
       <div className="player-area">
         <div className="avatar-and-name">
           <div className="avatar-and-name">
-            <img src={playerInfo.photo} alt="" />
+            {playerInfo.photo === "default" ? (
+              <Avatar name={playerInfo.username} size="40" textSizeRatio={2} />
+            ) : (
+              <img src={playerInfo.photo} alt="" />
+            )}
             <OverlayTrigger
               placement="top"
               overlay={(props) => (

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./VerifyEmailNote.scss";
 
-const VerifyEmailNote = (lang) => {
+const VerifyEmailNote = ({ lang }) => {
   const [hideNote, setHideNote] = useState(false);
 
   const handleHideNote = () => {

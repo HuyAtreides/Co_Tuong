@@ -14,6 +14,8 @@ const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
     maxAge: 259200000,
+    sameSite: "lax",
+    secure: true,
   },
   resave: false,
   saveUninitialized: false,
@@ -26,7 +28,7 @@ const io = require("socket.io")(httpServer, {
   },
 });
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(sessionMiddleware);
@@ -43,7 +45,7 @@ passport.deserializeUser(async (username, done) => {
   return done(null, user);
 });
 
-app.use(express.static("./build/"));
+app.use(express.static("build", { extensions: ["svg", "xml"] }));
 app.use("/api", api);
 app.use("/uploads", uploadsRoutes);
 app.use((_, res) => {
