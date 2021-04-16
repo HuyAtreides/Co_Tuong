@@ -191,9 +191,7 @@ class USERDAO {
           },
           photo: profile.photos
             ? profile.photos[0].value
-            : `/user_profile_pic/${nonAccentVietnamese(
-                username[0]
-              ).toUpperCase()}.svg`,
+            : process.env.BASE + "/images/default_avatar.png",
           name: {
             firstname: name && name.familyName ? name.familyName : "",
             lastname: name && name.givenName ? name.givenName : "",
@@ -222,7 +220,7 @@ class USERDAO {
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: "images/default_img.jpeg",
+        photo: process.env.BASE + "/images/default_avatar.png",
         totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],
         lastOnline: new Date(),

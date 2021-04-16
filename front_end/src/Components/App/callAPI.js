@@ -1,3 +1,4 @@
+const server = "https://co-tuong-online.herokuapp.com";
 const callAPI = async (method, endPoint, data, isFile) => {
   try {
     let response;
@@ -12,8 +13,11 @@ const callAPI = async (method, endPoint, data, isFile) => {
             },
         body: isFile ? data : JSON.stringify(data),
       };
-      response = await fetch(`/${endPoint}`, init);
-    } else response = await fetch(`/${endPoint}`, { credentials: "include" });
+      response = await fetch(server + `/${endPoint}`, init);
+    } else
+      response = await fetch(server + `/${endPoint}`, {
+        credentials: "include",
+      });
     const responseData = await response.json();
     responseData.ok = response.ok;
     return responseData;

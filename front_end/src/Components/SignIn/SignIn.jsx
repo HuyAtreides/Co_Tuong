@@ -134,7 +134,7 @@ const Login = () => {
                 <Form.Control
                   type="password"
                   isInvalid={invalidPasswordMess !== ""}
-                  placeholder={lang === "Engish" ? "Password" : "Mật Khẩu"}
+                  placeholder={lang === "English" ? "Password" : "Mật Khẩu"}
                   onChange={handlePasswordChange}
                   value={password}
                   disabled={waitForResponse || waitForServer}
@@ -171,13 +171,22 @@ const Login = () => {
             <span></span>
           </p>
           <div className="social-login">
-            <a className="google" href="/api/auth/google">
+            <a
+              className="google"
+              href="https://co-tuong-online.herokuapp.com/api/auth/google"
+            >
               <i className="fab fa-google"></i> Google
             </a>
-            <a className="facebook" href="/api/auth/facebook">
+            <a
+              className="facebook"
+              href="https://co-tuong-online.herokuapp.com/api/auth/facebook"
+            >
               <i className="fab fa-facebook "></i> Facebook
             </a>
-            <a className="github" href="/api/auth/github">
+            <a
+              className="github"
+              href="https://co-tuong-online.herokuapp.com/api/auth/github"
+            >
               <i className="fab fa-github "></i> Github
             </a>
           </div>

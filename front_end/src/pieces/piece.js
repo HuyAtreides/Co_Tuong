@@ -170,12 +170,11 @@ class Piece {
   modifyBoard(board, [newRow, newCol], dispatch) {
     const [curRow, curCol] = this.position;
     this.setPosition(null, newRow, newCol);
-    const tmp = board[curRow][curCol];
     if (board[newRow][newCol]) {
       dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
     }
-    board[curRow][curCol] = 0;
-    board[newRow][newCol] = tmp;
+    board[newRow][newCol] = board[curRow][curCol];
+    board[newRow][newCol] = 0;
     dispatch({ type: "setBoard", value: [...board] });
   }
 
