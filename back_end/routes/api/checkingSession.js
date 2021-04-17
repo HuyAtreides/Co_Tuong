@@ -1,5 +1,5 @@
 const checkingSession = (req, res, next) => {
-  if (req.isAuthenticated()) return res.redirect(process.env.BASE);
+  if (req.isAuthenticated()) return res.redirect("/");
   next();
 };
 

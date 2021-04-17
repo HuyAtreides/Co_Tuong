@@ -146,9 +146,8 @@ class Piece {
 
   updateTmpBoard(newRow, newCol, tmpBoard) {
     const [curRow, curCol] = this.position;
-    const tmp = tmpBoard[curRow][curCol];
+    tmpBoard[newRow][newCol] = tmpBoard[curRow][curCol];
     tmpBoard[curRow][curCol] = 0;
-    tmpBoard[newRow][newCol] = tmp;
   }
 
   canCaptureGeneral(tmpBoard) {
@@ -174,7 +173,7 @@ class Piece {
       dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
     }
     board[newRow][newCol] = board[curRow][curCol];
-    board[newRow][newCol] = 0;
+    board[curRow][curCol] = 0;
     dispatch({ type: "setBoard", value: [...board] });
   }
 

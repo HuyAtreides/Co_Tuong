@@ -29,9 +29,9 @@ class Horse extends Piece {
     const [curRow, curCol] = this.position;
     const [moveRow, moveCol] = [newRow - curRow, newCol - curCol];
     if (Math.abs(moveRow) === 2) {
-      return board[curRow + moveRow / 2][curCol] !== 0;
+      return board[curRow + moveRow / 2][curCol];
     } else {
-      return board[curRow][curCol + moveCol / 2] !== 0;
+      return board[curRow][curCol + moveCol / 2];
     }
   }
 

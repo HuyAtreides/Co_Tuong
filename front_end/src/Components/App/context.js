@@ -1,8 +1,7 @@
 import React from "react";
 import { io } from "socket.io-client";
 
-const server = "https://co-tuong-online.herokuapp.com";
-const socket = io(server + "/play", { autoConnect: false });
+const socket = io("/play", { autoConnect: false });
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
 const AuthenticateUserContext = React.createContext();

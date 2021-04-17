@@ -20,16 +20,9 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
 });
-const io = require("socket.io")(httpServer, {
-  cors: {
-    origin: process.env.BASE,
-    methods: ["GET", "POST"],
-  },
-});
+const io = require("socket.io")(httpServer);
 
-app.use(cors({ origin: process.env.BASE, credentials: true }));
-
-registerIOEvents(io);
+app.use(express.static("build"));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -49,5 +42,10 @@ passport.deserializeUser(async (username, done) => {
 
 app.use("/api", api);
 app.use("/uploads", uploadsRoutes);
+app.use((_, res) => {
+  return res.sendFile(path.join(__dirname, "/build/index.html"));
+});
+
+registerIOEvents(io);
 
 module.exports = httpServer;

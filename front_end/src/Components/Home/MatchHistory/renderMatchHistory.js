@@ -7,6 +7,8 @@ const renderMatchHistory = (playerInfo, lang) => {
 
     if (value.result !== "Draw") {
       if (value.reason === "Game Abandoned") reasonInVi = "Trận Đấu Bị Hủy";
+      else if (/Resigned/.test(value.reason))
+        reasonInVi = value.reason.replace("Resigned", "Đầu Hàng");
       else reasonInVi = "Chiếu Bí";
       if (value.result === "Won") resultInVi = "Thắng";
       else resultInVi = "Thua";

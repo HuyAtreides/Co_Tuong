@@ -346,11 +346,11 @@ class EventHandlers {
     });
 
     socket.on("receivePauseSignalAck", () => {
-      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer");
+      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer", false);
     });
 
     socket.on("receiveResumeSignalAck", () => {
-      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer");
+      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer", true);
     });
 
     socket.on("startGame", () => {

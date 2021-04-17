@@ -33,11 +33,11 @@ router.get(
 router.get("/callback", checkingSession, (req, res, next) => {
   passport.authenticate("github", (err, user, _) => {
     if (err) next(err);
-    if (!user) return res.redirect(process.env.BASE);
+    if (!user) return res.redirect("/");
     req.login(user, (err) => {
       if (err) req.session.loginError = err.message;
       req.session.save((err) => {
-        return res.redirect(process.env.BASE);
+        return res.redirect("/");
       });
     });
   })(req, res, next);
@@ -46,7 +46,7 @@ router.get("/callback", checkingSession, (req, res, next) => {
 router.use((err, req, res, next) => {
   req.session.loginError = "Something Wrong Happend. Please Try Again";
   req.session.save((err) => {
-    return res.redirect(process.env.BASE);
+    return res.redirect("/");
   });
 });
 

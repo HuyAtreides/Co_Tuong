@@ -18,6 +18,7 @@ const Timer = ({ lang, pause }) => {
         dispatch({ type: "setPause", value: "Timeout" });
         socket.emit("startTimer", true);
       } else {
+        socket.emit("startTimer", false);
         socket.emit("startGame");
       }
     }
@@ -73,9 +74,6 @@ const Pause = () => {
   let pauseAnnounce = pause;
 
   useEffect(() => {
-    if (/Resumed/.test(pause))
-      dispatch({ type: "setPauseTime", value: "timeout" });
-
     const handleOpponentPauseOrResumeGame = (pause) => {
       const opponentInfo = store.getState().gameState.opponentInfo;
       const action = pause ? "Paused" : "Resumed";
@@ -95,7 +93,9 @@ const Pause = () => {
       socket.emit(`receive${pause ? "Pause" : "Resume"}SignalAck`);
     };
 
-    socket.on("startPauseTimer", () => {
+    socket.on("startPauseTimer", (isResume) => {
+      socket.emit("startTimer", false);
+      if (isResume) dispatch({ type: "setPauseTime", value: "timeout" });
       socket.removeAllListeners("oneSecondPass");
       socket.on("oneSecondPass", () => {
         dispatch({ type: "setPauseTime", value: null });

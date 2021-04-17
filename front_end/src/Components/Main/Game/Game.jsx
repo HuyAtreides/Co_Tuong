@@ -44,6 +44,8 @@ const Game = () => {
             ? reason
             : reason === "Game Abandoned"
             ? "Trận Đấu Bị Hủy"
+            : /Resigned/.test(reason)
+            ? reason.replace("Resigned", "Đầu Hàng")
             : "Chiếu Bí",
         className: "game-message",
       },
