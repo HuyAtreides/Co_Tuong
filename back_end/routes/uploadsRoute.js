@@ -3,7 +3,8 @@ const USERDAO = require("../DAO/USERDAO.js");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const USERIMGDAO = require("../DAO/USERIMGDAO.js");
+
 const storage = multer.diskStorage({
   destination: (_, __, callback) => {
     callback(null, "./uploads/profile_pictures/");
@@ -25,15 +26,12 @@ const filter = (_, file, callback) => {
 
 router.get("/profile_pictures/:filename", (req, res) => {
   const { filename } = req.params;
-  const readStream = fs.createReadStream(
-    `./uploads/profile_pictures/${filename}`
-  );
+  const readStream = USERIMGDAO.downloadFile(filename);
 
-  readStream.on("open", function () {
-    readStream.pipe(res);
-  });
+  readStream.pipe(res);
 
   readStream.on("error", function (err) {
+    console.log(err.message);
     res.status(404).end(err.message);
   });
 });
@@ -50,14 +48,21 @@ router.post("/:id", (req, res) => {
     upload(req, res, async (err) => {
       try {
         if (err) return res.json({ message: err.message });
+        await USERIMGDAO.uploadFile(req.file.filename);
         const user = await USERDAO.updateUserProfilePic(id, req.file.filename);
         return res.json({ user: user, message: null });
       } catch (err) {
-        return res.status(500).json({ message: err.message });
+        console.log(err.message);
+        return res
+          .status(500)
+          .json({ message: "Something wrong happened. Please try again." });
       }
     });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.log(err.message);
+    return res
+      .status(500)
+      .json({ message: "Something wrong happened. Please try again." });
   }
 });
 

@@ -47,6 +47,7 @@ const GameBar = (props) => {
   };
 
   const handleExit = () => {
+    socket.removeAllListeners("oneSecondPass");
     const width = document.querySelector(".board-container").offsetWidth;
     socket.emit("exitGame");
     dispatch({ type: "resetBoardState", value: width });

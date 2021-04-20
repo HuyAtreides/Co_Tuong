@@ -39,7 +39,9 @@ const ProfileHeader = (props) => {
         setError(
           message === "Only image files are allowed." && lang !== "English"
             ? "Tập tin không hợp lệ."
-            : message
+            : lang === "English"
+            ? message
+            : "Đã xảy ra lỗi. Xin hãy thử lại."
         );
       }
     } catch (err) {

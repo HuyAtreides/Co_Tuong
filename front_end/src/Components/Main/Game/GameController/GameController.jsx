@@ -70,9 +70,11 @@ const GameController = (props) => {
 
   useEffect(() => {
     socket.on("timeout", () => {
+      const messageInVi = "Hiện không có người chơi nào online :(";
+      const messageINEng = "No Players are currently online :(";
       dispatch({
         type: "setFindingMatch",
-        value: "No Players are currently online :(",
+        value: lang === "English" ? messageINEng : messageInVi,
       });
     });
 
@@ -113,7 +115,7 @@ const GameController = (props) => {
       type: "setFindingMatch",
       value: lang === "English" ? "Play" : "Chơi",
     });
-  }, []);
+  }, [lang]);
 
   return (
     <Col md={{ span: 4 }} xs={{ span: 10 }} className="game-controller mb-3">

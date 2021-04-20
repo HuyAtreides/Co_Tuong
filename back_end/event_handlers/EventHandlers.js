@@ -171,14 +171,14 @@ class EventHandlers {
         receiverSocket.opponentID ||
         receiverSocket.opponentID === null
       ) {
-        const message = `${receiverSocket.player.playername} is in a game`;
+        const message = `${playername} is in a game`;
         socket.emit("invalidInvite", message);
         return false;
       } else if (
         receiverSocket.inviteSenders &&
         receiverSocket.inviteSenders.length >= 5
       ) {
-        const message = `${receiverSocket.player.playername} has received too many invites`;
+        const message = `${playername} has received too many invites`;
         socket.emit("invalidInvite", message);
         return false;
       }

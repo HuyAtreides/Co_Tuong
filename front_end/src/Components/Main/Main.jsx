@@ -25,15 +25,25 @@ const Main = (props) => {
   const [waitForResponse, setWaitForResponse] = useFetchData();
 
   useEffect(() => {
+    if (connectionError) {
+      if (connectionError === "The connection was closed")
+        setConnectionError("Kết nối đã đóng");
+      else if (connectionError === "Successfully reconnect")
+        setConnectionError("Kết nối lại thành công");
+      else if (/logged in/.test(connectionError))
+        setConnectionError(
+          "Kết nối đã đóng vì tài khoản của bạn được đăng nhập từ nơi khác"
+        );
+    }
+  }, [lang]);
+
+  useEffect(() => {
     socket.on("connect_error", (err) => {
-      let errMess;
-      if (/your account/.test(err))
+      let errMess = err.message;
+      if (/your account/.test(err) && lang !== "English")
         errMess =
-          lang === "English"
-            ? err.message
-            : "Kết nối đã đóng vì tài khoản của bạn được đặng nhập từ nơi khác";
-      else errMess = err.message;
-      setConnectionError(err.message);
+          "Kết nối đã đóng vì tài khoản của bạn được đăng nhập từ nơi khác";
+      setConnectionError(errMess);
       socket.close();
     });
 
@@ -76,6 +86,7 @@ const Main = (props) => {
         }, 700);
       }
       if (reason !== "io client disconnect") {
+        socket.removeAllListeners("oneSecondPass");
         setConnectionError(
           lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
         );

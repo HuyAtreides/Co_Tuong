@@ -179,7 +179,11 @@ const PlayWithFriend = ({ goBack, lang }) => {
 
     socket.on("invalidInvite", (message) => {
       setWaitForResponse(false);
-      handleCanotSendInvite(message);
+      let messageInVi = `${invitedPlayer.username} đang trong trận`;
+      if (/disconnected/.test(message))
+        messageInVi = `${invitedPlayer.username} có thể đã bị ngắt kết nối`;
+      else messageInVi = `${invitedPlayer.username} đã nhận quá nhiều lời mời`;
+      handleCanotSendInvite(lang === "English" ? message : messageInVi);
     });
 
     return () => {

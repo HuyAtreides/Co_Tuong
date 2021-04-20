@@ -108,6 +108,8 @@ const Pause = () => {
     });
 
     socket.on("opponentResumeGame", () => {
+      socket.removeAllListeners("oneSecondPass");
+      dispatch({ type: "setPauseTime", value: "timeout" });
       handleOpponentPauseOrResumeGame(false);
     });
 
