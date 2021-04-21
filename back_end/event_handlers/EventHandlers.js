@@ -109,12 +109,8 @@ class EventHandlers {
     );
   }
 
-  static findMatch(io, socket, timeElapse) {
-    if (timeElapse > 10) {
-      socket.emit("timeout");
-      socket.opponentID = undefined;
-      return true;
-    } else if (socket.opponentID) {
+  static findMatch(io, socket) {
+    if (socket.opponentID) {
       return true;
     } else if (!socket.connected) {
       socket.opponentID = undefined;
@@ -135,7 +131,6 @@ class EventHandlers {
 
   static registerFindMatchHandlers(io, socket) {
     socket.on("findMatch", async () => {
-      const start = new Date();
       socket.opponentID = null;
       let intervalID;
       socket.removeAllListeners("cancelFindMatch");
@@ -150,8 +145,7 @@ class EventHandlers {
 
       if (socket.opponentID === null) {
         intervalID = setInterval(() => {
-          const timeElapse = (new Date() - start) / 1000;
-          const finish = EventHandlers.findMatch(io, socket, timeElapse);
+          const finish = EventHandlers.findMatch(io, socket);
           if (finish) {
             socket.removeAllListeners("cancelFindMatch");
             clearInterval(intervalID);

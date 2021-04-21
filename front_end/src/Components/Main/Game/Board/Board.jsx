@@ -87,26 +87,31 @@ function Board() {
     }
   };
 
+  const movePiece = (event) => {
+    let moveResult = null;
+    const svg = svgRef.current;
+    const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
+    const newCol = Math.floor(x / currentPiece.width);
+    const newRow = Math.floor(y / currentPiece.width);
+    const [curRow, curCol] = currentPiece.position;
+    const canMove = currentPiece.canMoveToNewPosition(newRow, newCol, board);
+    if (turnToMove && canMove && !/translate/.test(canMove))
+      moveResult = currentPiece.setPosition(canMove, newRow, newCol);
+    else if (/translate/.test(canMove)) moveResult = canMove;
+    updateBoard(moveResult, [curRow, curCol]);
+    dispatch({ type: "setDraggable", value: false });
+    updateCurrentPiece(moveResult);
+    dispatch({ type: "setBoard", value: [...board] });
+    if (moveResult && !/translate/.test(moveResult)) {
+      dispatch({ type: "setTurnToMove", value: !turnToMove });
+      socket.emit("opponentMove", moveResult, [curRow, curCol]);
+    }
+  };
+
   const handleMouseUp = (event) => {
-    if (currentPiece) {
-      let moveResult = null;
-      const svg = svgRef.current;
-      const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
-      const newCol = Math.floor(x / currentPiece.width);
-      const newRow = Math.floor(y / currentPiece.width);
-      const [curRow, curCol] = currentPiece.position;
-      const canMove = currentPiece.canMoveToNewPosition(newRow, newCol, board);
-      if (turnToMove && canMove && !/translate/.test(canMove))
-        moveResult = currentPiece.setPosition(canMove, newRow, newCol);
-      else if (/translate/.test(canMove)) moveResult = canMove;
-      updateBoard(moveResult, [curRow, curCol]);
-      dispatch({ type: "setDraggable", value: false });
-      updateCurrentPiece(moveResult);
-      dispatch({ type: "setBoard", value: [...board] });
-      if (moveResult && !/translate/.test(moveResult)) {
-        dispatch({ type: "setTurnToMove", value: !turnToMove });
-        socket.emit("opponentMove", moveResult, [curRow, curCol]);
-      }
+    const gameResult = store.getState().gameState.gameResult;
+    if (currentPiece && gameResult === null) {
+      movePiece(event);
     }
   };
 
@@ -119,31 +124,10 @@ function Board() {
     }
   };
 
-  const moveOnClick = (currentPiece, x, y) => {
-    let moveResult = null;
-    const [curRow, curCol] = currentPiece.position;
-    const newCol = Math.floor(x / currentPiece.width);
-    const newRow = Math.floor(y / currentPiece.width);
-    const canMove = currentPiece.canMoveToNewPosition(newRow, newCol, board);
-    if (turnToMove && canMove && !/translate/.test(canMove))
-      moveResult = currentPiece.setPosition(canMove, newRow, newCol);
-    updateBoard(moveResult, [curRow, curCol]);
-    currentPiece.showMoveHints("off", board);
-    dispatch({ type: "setTargetDisplay", value: "none" });
-    dispatch({ type: "setCurrentPiece", value: null });
-    dispatch({ type: "setBoard", value: [...board] });
-    if (moveResult && !/translate/.test(moveResult)) {
-      dispatch({ type: "setTurnToMove", value: !turnToMove });
-      socket.emit("opponentMove", moveResult, [curRow, curCol]);
-      socket.emit("finishMove");
-    }
-  };
-
   const handleClick = (event) => {
     if (currentPiece) {
-      const svg = svgRef.current;
-      const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
-      if (!event.target.id) moveOnClick(currentPiece, x, y);
+      const gameResult = store.getState().gameState.gameResult;
+      if (!event.target.id && gameResult === null) movePiece(event);
     }
   };
 
@@ -196,7 +180,9 @@ function Board() {
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;
     socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
-      handleOpponentMove([curRow, curCol], [newRow, newCol]);
+      const gameResult = store.getState().gameState.gameResult;
+      if (gameResult === null)
+        handleOpponentMove([curRow, curCol], [newRow, newCol]);
     });
 
     return () => {

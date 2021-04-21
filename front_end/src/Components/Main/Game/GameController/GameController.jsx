@@ -69,15 +69,6 @@ const GameController = (props) => {
   };
 
   useEffect(() => {
-    socket.on("timeout", () => {
-      const messageInVi = "Hiện không có người chơi nào online :(";
-      const messageINEng = "No Players are currently online :(";
-      dispatch({
-        type: "setFindingMatch",
-        value: lang === "English" ? messageINEng : messageInVi,
-      });
-    });
-
     socket.on("foundMatch", (opponent, firstMove, time) => {
       dispatch({ type: "setFoundMatch", value: true });
       dispatch({
