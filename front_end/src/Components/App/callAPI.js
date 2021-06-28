@@ -12,9 +12,9 @@ const callAPI = async (method, endPoint, data, isFile) => {
             },
         body: isFile ? data : JSON.stringify(data),
       };
-      response = await fetch(`/${endPoint}`, init);
+      response = await fetch(`https://www.cotuong.tk/${endPoint}`, init);
     } else
-      response = await fetch(`/${endPoint}`, {
+      response = await fetch(`https://www.cotuong.tk/${endPoint}`, {
         credentials: "include",
       });
     const responseData = await response.json();

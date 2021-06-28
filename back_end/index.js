@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("newrelic");
 const server = require("./app.js");
 const MongoClient = require("mongodb").MongoClient;
 const USERDAO = require("./DAO/USERDAO.js");

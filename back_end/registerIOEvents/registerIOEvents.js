@@ -17,8 +17,6 @@ const handleUseInviteLink = (io, socket) => {
 
 function registerIOEvents(io) {
   const onConnectionHandler = async (socket) => {
-    console.log(`${socket.id} connect`);
-
     EventHandlers.registerSetTimeAndSideHandlers(socket);
     EventHandlers.registerFindMatchHandlers(io.of("/play"), socket);
     EventHandlers.registerOpponentMoveHandlers(io.of("/play"), socket);

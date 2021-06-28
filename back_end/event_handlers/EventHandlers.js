@@ -256,9 +256,7 @@ class EventHandlers {
 
     socket.on("generateInviteLink", (callback) => {
       socket.useInviteLink = true;
-      const url =
-        "https://co-tuong-online.herokuapp.com/api/play-with-friend/" +
-        socket.id;
+      const url = "https://www.cotuong.tk/api/play-with-friend/" + socket.id;
       callback(url);
     });
   }
@@ -284,17 +282,15 @@ class EventHandlers {
     };
 
     socket.on("disconnect", (reason) => {
-      console.log(socket.id + " disconnect");
-
+      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
+      else {
+        USERDAO.setSocketID(socket.player.playername, null, false);
+      }
       if (reason === "server namespace disconnect") return;
       handleGameFinish();
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);
       io.to(socket.opponentID).emit("opponentLeftGame");
-      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
-      else {
-        USERDAO.setSocketID(socket.player.playername, null, false);
-      }
     });
 
     socket.on("exitGame", async () => {

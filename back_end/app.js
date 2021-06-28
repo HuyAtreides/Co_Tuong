@@ -8,27 +8,38 @@ const httpServer = require("http").createServer(app);
 const registerIOEvents = require("./registerIOEvents/registerIOEvents.js");
 const api = require("./routes/api/api.js");
 const USERDAO = require("./DAO/USERDAO.js");
-const path = require("path");
 const uploadsRoutes = require("./routes/uploadsRoute.js");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
     maxAge: 259200000,
-    sameSite: "lax",
+    sameSite: "none",
+    secure: true,
   },
+  proxy: true,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
 });
-const io = require("socket.io")(httpServer);
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "https://co-tuong.netlify.app",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
-app.use(express.static("build"));
-
+app.use(cors({ origin: "https://co-tuong.netlify.app", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
-
+app.use((req, res, next) => {
+  req.headers["x-forwarded-proto"] = "https";
+  req.session.cookie.secure = true;
+  req.session.cookie.sameSite = "none";
+  next();
+});
 app.use(passport.session());
 
 passport.serializeUser((user, done) => {
@@ -42,9 +53,6 @@ passport.deserializeUser(async (username, done) => {
 
 app.use("/api", api);
 app.use("/uploads", uploadsRoutes);
-app.use((_, res) => {
-  return res.sendFile(path.join(__dirname, "/build/index.html"));
-});
 
 registerIOEvents(io);
 

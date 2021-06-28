@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
   try {
     const { username } = req.body;
     const user = await USERDAO.findUserByUsername(username);
-    return res.json({ user: user });
+    return res.json({ user: user.guest ? null : user });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

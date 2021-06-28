@@ -88,6 +88,8 @@ function Board() {
   };
 
   const movePiece = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     let moveResult = null;
     const svg = svgRef.current;
     const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
@@ -109,6 +111,7 @@ function Board() {
   };
 
   const handleMouseUp = (event) => {
+    event.preventDefault();
     const gameResult = store.getState().gameState.gameResult;
     if (currentPiece && gameResult === null) {
       movePiece(event);
@@ -167,7 +170,8 @@ function Board() {
 
     socket.on("setTimer", () => {
       const turnToMove = store.getState().boardState.turnToMove;
-      setMoveTimer(turnToMove, false, dispatch);
+      const gameResult = store.getState().gameState.gameResult;
+      if (gameResult == null) setMoveTimer(turnToMove, false, dispatch);
     });
 
     return () => {

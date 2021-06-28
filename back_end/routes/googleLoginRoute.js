@@ -10,8 +10,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL:
-        "https://co-tuong-online.herokuapp.com/api/auth/google/callback",
+      callbackURL: "https://www.cotuong.tk/api/auth/google/callback",
     },
     async (accessToken, _, profile, done) => {
       try {
@@ -42,11 +41,11 @@ router.get(
 router.get("/callback", checkingSession, (req, res, next) => {
   passport.authenticate("google", (err, user, _) => {
     if (err) next(err);
-    if (!user) return res.redirect("/");
+    if (!user) return res.redirect("https://co-tuong.netlify.app/");
     req.login(user, (err) => {
       if (err) req.session.loginError = err.message;
       req.session.save((err) => {
-        return res.redirect("/");
+        return res.redirect("https://co-tuong.netlify.app/");
       });
     });
   })(req, res, next);
@@ -55,7 +54,7 @@ router.get("/callback", checkingSession, (req, res, next) => {
 router.use((err, req, res, next) => {
   req.session.loginError = "Something Wrong Happend. Please Try Again";
   req.session.save((err) => {
-    return res.redirect("/");
+    return res.redirect("https://co-tuong.netlify.app/");
   });
 });
 

@@ -1,7 +1,10 @@
 import React from "react";
 import { io } from "socket.io-client";
 
-const socket = io("/play", { autoConnect: false });
+const socket = io("https://www.cotuong.tk/play", {
+  autoConnect: false,
+  withCredentials: true,
+});
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();
 const AuthenticateUserContext = React.createContext();
@@ -35,16 +38,17 @@ const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
     dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
     dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
     dispatch({ type: "setTurnToMove", value: false });
-    return;
+  } else {
+    if (playerTurn)
+      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
+    else dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
+    socket.emit("startTimer", true);
+    socket.on("oneSecondPass", () => {
+      if (playerTurn)
+        dispatch({ type: "setPlayerTimeLeftToMove", value: null });
+      else dispatch({ type: "setOpponentTimeLeftToMove", value: null });
+    });
   }
-  if (playerTurn)
-    dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-  else dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-  socket.emit("startTimer", true);
-  socket.on("oneSecondPass", () => {
-    if (playerTurn) dispatch({ type: "setPlayerTimeLeftToMove", value: null });
-    else dispatch({ type: "setOpponentTimeLeftToMove", value: null });
-  });
 };
 
 export {

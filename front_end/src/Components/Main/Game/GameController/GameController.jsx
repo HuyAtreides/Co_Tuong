@@ -20,7 +20,7 @@ const GameController = (props) => {
   const side = useSelector((state) => state.boardState.side);
 
   const handlePlayWithFriend = () => {
-    if (!socket.connected) {
+    if (!socket.connected && !playWithFriend) {
       setPlayWithFriendText(
         lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
       );
