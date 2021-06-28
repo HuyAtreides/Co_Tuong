@@ -9,12 +9,13 @@ const registerIOEvents = require("./registerIOEvents/registerIOEvents.js");
 const api = require("./routes/api/api.js");
 const USERDAO = require("./DAO/USERDAO.js");
 const uploadsRoutes = require("./routes/uploadsRoute.js");
+const configCookie = require("./configCookie.js");
 const sessionMiddleware = session({
   secret: "co_tuong",
   cookie: {
     maxAge: 259200000,
-    sameSite: "none",
     secure: true,
+    sameSite: "none",
   },
   proxy: true,
   resave: false,
@@ -34,12 +35,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
-app.use((req, res, next) => {
-  req.headers["x-forwarded-proto"] = "https";
-  req.session.cookie.secure = true;
-  req.session.cookie.sameSite = "none";
-  next();
-});
+app.use(configCookie);
 app.use(passport.session());
 
 passport.serializeUser((user, done) => {
