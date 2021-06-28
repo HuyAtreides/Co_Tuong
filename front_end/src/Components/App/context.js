@@ -4,6 +4,8 @@ import { io } from "socket.io-client";
 const socket = io("https://www.cotuong.tk/play", {
   autoConnect: false,
   withCredentials: true,
+  transports: ["websocket", "polling"],
+  rememberUpgrade: true,
 });
 const SocketContext = React.createContext();
 const SetMoveTimerContext = React.createContext();

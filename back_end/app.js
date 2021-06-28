@@ -25,9 +25,9 @@ const sessionMiddleware = session({
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: "https://co-tuong.netlify.app",
-    methods: ["GET", "POST"],
-    credentials: true,
   },
+  transports: ["websocket", "polling"],
+  pingTimeout: 7000,
 });
 
 app.use(cors({ origin: "https://co-tuong.netlify.app", credentials: true }));
