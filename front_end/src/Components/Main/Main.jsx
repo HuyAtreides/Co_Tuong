@@ -43,10 +43,6 @@ const Main = (props) => {
       if (/your account/.test(err) && lang !== "English")
         errMess =
           "Kết nối đã đóng vì tài khoản của bạn được đăng nhập từ nơi khác";
-      else {
-        socket.open();
-        return;
-      }
       setConnectionError(errMess);
       socket.close();
     });
