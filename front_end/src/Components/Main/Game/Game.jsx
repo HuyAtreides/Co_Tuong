@@ -83,15 +83,21 @@ const Game = () => {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && !socket.connected) {
-        socket.open();
+        socket.connect();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.onfocus = () => {
+      if (!socket.connected) {
+        socket.connect();
+      }
+    };
 
     return () => {
       socket.removeAllListeners("opponentLeftGame");
       socket.removeAllListeners("gameOver");
+      window.onfocus = null;
       document.removeAllListeners("visibilitychange", handleVisibilityChange);
     };
   }, []);

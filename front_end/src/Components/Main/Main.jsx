@@ -94,7 +94,6 @@ const Main = (props) => {
         setConnectionError(
           lang === "English" ? "Connection Was Closed" : "Kết nối đã đóng"
         );
-        socket.open();
         if (foundMatch) {
           dispatch({ type: "setGameResult", value: undefined });
           dispatch({
