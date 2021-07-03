@@ -81,9 +81,18 @@ const Game = () => {
         });
     });
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && !socket.connected) {
+        socket.open();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       socket.removeAllListeners("opponentLeftGame");
       socket.removeAllListeners("gameOver");
+      document.removeAllListeners("visibilitychange", handleVisibilityChange);
     };
   }, []);
 

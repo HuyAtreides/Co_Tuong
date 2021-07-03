@@ -26,7 +26,7 @@ const Main = (props) => {
 
   useEffect(() => {
     if (connectionError) {
-      if (connectionError === "The connection was closed")
+      if (connectionError === "Connection Was Closed")
         setConnectionError("Kết nối đã đóng");
       else if (connectionError === "Successfully reconnect")
         setConnectionError("Kết nối lại thành công");
@@ -43,13 +43,17 @@ const Main = (props) => {
       if (/your account/.test(err) && lang !== "English")
         errMess =
           "Kết nối đã đóng vì tài khoản của bạn được đăng nhập từ nơi khác";
+      else {
+        socket.open();
+        return;
+      }
       setConnectionError(errMess);
       socket.close();
     });
 
     socket.on("connect", () => {
       if (
-        connectionError === "The connection was closed" ||
+        connectionError === "Connection Was Closed" ||
         connectionError === "Kết nối đã đóng"
       ) {
         setConnectionError(

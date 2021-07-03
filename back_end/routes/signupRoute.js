@@ -7,8 +7,8 @@ const checkEmail = async (req, res, next) => {
   try {
     let email;
     const formData = req.body;
-    if (formData.changes && formData.changes["email.value"])
-      email = formData.changes["email.value"];
+    if (formData.changes && formData.changes["email"].value)
+      email = formData.changes["email"].value;
     else email = formData.email;
     if (!email) return next();
     const user = await USERDAO.findUserByEmail(email);

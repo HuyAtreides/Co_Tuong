@@ -27,7 +27,7 @@ const io = require("socket.io")(httpServer, {
     origin: "https://co-tuong.netlify.app",
   },
   transports: ["websocket", "polling"],
-  pingTimeout: 7000,
+  pingTimeout: 17000,
 });
 
 app.use(cors({ origin: "https://co-tuong.netlify.app", credentials: true }));
