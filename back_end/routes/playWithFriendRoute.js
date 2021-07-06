@@ -6,8 +6,8 @@ router.get("/:socketid", (req, res) => {
   req.session.opponentID = socketID;
   req.session.save(() => {
     if (req.isAuthenticated())
-      return res.redirect("https://co-tuong.netlify.app/");
-    return res.redirect("https://co-tuong.netlify.app/signin");
+      return res.redirect("https://huyatreides.github.io/cotuong/");
+    return res.redirect("https://huyatreides.github.io/cotuong/signin");
   });
 });
 

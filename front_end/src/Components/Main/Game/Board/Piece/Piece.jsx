@@ -8,7 +8,7 @@ const appendPiece = ({ board, handleMouseDown }, pieces, choosenSide) => {
         pieces.push(
           <image
             id={`p${row}${col}`}
-            href={`/images/Pieces/${board[i][j].name}.png`}
+            href={`images/Pieces/${board[i][j].name}.png`}
             width={board[i][j].width - 3}
             height={board[i][j].width - 3}
             style={{ opacity: board[i][j].canBeCaptured ? "0.6" : "1" }}

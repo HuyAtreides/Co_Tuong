@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
 import { App } from "./Components/App/App.jsx";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { batchedSubscribe } from "redux-batched-subscribe";

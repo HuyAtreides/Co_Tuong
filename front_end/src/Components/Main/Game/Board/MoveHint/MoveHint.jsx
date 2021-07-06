@@ -18,7 +18,7 @@ const MoveHint = ({ board, boardWidth }) => {
       } else if (board[i][j] && board[i][j].canBeCaptured) {
         canCaptureHints.push(
           <image
-            href="/images/Legal_Capture_Icon/legal_capture.png"
+            href="images/Legal_Capture_Icon/legal_capture.png"
             key={`capture-hint-${canCaptureHints.length}`}
             transform={board[i][j].translate}
             width={board[i][j].width - 3}

@@ -24,13 +24,13 @@ const sessionMiddleware = session({
 });
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "https://co-tuong.netlify.app",
+    origin: "https://huyatreides.github.io",
   },
   transports: ["websocket", "polling"],
   pingTimeout: 17000,
 });
 
-app.use(cors({ origin: "https://co-tuong.netlify.app", credentials: true }));
+app.use(cors({ origin: "https://huyatreides.github.io", credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(sessionMiddleware);

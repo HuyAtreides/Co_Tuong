@@ -229,12 +229,12 @@ function Board() {
       height={boardSize[1]}
       onClick={handleClick}
       style={{
-        backgroundImage: 'url("/images/Board/board.jpg")',
+        backgroundImage: 'url("images/Board/board.jpg")',
       }}
       ref={svgRef}
     >
       <image
-        href="/images/Target_Icon/target.gif"
+        href="images/Target_Icon/target.gif"
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
         style={{ display: targetDisplay }}
@@ -249,7 +249,7 @@ function Board() {
       />
 
       <image
-        href="/images/Legal_Capture_Icon/legal_capture.png"
+        href="images/Legal_Capture_Icon/legal_capture.png"
         transform={warningTranslate}
         style={{ display: warningDisplay, opacity: "0.6" }}
         width={boardSize[0] / 9 - 3}

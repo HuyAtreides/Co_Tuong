@@ -48,10 +48,7 @@ const Main = (props) => {
     });
 
     socket.on("connect", () => {
-      if (
-        connectionError === "Connection Was Closed" ||
-        connectionError === "Kết nối đã đóng"
-      ) {
+      if (connectionError) {
         setConnectionError(
           lang === "English"
             ? "Successfully reconnect"

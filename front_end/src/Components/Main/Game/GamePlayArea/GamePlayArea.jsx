@@ -61,7 +61,7 @@ const GamePlayArea = ({ lang }) => {
             if (element.side === element.choosenSide[1])
               return (
                 <img
-                  src={`/images/Pieces/${element.name}.png`}
+                  src={`images/Pieces/${element.name}.png`}
                   style={{ width: "27px" }}
                   key={`c${index}`}
                 ></img>

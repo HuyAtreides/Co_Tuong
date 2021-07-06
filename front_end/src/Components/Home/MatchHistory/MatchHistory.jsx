@@ -45,7 +45,7 @@ const MatchHistory = ({ playerInfo, viewOthersProfile }) => {
             lang === "English" ? (
               "User's match history isn't available."
             ) : (
-              "Lịch sử đấu của người chơi hiện khả dụng."
+              "Lịch sử đấu của người chơi hiện không khả dụng."
             )
           ) : lang === "English" ? (
             <>
