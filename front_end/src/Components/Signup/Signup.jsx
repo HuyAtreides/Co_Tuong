@@ -1,24 +1,15 @@
-import React, { useState, useContext } from "react";
-import useValidateInput from "./useValidateInput.js";
-import {
-  Container,
-  Form,
-  InputGroup,
-  Button,
-  Spinner,
-  Row,
-  Col,
-} from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
-import { AuthenticateUserContext } from "../App/context.js";
-import callAPI from "../App/callAPI.js";
+import React, { useState, useContext } from 'react';
+import useValidateInput from './useValidateInput.js';
+import { Container, Form, InputGroup, Button, Spinner, Row, Col } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { AuthenticateUserContext } from '../App/context.js';
+import callAPI from '../App/callAPI.js';
+import { baseURL } from '../../index.jsx';
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(
-    (state) => state.appState.isAuthenticated
-  );
+  const isAuthenticated = useSelector((state) => state.appState.isAuthenticated);
   const lang = useSelector((state) => state.appState.lang);
   const authenticateUser = useContext(AuthenticateUserContext);
   const [waitForResponse, setWaitForResponse] = useState(false);
@@ -52,11 +43,11 @@ const Signup = () => {
     try {
       event.preventDefault();
       if (waitForResponse) return;
-      setError("");
+      setError('');
       const missingField = handleMissingField();
       if (confirmPassword !== password) {
         setConfirmPasswordMess(
-          lang === "English" ? "Password doesn't match" : "Mật khẩu không khớp"
+          lang === 'English' ? "Password doesn't match" : 'Mật khẩu không khớp',
         );
         return;
       }
@@ -69,17 +60,13 @@ const Signup = () => {
       ) {
         setWaitForResponse(true);
         setError(null);
-        const { message, user, ok, opponentID } = await callAPI(
-          "POST",
-          "api/signup",
-          {
-            email: email,
-            firstname: firstname,
-            username: username,
-            password: password,
-            lastname: lastname,
-          }
-        );
+        const { message, user, ok, opponentID } = await callAPI('POST', 'api/signup', {
+          email: email,
+          firstname: firstname,
+          username: username,
+          password: password,
+          lastname: lastname,
+        });
         setWaitForResponse(false);
         if (user) {
           authenticateUser(dispatch, user, opponentID);
@@ -92,153 +79,146 @@ const Signup = () => {
   };
 
   if (isAuthenticated) {
-    if (isAuthenticated !== "guest") return <Redirect to="/" />;
+    if (isAuthenticated !== 'guest') return <Redirect to='/' />;
   }
 
   return (
     <Container fluid>
-      <h1>{lang === "English" ? "Xiangqi" : "Cờ Tướng"}</h1>(
-      <Row className="justify-content-center">
+      <h1>{lang === 'English' ? 'Xiangqi' : 'Cờ Tướng'}</h1>(
+      <Row className='justify-content-center'>
         <Col
           md={{ span: 7 }}
           sm={{ span: 7 }}
           xs={{ span: 10 }}
-          className="login-component d-flex flex-column  align-items-center"
+          className='login-component d-flex flex-column  align-items-center'
         >
-          {error ? <p className="error-message">{error}</p> : null}
-          <Form onSubmit={handleSignUp} method="POST">
-            <Form.Group controlId="username">
-              <Form.Label>
-                {lang === "English" ? "Username" : "Tên tài khoản"}
-              </Form.Label>
+          {error ? <p className='error-message'>{error}</p> : null}
+          <Form onSubmit={handleSignUp} method='POST'>
+            <Form.Group controlId='username'>
+              <Form.Label>{lang === 'English' ? 'Username' : 'Tên tài khoản'}</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  type="text"
-                  isInvalid={invalidUsernameMess !== ""}
+                  type='text'
+                  isInvalid={invalidUsernameMess !== ''}
                   onChange={handleUsernameChange}
                   value={username}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback type='invalid'>
                   {invalidUsernameMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
-            <Form.Group controlId="firstname">
-              <Form.Label>{lang === "English" ? "Firstname" : "Họ"}</Form.Label>
+            <Form.Group controlId='firstname'>
+              <Form.Label>{lang === 'English' ? 'Firstname' : 'Họ'}</Form.Label>
               <Form.Control
-                type="text"
+                type='text'
                 onChange={handleFirstnameChange}
                 value={firstname}
                 disabled={waitForResponse}
               />
             </Form.Group>
 
-            <Form.Group controlId="lastname">
-              <Form.Label>{lang === "English" ? "Lastname" : "tên"}</Form.Label>
+            <Form.Group controlId='lastname'>
+              <Form.Label>{lang === 'English' ? 'Lastname' : 'tên'}</Form.Label>
               <Form.Control
-                type="text"
+                type='text'
                 onChange={handleLastnameChange}
                 value={lastname}
                 disabled={waitForResponse}
               />
             </Form.Group>
 
-            <Form.Group controlId="email">
+            <Form.Group controlId='email'>
               <Form.Label>Email</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  type="email"
-                  isInvalid={invalidEmailMess !== ""}
+                  type='email'
+                  isInvalid={invalidEmailMess !== ''}
                   onChange={handleEmailChange}
                   value={email}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback type='invalid'>
                   {invalidEmailMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
-            <Form.Group controlId="password">
-              <Form.Label>
-                {lang === "English" ? "Password" : "Mật Khẩu"}
-              </Form.Label>
-              <InputGroup hasValidation className="password-group">
+            <Form.Group controlId='password'>
+              <Form.Label>{lang === 'English' ? 'Password' : 'Mật Khẩu'}</Form.Label>
+              <InputGroup hasValidation className='password-group'>
                 <Form.Control
-                  type={showPassword ? "text" : "password"}
-                  isInvalid={invalidPasswordMess !== ""}
+                  type={showPassword ? 'text' : 'password'}
+                  isInvalid={invalidPasswordMess !== ''}
                   onChange={handlePasswordChange}
                   value={password}
                   disabled={waitForResponse}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback type='invalid'>
                   {invalidPasswordMess}
                 </Form.Control.Feedback>
                 <button
-                  className="toggle-password"
-                  type="button"
-                  style={{ display: invalidPasswordMess ? "none" : "inline" }}
+                  className='toggle-password'
+                  type='button'
+                  style={{ display: invalidPasswordMess ? 'none' : 'inline' }}
                   onClick={() => {
                     setShowPassword(!showPassword);
                   }}
                 >
                   {showPassword
-                    ? lang === "English"
-                      ? "Hide"
-                      : "Ẩn"
-                    : lang === "English"
-                    ? "Show"
-                    : "Hiện"}
+                    ? lang === 'English'
+                      ? 'Hide'
+                      : 'Ẩn'
+                    : lang === 'English'
+                    ? 'Show'
+                    : 'Hiện'}
                 </button>
               </InputGroup>
             </Form.Group>
             <Form.Group>
               <Form.Label>
-                {lang === "English" ? "Confirm Password" : "Xác nhận mật khẩu"}
+                {lang === 'English' ? 'Confirm Password' : 'Xác nhận mật khẩu'}
               </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  type="password"
-                  isInvalid={confirmPasswordMess !== ""}
+                  type='password'
+                  isInvalid={confirmPasswordMess !== ''}
                   disabled={waitForResponse}
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback type='invalid'>
                   {confirmPasswordMess}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
-            <Button type="submit" className="submit-form-button">
+            <Button type='submit' className='submit-form-button'>
               {waitForResponse ? (
-                <Spinner animation="border" variant="dark" />
-              ) : lang === "English" ? (
-                "Submit"
+                <Spinner animation='border' variant='dark' />
+              ) : lang === 'English' ? (
+                'Submit'
               ) : (
-                "Đăng Ký"
+                'Đăng Ký'
               )}
             </Button>
           </Form>
-          <p className="seperator">
+          <p className='seperator'>
             <span></span>
-            <span className="seperator-text">
-              {lang === "English" ? "or connect with" : "hoặc đăng nhập với"}
+            <span className='seperator-text'>
+              {lang === 'English' ? 'or connect with' : 'hoặc đăng nhập với'}
             </span>
             <span></span>
           </p>
-          <div className="social-login">
-            <a className="google" href="https://www.cotuong.tk/api/auth/google">
-              <i className="fab fa-google"></i> Google
+          <div className='social-login'>
+            <a className='google' href={`${baseURL}/api/auth/google`}>
+              <i className='fab fa-google'></i> Google
             </a>
-            <a
-              className="facebook"
-              href="https://www.cotuong.tk/api/auth/facebook"
-            >
-              <i className="fab fa-facebook "></i> Facebook
+            <a className='facebook' href={`${baseURL}/api/auth/facebook`}>
+              <i className='fab fa-facebook '></i> Facebook
             </a>
-            <a className="github" href="https://www.cotuong.tk/api/auth/github">
-              <i className="fab fa-github "></i> Github
+            <a className='github' href={`${baseURL}/api/auth/github`}>
+              <i className='fab fa-github '></i> Github
             </a>
           </div>
         </Col>

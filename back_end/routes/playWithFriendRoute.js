@@ -7,7 +7,7 @@ router.get("/:socketid", (req, res) => {
   req.session.save(() => {
     if (req.isAuthenticated())
       return res.redirect("https://huyatreides.github.io/cotuong/");
-    return res.redirect("https://huyatreides.github.io/cotuong/signin");
+    return res.redirect("https://huyatreides.github.io/cotuong/#/signin");
   });
 });
 

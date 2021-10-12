@@ -16,6 +16,7 @@ const sessionMiddleware = session({
     maxAge: 259200000,
     secure: true,
     sameSite: "none",
+    domain: "",
   },
   proxy: true,
   resave: false,

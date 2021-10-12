@@ -1,10 +1,11 @@
-import React from "react";
-import { io } from "socket.io-client";
+import React from 'react';
+import { io } from 'socket.io-client';
+import { baseURL } from '../..';
 
-const socket = io("https://www.cotuong.tk/play", {
+const socket = io(`${baseURL}/play`, {
   autoConnect: false,
   withCredentials: true,
-  transports: ["websocket", "polling"],
+  transports: ['websocket', 'polling'],
   rememberUpgrade: true,
 });
 const SocketContext = React.createContext();
@@ -15,12 +16,12 @@ const authenticateUser = (dispatch, user, opponentID) => {
   if (socket.guest) socket.disconnect();
   socket.guest = user.guest;
 
-  dispatch({ type: "resetBoardState", value: 520 });
-  dispatch({ type: "resetGameState" });
-  dispatch({ type: "setIsAuthenticated", value: !user.guest ? true : "guest" });
-  dispatch({ type: "setPlayerInfo", value: user });
+  dispatch({ type: 'resetBoardState', value: 520 });
+  dispatch({ type: 'resetGameState' });
+  dispatch({ type: 'setIsAuthenticated', value: !user.guest ? true : 'guest' });
+  dispatch({ type: 'setPlayerInfo', value: user });
 
-  if (user.lang) dispatch({ type: "setLang", value: user.lang });
+  if (user.lang) dispatch({ type: 'setLang', value: user.lang });
   socket.auth = {
     player: {
       playername: user.username,
@@ -33,22 +34,20 @@ const authenticateUser = (dispatch, user, opponentID) => {
 };
 
 const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
-  socket.removeAllListeners("oneSecondPass");
+  socket.removeAllListeners('oneSecondPass');
   if (gameFinish) {
-    dispatch({ type: "setPause", value: null });
-    dispatch({ type: "setPauseTime", value: "restart" });
-    dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-    dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-    dispatch({ type: "setTurnToMove", value: false });
+    dispatch({ type: 'setPause', value: null });
+    dispatch({ type: 'setPauseTime', value: 'restart' });
+    dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
+    dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+    dispatch({ type: 'setTurnToMove', value: false });
   } else {
-    if (playerTurn)
-      dispatch({ type: "setOpponentTimeLeftToMove", value: "restart" });
-    else dispatch({ type: "setPlayerTimeLeftToMove", value: "restart" });
-    socket.emit("startTimer", true);
-    socket.on("oneSecondPass", () => {
-      if (playerTurn)
-        dispatch({ type: "setPlayerTimeLeftToMove", value: null });
-      else dispatch({ type: "setOpponentTimeLeftToMove", value: null });
+    if (playerTurn) dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
+    else dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+    socket.emit('startTimer', true);
+    socket.on('oneSecondPass', () => {
+      if (playerTurn) dispatch({ type: 'setPlayerTimeLeftToMove', value: null });
+      else dispatch({ type: 'setOpponentTimeLeftToMove', value: null });
     });
   }
 };
