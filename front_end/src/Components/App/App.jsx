@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { Route, Switch } from "react-router-dom";
-import SignIn from "../SignIn/SignIn.jsx";
-import Main from "../Main/Main.jsx";
-import Signup from "../Signup/Signup.jsx";
-import VerifyEmail from "../VerifyEmail/VerifyEmail.jsx";
-import Home from "../Home/Home.jsx";
-import Settings from "../Settings/Settings.jsx";
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import SignIn from '../SignIn/SignIn.jsx';
+import Main from '../Main/Main.jsx';
+import Signup from '../Signup/Signup.jsx';
+import VerifyEmail from '../VerifyEmail/VerifyEmail.jsx';
+import Home from '../Home/Home.jsx';
+import Settings from '../Settings/Settings.jsx';
 
 import {
   SocketContext,
@@ -14,8 +14,8 @@ import {
   AuthenticateUserContext,
   authenticateUser,
   socket,
-} from "./context.js";
-import useHandleRoutingWhilePlaying from "./useHandleRoutingWhilePlaying.js";
+} from './context.js';
+import useHandleRoutingWhilePlaying from './useHandleRoutingWhilePlaying.js';
 
 function App() {
   useHandleRoutingWhilePlaying(socket, setMoveTimer);
@@ -25,25 +25,25 @@ function App() {
       <SetMoveTimerContext.Provider value={setMoveTimer}>
         <AuthenticateUserContext.Provider value={authenticateUser}>
           <Switch>
-            <Route path="/signin">
+            <Route path='/signin'>
               <SignIn />
             </Route>
-            <Route path="/signup">
+            <Route path='/signup'>
               <Signup />
             </Route>
-            <Route path="/verify-email">
+            <Route path='/verify-email'>
               <VerifyEmail />
             </Route>
-            <Route path="/home/:name">
+            <Route path='/home/:name'>
               <Home />
             </Route>
-            <Route path="/home">
+            <Route path='/home'>
               <Home />
             </Route>
-            <Route path="/settings">
+            <Route path='/settings'>
               <Settings />
             </Route>
-            <Route path="/">
+            <Route path='/'>
               <Main />
             </Route>
           </Switch>

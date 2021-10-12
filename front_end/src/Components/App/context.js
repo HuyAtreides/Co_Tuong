@@ -1,8 +1,7 @@
 import React from 'react';
 import { io } from 'socket.io-client';
-import { baseURL } from '../..';
 
-const socket = io(`${baseURL}/play`, {
+const socket = io('https://co-tuong-online.herokuapp.com/play', {
   autoConnect: false,
   withCredentials: true,
   transports: ['websocket', 'polling'],

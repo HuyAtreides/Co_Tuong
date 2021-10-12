@@ -1,10 +1,10 @@
-const USERDAO = require("../DAO/USERDAO.js");
+const USERDAO = require('../DAO/USERDAO.js');
 
 class EventHandlers {
   static intervalID;
 
   static registerSetTimeAndSideHandlers(socket) {
-    socket.on("setTimeAndSide", (time, side, callback) => {
+    socket.on('setTimeAndSide', (time, side, callback) => {
       socket.time = time;
       socket.side = side;
       if (callback) callback();
@@ -18,7 +18,7 @@ class EventHandlers {
         if (senderSocket && (excludeID === null || excludeID !== senderID)) {
           const index = senderSocket.sentInvites.indexOf(socket.id);
           senderSocket.sentInvites.splice(index, 1);
-          io.to(senderID).emit("inviteDeclined", socket.player);
+          io.to(senderID).emit('inviteDeclined', socket.player);
         }
       });
       socket.inviteSenders = [];
@@ -32,7 +32,7 @@ class EventHandlers {
         if (receiverSocket && (excludeID === null || socketID !== excludeID)) {
           const index = receiverSocket.inviteSenders.indexOf(socket.id);
           receiverSocket.inviteSenders.splice(index, 1);
-          receiverSocket.emit("inviteCanceled", socket.player);
+          receiverSocket.emit('inviteCanceled', socket.player);
         }
       });
       socket.sentInvites = [];
@@ -40,31 +40,31 @@ class EventHandlers {
   }
 
   static registerTimerHandlers(io, socket) {
-    socket.on("startTimer", (start) => {
+    socket.on('startTimer', (start) => {
       clearInterval(EventHandlers.intervalID);
       if (start) {
         EventHandlers.intervalID = setInterval(() => {
           if (io.sockets.size === 0) clearInterval(EventHandlers.intervalID);
-          else io.emit("oneSecondPass");
+          else io.emit('oneSecondPass');
         }, 1000);
       }
     });
   }
 
   static registerOpponentMoveHandlers(io, socket) {
-    socket.on("opponentMove", (newPosition, [curRow, curCol]) => {
+    socket.on('opponentMove', (newPosition, [curRow, curCol]) => {
       const [_, newRow, newCol] = newPosition;
       const [symmetryCurRow, symmetryCurCol] = [9 - curRow, 8 - curCol];
       const [symmetryNewRow, symmetryNewCol] = [9 - newRow, 8 - newCol];
       io.to(socket.opponentID).emit(
-        "move",
+        'move',
         [symmetryCurRow, symmetryCurCol],
-        [symmetryNewRow, symmetryNewCol]
+        [symmetryNewRow, symmetryNewCol],
       );
     });
 
-    socket.on("finishMove", () => {
-      io.to(socket.id).to(socket.opponentID).emit("setTimer");
+    socket.on('finishMove', () => {
+      io.to(socket.id).to(socket.opponentID).emit('setTimer');
     });
   }
 
@@ -74,8 +74,8 @@ class EventHandlers {
     curSocket.opponent = socket.player;
     socket.opponentID = id;
     if (socket.side !== curSocket.side) {
-      socket.firstMove = socket.side === "red";
-      curSocket.firstMove = curSocket.side === "red";
+      socket.firstMove = socket.side === 'red';
+      curSocket.firstMove = curSocket.side === 'red';
     } else {
       const firstMove = Math.floor(Math.random() * 2);
       socket.firstMove = firstMove === 1;
@@ -92,10 +92,10 @@ class EventHandlers {
     socket.time = time;
     const [player1, player2] = [socket.player, curSocket.player];
     EventHandlers.assignFirstMove(socket, curSocket, curSocket.id);
-    socket.emit("foundMatch", player2, socket.firstMove, time);
-    curSocket.emit("foundMatch", player1, !socket.firstMove, time);
-    socket.emit("clearInvites");
-    curSocket.emit("clearInvites");
+    socket.emit('foundMatch', player2, socket.firstMove, time);
+    curSocket.emit('foundMatch', player1, !socket.firstMove, time);
+    socket.emit('clearInvites');
+    curSocket.emit('clearInvites');
   }
 
   static canJoinGame(socket, curSocket, useInviteLink) {
@@ -130,16 +130,16 @@ class EventHandlers {
   }
 
   static registerFindMatchHandlers(io, socket) {
-    socket.on("findMatch", async () => {
+    socket.on('findMatch', async () => {
       socket.opponentID = null;
       let intervalID;
-      socket.removeAllListeners("cancelFindMatch");
+      socket.removeAllListeners('cancelFindMatch');
 
-      socket.on("cancelFindMatch", () => {
+      socket.on('cancelFindMatch', () => {
         if (!socket.opponentID) {
           socket.opponentID = undefined;
           clearInterval(intervalID);
-          socket.emit("findMatchCanceled");
+          socket.emit('findMatchCanceled');
         }
       });
 
@@ -147,7 +147,7 @@ class EventHandlers {
         intervalID = setInterval(() => {
           const finish = EventHandlers.findMatch(io, socket);
           if (finish) {
-            socket.removeAllListeners("cancelFindMatch");
+            socket.removeAllListeners('cancelFindMatch');
             clearInterval(intervalID);
           }
         }, 1000);
@@ -159,27 +159,24 @@ class EventHandlers {
     const canSendInvite = (receiverSocket, playername) => {
       if (!receiverSocket) {
         const message = `${playername} may be disconnected`;
-        socket.emit("invalidInvite", message);
+        socket.emit('invalidInvite', message);
         return false;
-      } else if (
-        receiverSocket.opponentID ||
-        receiverSocket.opponentID === null
-      ) {
+      } else if (receiverSocket.opponentID || receiverSocket.opponentID === null) {
         const message = `${playername} is in a game`;
-        socket.emit("invalidInvite", message);
+        socket.emit('invalidInvite', message);
         return false;
       } else if (
         receiverSocket.inviteSenders &&
         receiverSocket.inviteSenders.length >= 5
       ) {
         const message = `${playername} has received too many invites`;
-        socket.emit("invalidInvite", message);
+        socket.emit('invalidInvite', message);
         return false;
       }
       return true;
     };
 
-    socket.on("sendInvite", (receiverSocketID, playername) => {
+    socket.on('sendInvite', (receiverSocketID, playername) => {
       try {
         const receiverSocket = io.sockets.get(receiverSocketID);
         if (canSendInvite(receiverSocket, playername)) {
@@ -188,10 +185,10 @@ class EventHandlers {
           socket.sentInvites.push(receiverSocketID);
           receiverSocket.inviteSenders.push(socket.id);
           io.to(receiverSocketID).emit(
-            "receiveInvite",
+            'receiveInvite',
             socket.player,
             socket.id,
-            socket.time
+            socket.time,
           );
         }
       } catch (err) {
@@ -199,7 +196,7 @@ class EventHandlers {
       }
     });
 
-    socket.on("declineInvite", (senderSocketID, all) => {
+    socket.on('declineInvite', (senderSocketID, all) => {
       try {
         if (all) EventHandlers.declineAllInvites(io, socket, null);
         else {
@@ -209,14 +206,14 @@ class EventHandlers {
           if (!senderSocket) return;
           index = senderSocket.sentInvites.indexOf(socket.id);
           senderSocket.sentInvites.splice(index, 1);
-          io.to(senderSocketID).emit("inviteDeclined", socket.player);
+          io.to(senderSocketID).emit('inviteDeclined', socket.player);
         }
       } catch (err) {
         console.log(err.toString());
       }
     });
 
-    socket.on("cancelInvite", (receiverSocketID, all) => {
+    socket.on('cancelInvite', (receiverSocketID, all) => {
       if (all) {
         EventHandlers.cancelAllInvites(io, socket, null);
       } else {
@@ -226,15 +223,15 @@ class EventHandlers {
         receiverSocket.inviteSenders.splice(index, 1);
         index = socket.sentInvites.indexOf(receiverSocketID);
         socket.sentInvites.splice(index, 1);
-        io.to(receiverSocketID).emit("inviteCanceled", socket.player);
+        io.to(receiverSocketID).emit('inviteCanceled', socket.player);
       }
     });
 
-    socket.on("inviteReceived", (senderSocketID) => {
-      io.to(senderSocketID).emit("validInvite");
+    socket.on('inviteReceived', (senderSocketID) => {
+      io.to(senderSocketID).emit('validInvite');
     });
 
-    socket.on("acceptInvite", (senderSocketID) => {
+    socket.on('acceptInvite', (senderSocketID) => {
       try {
         const senderSocket = io.sockets.get(senderSocketID);
         if (
@@ -254,16 +251,16 @@ class EventHandlers {
       }
     });
 
-    socket.on("generateInviteLink", (callback) => {
+    socket.on('generateInviteLink', (callback) => {
       socket.useInviteLink = true;
-      const url = "https://www.cotuong.tk/api/play-with-friend/" + socket.id;
+      const url = `${process.env.BASE_URL}/api/play-with-friend/` + socket.id;
       callback(url);
     });
   }
 
   static registerSendMessageHandlers(io, socket) {
-    socket.on("sendMessage", (message) => {
-      io.to(socket.opponentID).emit("incomingMessage", message);
+    socket.on('sendMessage', (message) => {
+      io.to(socket.opponentID).emit('incomingMessage', message);
     });
   }
 
@@ -272,52 +269,51 @@ class EventHandlers {
       const opponentSocket = io.sockets.get(socket.opponentID);
       if (socket.opponentID && !socket.gameFinished) {
         socket.gameFinished = true;
-        io.to(socket.opponentID).emit("gameOver", "Won", "Game Abandoned");
-        USERDAO.updateMatchHistory(socket, "Lost", "Game Abandoned");
+        io.to(socket.opponentID).emit('gameOver', 'Won', 'Game Abandoned');
+        USERDAO.updateMatchHistory(socket, 'Lost', 'Game Abandoned');
       }
       if (opponentSocket && !opponentSocket.gameFinished) {
-        USERDAO.updateMatchHistory(opponentSocket, "Won", "Game Abandoned");
+        USERDAO.updateMatchHistory(opponentSocket, 'Won', 'Game Abandoned');
         opponentSocket.gameFinished = true;
       }
     };
 
-    socket.on("disconnect", async (reason) => {
-      if (socket.player.guest)
-        await USERDAO.removeGuest(socket.player.playername);
+    socket.on('disconnect', async (reason) => {
+      if (socket.player.guest) await USERDAO.removeGuest(socket.player.playername);
       else {
         USERDAO.setSocketID(socket.player.playername, null, false);
       }
-      if (reason === "server namespace disconnect") return;
+      if (reason === 'server namespace disconnect') return;
       handleGameFinish();
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);
-      io.to(socket.opponentID).emit("opponentLeftGame");
+      io.to(socket.opponentID).emit('opponentLeftGame');
     });
 
-    socket.on("exitGame", async () => {
-      io.to(socket.opponentID).emit("opponentLeftGame");
+    socket.on('exitGame', async () => {
+      io.to(socket.opponentID).emit('opponentLeftGame');
       socket.opponentID = undefined;
     });
   }
 
   static registerDrawOfferHandlers(io, socket) {
-    socket.on("sendDrawOffer", () => {
-      io.to(socket.opponentID).emit("receiveDrawOffer");
+    socket.on('sendDrawOffer', () => {
+      io.to(socket.opponentID).emit('receiveDrawOffer');
     });
   }
 
   static registerGameFinishHandlers(io, socket) {
-    socket.on("gameFinish", (gameResult) => {
+    socket.on('gameFinish', (gameResult) => {
       const opponentSocket = io.sockets.get(socket.opponentID);
-      let [result, reason] = ["Draw", "Game Draw By Agreement"];
+      let [result, reason] = ['Draw', 'Game Draw By Agreement'];
       if (!socket.gameFinished) {
         socket.gameFinished = true;
-        if (gameResult !== "Draw") {
+        if (gameResult !== 'Draw') {
           [result, reason] = gameResult;
-          io.to(socket.opponentID).emit("gameOver", result, reason);
-        } else io.to(socket.opponentID).emit("draw", result, null);
+          io.to(socket.opponentID).emit('gameOver', result, reason);
+        } else io.to(socket.opponentID).emit('draw', result, null);
         const matchResult =
-          result === "Draw" ? result : result === "Won" ? "Lost" : "Won";
+          result === 'Draw' ? result : result === 'Won' ? 'Lost' : 'Won';
         USERDAO.updateMatchHistory(socket, matchResult, reason);
       }
       if (opponentSocket && !opponentSocket.gameFinished) {
@@ -328,28 +324,28 @@ class EventHandlers {
   }
 
   static registerPauseAndResumeGameHandlers(io, socket) {
-    socket.on("playerPauseGame", () => {
-      io.to(socket.opponentID).emit("opponentPauseGame");
+    socket.on('playerPauseGame', () => {
+      io.to(socket.opponentID).emit('opponentPauseGame');
     });
 
-    socket.on("playerResumeGame", () => {
-      io.to(socket.opponentID).emit("opponentResumeGame");
+    socket.on('playerResumeGame', () => {
+      io.to(socket.opponentID).emit('opponentResumeGame');
     });
 
-    socket.on("receivePauseSignalAck", () => {
-      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer", false);
+    socket.on('receivePauseSignalAck', () => {
+      io.to(socket.opponentID).to(socket.id).emit('startPauseTimer', false);
     });
 
-    socket.on("receiveResumeSignalAck", () => {
-      io.to(socket.opponentID).to(socket.id).emit("startPauseTimer", true);
+    socket.on('receiveResumeSignalAck', () => {
+      io.to(socket.opponentID).to(socket.id).emit('startPauseTimer', true);
     });
 
-    socket.on("startGame", () => {
-      io.to(socket.opponentID).emit("receiveGameStartSignal");
+    socket.on('startGame', () => {
+      io.to(socket.opponentID).emit('receiveGameStartSignal');
     });
 
-    socket.on("receiveGameStartSignalAck", () => {
-      io.to(socket.opponentID).to(socket.id).emit("gameStarted");
+    socket.on('receiveGameStartSignalAck', () => {
+      io.to(socket.opponentID).to(socket.id).emit('gameStarted');
     });
   }
 }
