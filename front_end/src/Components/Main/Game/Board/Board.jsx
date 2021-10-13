@@ -70,6 +70,7 @@ function Board() {
 
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
+      dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
       socket.emit('finishMove');
       dispatch({ type: 'setTurnToMove', value: true });
@@ -105,6 +106,7 @@ function Board() {
     updateCurrentPiece(moveResult);
     dispatch({ type: 'setBoard', value: [...board] });
     if (moveResult && !/translate/.test(moveResult)) {
+      dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
       dispatch({ type: 'setTurnToMove', value: !turnToMove });
       socket.emit('opponentMove', moveResult, [curRow, curCol]);
     }

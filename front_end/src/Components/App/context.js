@@ -41,8 +41,8 @@ const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
     dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
     dispatch({ type: 'setTurnToMove', value: false });
   } else {
-    if (playerTurn) dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
-    else dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+    dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
+    dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
     socket.emit('startTimer', true);
     socket.on('oneSecondPass', () => {
       if (playerTurn) dispatch({ type: 'setPlayerTimeLeftToMove', value: null });
