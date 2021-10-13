@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useContext, useState } from "react";
-import Piece from "./Piece/Piece.jsx";
-import "./Board.scss";
-import { useSelector, useDispatch, useStore } from "react-redux";
-import getSVGLocation from "./getSVGLocation.js";
-import { SocketContext, SetMoveTimerContext } from "../../../App/context.js";
-import PieceClass from "../../../../pieces/piece.js";
-import MoveHint from "./MoveHint/MoveHint.jsx";
+import React, { useEffect, useRef, useContext, useState } from 'react';
+import Piece from './Piece/Piece.jsx';
+import './Board.scss';
+import { useSelector, useDispatch, useStore } from 'react-redux';
+import getSVGLocation from './getSVGLocation.js';
+import { SocketContext, SetMoveTimerContext } from '../../../App/context.js';
+import PieceClass from '../../../../pieces/piece.js';
+import MoveHint from './MoveHint/MoveHint.jsx';
 
 function Board() {
   const dispatch = useDispatch();
@@ -17,13 +17,11 @@ function Board() {
   const currentPiece = useSelector((state) => state.boardState.currentPiece);
   const getClicked = useSelector((state) => state.boardState.getClicked);
   const draggable = useSelector((state) => state.boardState.draggable);
-  const [warningDisplay, setWarningDisplay] = useState("none");
-  const [warningTranslate, setWarningTranslate] = useState("translate(0, 0)");
+  const [warningDisplay, setWarningDisplay] = useState('none');
+  const [warningTranslate, setWarningTranslate] = useState('translate(0, 0)');
   const side = useSelector((state) => state.boardState.side);
   const svgRef = useRef();
-  const targetTranslate = useSelector(
-    (state) => state.boardState.targetTranslate
-  );
+  const targetTranslate = useSelector((state) => state.boardState.targetTranslate);
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const socket = useContext(SocketContext);
   const setMoveTimer = useContext(SetMoveTimerContext);
@@ -31,6 +29,8 @@ function Board() {
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
   const handleMouseDown = (event) => {
+    const gameResult = store.getState().gameState.gameResult;
+    if (gameResult !== null) return;
     const elementId = event.currentTarget.id;
     const [row, col] = [+elementId[1], +elementId[2]];
     const translate = board[row][col].translate;
@@ -38,16 +38,16 @@ function Board() {
       if (currentPiece) {
         const [curRow, curCol] = currentPiece.position;
         if (row !== curRow || curCol !== col) {
-          currentPiece.showMoveHints("off", board);
-          dispatch({ type: "setGetClicked", value: false });
+          currentPiece.showMoveHints('off', board);
+          dispatch({ type: 'setGetClicked', value: false });
         }
       }
-      board[row][col].showMoveHints("on", board);
-      dispatch({ type: "setBoard", value: [...board] });
-      dispatch({ type: "setTargetDisplay", value: "inline" });
-      dispatch({ type: "setDraggable", value: true });
-      dispatch({ type: "setTargetTranslate", value: translate });
-      dispatch({ type: "setCurrentPiece", value: board[row][col] });
+      board[row][col].showMoveHints('on', board);
+      dispatch({ type: 'setBoard', value: [...board] });
+      dispatch({ type: 'setTargetDisplay', value: 'inline' });
+      dispatch({ type: 'setDraggable', value: true });
+      dispatch({ type: 'setTargetTranslate', value: translate });
+      dispatch({ type: 'setCurrentPiece', value: board[row][col] });
     }
   };
 
@@ -55,15 +55,15 @@ function Board() {
     if (moveResult && !/translate/.test(moveResult)) {
       const [capture, newRow, newCol] = moveResult;
       if (capture) {
-        dispatch({ type: "setCapturedPieces", value: board[newRow][newCol] });
+        dispatch({ type: 'setCapturedPieces', value: board[newRow][newCol] });
       }
       board[curRow][curCol] = 0;
       board[newRow][newCol] = currentPiece;
     } else if (moveResult) {
       setTimeout(() => {
-        setWarningDisplay("none");
+        setWarningDisplay('none');
       }, 400);
-      setWarningDisplay("inline");
+      setWarningDisplay('inline');
       setWarningTranslate(moveResult);
     }
   };
@@ -71,19 +71,19 @@ function Board() {
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
-      dispatch({ type: "setTurnToMove", value: true });
-      socket.emit("finishMove");
+      socket.emit('finishMove');
+      dispatch({ type: 'setTurnToMove', value: true });
     }
   };
 
   const updateCurrentPiece = (moveResult) => {
     if ((moveResult && !/translate/.test(moveResult)) || getClicked) {
-      currentPiece.showMoveHints("off", board);
-      dispatch({ type: "setTargetDisplay", value: "none" });
-      dispatch({ type: "setCurrentPiece", value: null });
-      dispatch({ type: "setGetClicked", value: false });
+      currentPiece.showMoveHints('off', board);
+      dispatch({ type: 'setTargetDisplay', value: 'none' });
+      dispatch({ type: 'setCurrentPiece', value: null });
+      dispatch({ type: 'setGetClicked', value: false });
     } else {
-      dispatch({ type: "setGetClicked", value: true });
+      dispatch({ type: 'setGetClicked', value: true });
     }
   };
 
@@ -101,12 +101,12 @@ function Board() {
       moveResult = currentPiece.setPosition(canMove, newRow, newCol);
     else if (/translate/.test(canMove)) moveResult = canMove;
     updateBoard(moveResult, [curRow, curCol]);
-    dispatch({ type: "setDraggable", value: false });
+    dispatch({ type: 'setDraggable', value: false });
     updateCurrentPiece(moveResult);
-    dispatch({ type: "setBoard", value: [...board] });
+    dispatch({ type: 'setBoard', value: [...board] });
     if (moveResult && !/translate/.test(moveResult)) {
-      dispatch({ type: "setTurnToMove", value: !turnToMove });
-      socket.emit("opponentMove", moveResult, [curRow, curCol]);
+      dispatch({ type: 'setTurnToMove', value: !turnToMove });
+      socket.emit('opponentMove', moveResult, [curRow, curCol]);
     }
   };
 
@@ -123,7 +123,7 @@ function Board() {
     const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
     if (x >= 0 && x < boardSize[0] && y >= 0 && y < boardSize[1] && draggable) {
       currentPiece.move(x, y);
-      dispatch({ type: "setBoard", value: [...board] });
+      dispatch({ type: 'setBoard', value: [...board] });
     }
   };
 
@@ -151,31 +151,31 @@ function Board() {
   };
 
   const handleResize = () => {
-    const width = document.querySelector(".board-container").offsetWidth;
+    const width = document.querySelector('.board-container').offsetWidth;
     dispatch({
-      type: "setBoardSize",
+      type: 'setBoardSize',
       value: [width, width / (521 / 577)],
     });
     dispatch({
-      type: "setBoard",
+      type: 'setBoard',
       value: constructNewPiecesWidth(width / 9),
     });
   };
 
   useEffect(() => {
-    const width = document.querySelector(".board-container").offsetWidth;
-    dispatch({ type: "setBoardSize", value: [width, width / (521 / 577)] });
-    dispatch({ type: "setBoard", value: constructNewPiecesWidth(width / 9) });
+    const width = document.querySelector('.board-container').offsetWidth;
+    dispatch({ type: 'setBoardSize', value: [width, width / (521 / 577)] });
+    dispatch({ type: 'setBoard', value: constructNewPiecesWidth(width / 9) });
     window.ondragstart = () => false;
 
-    socket.on("setTimer", () => {
+    socket.on('setTimer', () => {
       const turnToMove = store.getState().boardState.turnToMove;
       const gameResult = store.getState().gameState.gameResult;
       if (gameResult == null) setMoveTimer(turnToMove, false, dispatch);
     });
 
     return () => {
-      socket.removeAllListeners("setTimer");
+      socket.removeAllListeners('setTimer');
     };
   }, []);
 
@@ -183,17 +183,16 @@ function Board() {
     window.onmousemove = handleMouseMove;
     window.onmouseup = handleMouseUp;
     window.onresize = handleResize;
-    socket.on("move", ([curRow, curCol], [newRow, newCol]) => {
+    socket.on('move', ([curRow, curCol], [newRow, newCol]) => {
       const gameResult = store.getState().gameState.gameResult;
-      if (gameResult === null)
-        handleOpponentMove([curRow, curCol], [newRow, newCol]);
+      if (gameResult === null) handleOpponentMove([curRow, curCol], [newRow, newCol]);
     });
 
     return () => {
       window.onmouseup = null;
       window.onmousemove = null;
       window.onresize = null;
-      socket.removeAllListeners("move");
+      socket.removeAllListeners('move');
     };
   });
 
@@ -202,22 +201,22 @@ function Board() {
       const lostReason = PieceClass.isLost(board, side[1]);
       if (lostReason) {
         let message = lostReason;
-        if (lang !== "English")
-          message = lostReason === "Checkmate" ? "Chiếu Bí" : "Hết Cờ";
-        dispatch({ type: "setGameResult", value: "Lose" });
+        if (lang !== 'English')
+          message = lostReason === 'Checkmate' ? 'Chiếu Bí' : 'Hết Cờ';
+        dispatch({ type: 'setGameResult', value: 'Lose' });
         dispatch({
-          type: "setMessage",
+          type: 'setMessage',
           value: {
-            type: "game result message",
+            type: 'game result message',
             winner: `${opponentInfo.playername} ${
-              lang === "English" ? "Won" : "Thắng"
+              lang === 'English' ? 'Won' : 'Thắng'
             } - `,
             reason: message,
-            className: "game-message",
+            className: 'game-message',
           },
         });
         setMoveTimer(null, true, dispatch);
-        socket.emit("gameFinish", ["Won", lostReason]);
+        socket.emit('gameFinish', ['Won', lostReason]);
         return;
       }
     }
@@ -234,7 +233,7 @@ function Board() {
       ref={svgRef}
     >
       <image
-        href="images/Target_Icon/target.gif"
+        href='images/Target_Icon/target.gif'
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
         style={{ display: targetDisplay }}
@@ -249,9 +248,9 @@ function Board() {
       />
 
       <image
-        href="images/Legal_Capture_Icon/legal_capture.png"
+        href='images/Legal_Capture_Icon/legal_capture.png'
         transform={warningTranslate}
-        style={{ display: warningDisplay, opacity: "0.6" }}
+        style={{ display: warningDisplay, opacity: '0.6' }}
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
       ></image>

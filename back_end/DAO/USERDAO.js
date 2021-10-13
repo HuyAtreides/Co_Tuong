@@ -1,12 +1,12 @@
-const bcrypt = require("bcrypt");
-const ObjectID = require("mongodb").ObjectID;
-const nonAccentVietnamese = require("./nonAccentVietnamese.js");
+const bcrypt = require('bcrypt');
+const ObjectID = require('mongodb').ObjectID;
+const nonAccentVietnamese = require('./nonAccentVietnamese.js');
 let users;
 
 class USERDAO {
   static async injectDB(connection) {
     try {
-      users = await connection.db().collection("users");
+      users = await connection.db().collection('users');
       await users.createIndex({ username: 1 });
     } catch (err) {
       console.log(err.toString());
@@ -24,7 +24,7 @@ class USERDAO {
   static async findUserByEmail(email) {
     try {
       const user = await users.findOne({
-        "email.value": email,
+        'email.value': email,
       });
       return user;
     } catch (err) {
@@ -45,7 +45,7 @@ class USERDAO {
 
   static async findPlayers(playername, exact) {
     try {
-      const regex = new RegExp(`${playername}`, "i");
+      const regex = new RegExp(`${playername}`, 'i');
       const result = await users.find({ username: exact ? playername : regex });
       const players = await result
         .project({
@@ -66,7 +66,7 @@ class USERDAO {
   static async setSocketID(username, id, set) {
     const result = await users.findOneAndUpdate(
       { username: username },
-      set ? { $set: { socketID: id } } : { $unset: { socketID: "" } }
+      set ? { $set: { socketID: id } } : { $unset: { socketID: '' } },
     );
     return result.value;
   }
@@ -75,10 +75,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { "email.value": username }],
+          $or: [{ username: username }, { 'email.value': username }],
         },
         { $set: { lastOnline: new Date() } },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
       return result.value;
     } catch (err) {
@@ -109,11 +109,11 @@ class USERDAO {
             },
           },
           $inc: {
-            "totalGames.won": result === "Won" ? 1 : 0,
-            "totalGames.lost": result === "Lost" ? 1 : 0,
-            "totalGames.draw": result === "Draw" ? 1 : 0,
+            'totalGames.won': result === 'Won' ? 1 : 0,
+            'totalGames.lost': result === 'Lost' ? 1 : 0,
+            'totalGames.draw': result === 'Draw' ? 1 : 0,
           },
-        }
+        },
       );
     } catch (err) {
       console.log(err.message);
@@ -131,10 +131,10 @@ class USERDAO {
   static async insertGuest() {
     try {
       const result = await users.insertOne({
-        username: "Guest" + Date.now(),
+        username: 'Guest' + Date.now(),
         name: { lastname: null, firstname: null },
         guest: true,
-        photo: "images/Pieces/general-black.png",
+        photo: 'images/Pieces/general-black.png',
       });
       return result.ops[0];
     } catch (err) {
@@ -151,7 +151,7 @@ class USERDAO {
             photo: `https://co-tuong-online.herokuapp.com/uploads/profile_pictures/${filename}`,
           },
         },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
 
       return result.value;
@@ -169,7 +169,7 @@ class USERDAO {
         {
           $set: { lastOnline: new Date() },
         },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
       if (result.value) {
         return result.value;
@@ -178,9 +178,7 @@ class USERDAO {
         const count = await users.countDocuments({
           username: regex,
         });
-        const username = count
-          ? profile.displayName + count
-          : profile.displayName;
+        const username = count ? profile.displayName + count : profile.displayName;
         const result = await users.insertOne({
           username: nonAccentVietnamese(username),
           provider: provider,
@@ -189,14 +187,12 @@ class USERDAO {
             value: email && email.value ? email.value : null,
             verified: true,
           },
-          photo: profile.photos
-            ? profile.photos[0].value
-            : "/images/default_avatar.png",
+          photo: profile.photos ? profile.photos[0].value : '/images/default_avatar.png',
           name: {
-            firstname: name && name.familyName ? name.familyName : "",
-            lastname: name && name.givenName ? name.givenName : "",
+            firstname: name && name.familyName ? name.familyName : '',
+            lastname: name && name.givenName ? name.givenName : '',
           },
-          lang: "English",
+          lang: 'English',
           totalGames: { lost: 0, won: 0, draw: 0 },
           lastOnline: new Date(),
           join: new Date(),
@@ -220,12 +216,12 @@ class USERDAO {
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
         email: { value: email, verified: false },
-        photo: "/images/default_avatar.png",
+        photo: 'images/default_avatar.png',
         totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],
         lastOnline: new Date(),
         join: new Date(),
-        lang: "English",
+        lang: 'English',
         failedLoginAttempt: 0,
         failedVerifyAttempt: 0,
       });
@@ -240,10 +236,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { "email.value": username }],
+          $or: [{ username: username }, { 'email.value': username }],
         },
         { $inc: { failedLoginAttempt: 1 } },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
       return result.value.failedLoginAttempt;
     } catch (err) {
@@ -257,8 +253,8 @@ class USERDAO {
         {
           username: username,
         },
-        { $set: { "email.verified": true } },
-        { returnOriginal: false }
+        { $set: { 'email.verified': true } },
+        { returnOriginal: false },
       );
       return result.value;
     } catch (err) {
@@ -268,14 +264,13 @@ class USERDAO {
 
   static async updateUserProfile(changes, username) {
     try {
-      if (changes.password)
-        changes.password = await bcrypt.hash(changes.password, 10);
+      if (changes.password) changes.password = await bcrypt.hash(changes.password, 10);
       const result = await users.findOneAndUpdate(
         { username: username },
         {
           $set: changes,
         },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
       return result.value;
     } catch (err) {
@@ -287,10 +282,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { "email.value": username }],
+          $or: [{ username: username }, { 'email.value': username }],
         },
         { $inc: { failedVerifyAttempt: 1 } },
-        { returnOriginal: false }
+        { returnOriginal: false },
       );
       return result.value.failedVerifyAttempt;
     } catch (err) {
@@ -302,9 +297,9 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { "email.value": username }],
+          $or: [{ username: username }, { 'email.value': username }],
         },
-        { $set: { failedVerifyAttempt: 0 } }
+        { $set: { failedVerifyAttempt: 0 } },
       );
     } catch (err) {
       throw new Error(err.toString());
@@ -315,9 +310,9 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { "email.value": username }],
+          $or: [{ username: username }, { 'email.value': username }],
         },
-        { $set: { failedLoginAttempt: 0 } }
+        { $set: { failedLoginAttempt: 0 } },
       );
     } catch (err) {
       throw new Error(err.toString());
