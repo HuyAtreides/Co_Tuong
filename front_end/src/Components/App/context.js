@@ -32,7 +32,7 @@ const authenticateUser = (dispatch, user, opponentID) => {
   socket.connect();
 };
 
-const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
+const setMoveTimer = (playerTurn, gameFinish, dispatch, resume) => {
   socket.removeAllListeners('oneSecondPass');
   if (gameFinish) {
     dispatch({ type: 'setPause', value: null });
@@ -41,8 +41,10 @@ const setMoveTimer = (playerTurn, gameFinish, dispatch) => {
     dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
     dispatch({ type: 'setTurnToMove', value: false });
   } else {
-    dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
-    dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+    if (!resume) {
+      dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
+      dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+    }
     socket.emit('startTimer', true);
     socket.on('oneSecondPass', () => {
       if (playerTurn) dispatch({ type: 'setPlayerTimeLeftToMove', value: null });

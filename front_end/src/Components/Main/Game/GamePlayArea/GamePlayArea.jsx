@@ -1,27 +1,24 @@
-import React from "react";
-import { Col, OverlayTrigger, Tooltip } from "react-bootstrap";
-import Timer from "../Timer/Timer.jsx";
-import Board from "../Board/Board";
-import "./GamePlayArea.scss";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import GameResult from "./GameResult/GameResult.jsx";
-import Pause from "./Pause/Pause.jsx";
-import Avatar from "react-avatar";
+import React from 'react';
+import { Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Timer from '../Timer/Timer.jsx';
+import Board from '../Board/Board';
+import './GamePlayArea.scss';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import GameResult from './GameResult/GameResult.jsx';
+import Pause from './Pause/Pause.jsx';
 
 const GamePlayArea = ({ lang }) => {
   const opponentTimeLeftToMove = useSelector(
-    (state) => state.gameState.opponentTimeLeftToMove
+    (state) => state.gameState.opponentTimeLeftToMove,
   );
   const playerTimeLeftToMove = useSelector(
-    (state) => state.gameState.playerTimeLeftToMove
+    (state) => state.gameState.playerTimeLeftToMove,
   );
   const turnToMove = useSelector((state) => state.boardState.turnToMove);
   const gameResult = useSelector((state) => state.gameState.gameResult);
   const foundMatch = useSelector((state) => state.gameState.foundMatch);
-  const capturedPieces = useSelector(
-    (state) => state.boardState.capturedPieces
-  );
+  const capturedPieces = useSelector((state) => state.boardState.capturedPieces);
   const playerInfo = useSelector((state) => state.appState.playerInfo);
   const opponentInfo = useSelector((state) => state.gameState.opponentInfo);
 
@@ -30,39 +27,39 @@ const GamePlayArea = ({ lang }) => {
       md={{ span: 4 }}
       sm={{ span: 11 }}
       xs={{ span: 11 }}
-      className="board-container pb-3"
+      className='board-container pb-3'
     >
-      <div className="player-area">
-        <div className="avatar-and-name">
-          <img src={opponentInfo.photo} alt="" />
+      <div className='player-area'>
+        <div className='avatar-and-name'>
+          <img src={opponentInfo.photo} alt='' />
           <OverlayTrigger
-            placement="bottom"
+            placement='bottom'
             overlay={(props) => (
-              <Tooltip id="name-tooltip" {...props}>
+              <Tooltip id='name-tooltip' {...props}>
                 {opponentInfo.playername}
               </Tooltip>
             )}
           >
-            <p className="user-name">
+            <p className='user-name'>
               {foundMatch ? (
-                <Link to={`/home/${opponentInfo.playername}`} target="_blank">
+                <Link to={`/home/${opponentInfo.playername}`} target='_blank'>
                   {opponentInfo.playername}
                 </Link>
-              ) : lang === "English" ? (
+              ) : lang === 'English' ? (
                 opponentInfo.playername
               ) : (
-                "Đối Thủ"
+                'Đối Thủ'
               )}
             </p>
           </OverlayTrigger>
         </div>
-        <div className="captured-pieces">
+        <div className='captured-pieces'>
           {capturedPieces.map((element, index) => {
             if (element.side === element.choosenSide[1])
               return (
                 <img
                   src={`images/Pieces/${element.name}.png`}
-                  style={{ width: "27px" }}
+                  style={{ width: '27px' }}
                   key={`c${index}`}
                 ></img>
               );
@@ -71,28 +68,26 @@ const GamePlayArea = ({ lang }) => {
         </div>
         <Timer
           timeLeftToMove={opponentTimeLeftToMove}
-          turnToMove={
-            foundMatch && gameResult === null ? !turnToMove : turnToMove
-          }
+          turnToMove={foundMatch && gameResult === null ? !turnToMove : turnToMove}
         />
       </div>
       <Board />
-      <div className="player-area">
-        <div className="avatar-and-name">
-          <div className="avatar-and-name">
-            <img src={playerInfo.photo} alt="" />
+      <div className='player-area'>
+        <div className='avatar-and-name'>
+          <div className='avatar-and-name'>
+            <img src={playerInfo.photo} alt='' />
 
             <OverlayTrigger
-              placement="top"
+              placement='top'
               overlay={(props) => (
-                <Tooltip id="name-tooltip" {...props}>
+                <Tooltip id='name-tooltip' {...props}>
                   {playerInfo.username}
                 </Tooltip>
               )}
             >
-              <p className="user-name">
+              <p className='user-name'>
                 {!playerInfo.guest ? (
-                  <Link to="/home" target="_blank">
+                  <Link to='/home' target='_blank'>
                     {playerInfo.username}
                   </Link>
                 ) : (
@@ -102,13 +97,13 @@ const GamePlayArea = ({ lang }) => {
             </OverlayTrigger>
           </div>
         </div>
-        <div className="captured-pieces">
+        <div className='captured-pieces'>
           {capturedPieces.map((element, index) => {
             if (element.side === element.choosenSide[0])
               return (
                 <img
                   src={`images/Pieces/${element.name}.png`}
-                  style={{ width: "27px" }}
+                  style={{ width: '27px' }}
                   key={`c${index}`}
                 ></img>
               );
