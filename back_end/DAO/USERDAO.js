@@ -174,9 +174,8 @@ class USERDAO {
       if (result.value) {
         return result.value;
       } else {
-        const regex = new RegExp(`^${profile.displayName}`);
         const count = await users.countDocuments({
-          username: regex,
+          username: { $regex: `^${profile.displayName}` },
         });
         const username = count ? profile.displayName + count : profile.displayName;
         const result = await users.insertOne({
