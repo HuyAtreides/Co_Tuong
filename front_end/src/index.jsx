@@ -20,5 +20,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
-
-export const baseURL = 'https://co-tuong-online.herokuapp.com';

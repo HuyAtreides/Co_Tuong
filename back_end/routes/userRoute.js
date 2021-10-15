@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const USERDAO = require("../DAO/USERDAO.js");
+const USERDAO = require('../DAO/USERDAO.js');
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const message = req.session.loginError;
     const opponentID = req.session.opponentID;
@@ -10,13 +10,16 @@ router.get("/", async (req, res) => {
       req.session.opponentID = undefined;
       return res.json({ user: req.user, opponentID: opponentID });
     }
-    return res.json({ user: null, message: message });
+    req.session.loginError = undefined;
+    req.session.save(() => {
+      return res.json({ user: null, message: message });
+    });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { username } = req.body;
     const user = await USERDAO.findUserByUsername(username);

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { AuthenticateUserContext } from '../App/context.js';
 import callAPI from '../App/callAPI.js';
-import { baseURL } from '../../index.jsx';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -211,13 +210,22 @@ const Signup = () => {
             <span></span>
           </p>
           <div className='social-login'>
-            <a className='google' href={`${baseURL}/api/auth/google`}>
+            <a
+              className='google'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/google`}
+            >
               <i className='fab fa-google'></i> Google
             </a>
-            <a className='facebook' href={`${baseURL}/api/auth/facebook`}>
+            <a
+              className='facebook'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/facebook`}
+            >
               <i className='fab fa-facebook '></i> Facebook
             </a>
-            <a className='github' href={`${baseURL}/api/auth/github`}>
+            <a
+              className='github'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/github`}
+            >
               <i className='fab fa-github '></i> Github
             </a>
           </div>

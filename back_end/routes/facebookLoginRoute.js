@@ -31,11 +31,11 @@ router.get('/', checkingSession, passport.authenticate('facebook', { scope: ['em
 router.get('/callback', checkingSession, (req, res, next) => {
   passport.authenticate('facebook', (err, user, _) => {
     if (err) next(err);
-    if (!user) return res.redirect('https://huyatreides.github.io/cotuong');
+    if (!user) return res.redirect(process.env.REDIRECT_URL);
     req.login(user, (err) => {
       if (err) req.session.loginError = err.message;
       req.session.save((err) => {
-        return res.redirect('https://huyatreides.github.io/cotuong');
+        return res.redirect(process.env.REDIRECT_URL);
       });
     });
   })(req, res, next);
@@ -44,7 +44,7 @@ router.get('/callback', checkingSession, (req, res, next) => {
 router.use((err, req, res, next) => {
   req.session.loginError = 'Something Wrong Happend. Please Try Again';
   req.session.save((err) => {
-    return res.redirect('https://huyatreides.github.io/cotuong');
+    return res.redirect(process.env.REDIRECT_URL);
   });
 });
 

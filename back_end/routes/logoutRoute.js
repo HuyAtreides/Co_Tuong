@@ -1,9 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   req.logout();
-  res.json({ message: "sucessfully logout" });
+  res.json({ message: 'sucessfully logout' });
 });
 
 module.exports = router;

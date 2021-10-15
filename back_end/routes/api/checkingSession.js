@@ -1,6 +1,5 @@
 const checkingSession = (req, res, next) => {
-  if (req.isAuthenticated())
-    return res.redirect("https://co-tuong.netlify.app/");
+  if (req.isAuthenticated()) return res.redirect(process.env.REDIRECT_URL);
   next();
 };
 

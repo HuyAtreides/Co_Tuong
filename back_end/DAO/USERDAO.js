@@ -175,9 +175,13 @@ class USERDAO {
         return result.value;
       } else {
         const count = await users.countDocuments({
-          username: { $regex: `^${profile.displayName}` },
+          username: profile.displayName,
         });
-        const username = count ? profile.displayName + count : profile.displayName;
+        console.log(profile.displayName);
+
+        const username = count
+          ? profile.displayName + '-' + id + '-' + provider
+          : profile.displayName;
         const result = await users.insertOne({
           username: nonAccentVietnamese(username),
           provider: provider,

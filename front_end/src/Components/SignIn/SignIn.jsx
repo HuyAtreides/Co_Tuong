@@ -6,7 +6,6 @@ import { Container, Form, InputGroup, Button, Spinner, Row, Col } from 'react-bo
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import './SignIn.scss';
-import { baseURL } from '../../index.jsx';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -73,8 +72,10 @@ const Login = () => {
     }
   };
 
-  if (loginError) handleError(false, loginError);
-  else if (isAuthenticated) {
+  if (loginError) {
+    setError(loginError);
+    dispatch({ type: 'setLoginError', value: null });
+  } else if (isAuthenticated) {
     if (isAuthenticated !== 'guest') {
       return <Redirect to='/' />;
     } else if (successfullyLogin) return <Redirect to='/' />;
@@ -152,13 +153,22 @@ const Login = () => {
             <span></span>
           </p>
           <div className='social-login'>
-            <a className='google' href={`${baseURL}/api/auth/google`}>
+            <a
+              className='google'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/google`}
+            >
               <i className='fab fa-google'></i> Google
             </a>
-            <a className='facebook' href={`${baseURL}/api/auth/facebook`}>
+            <a
+              className='facebook'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/facebook`}
+            >
               <i className='fab fa-facebook '></i> Facebook
             </a>
-            <a className='github' href={`${baseURL}/api/auth/github`}>
+            <a
+              className='github'
+              href={`${process.env.REACT_APP_BASE_URL}/api/auth/github`}
+            >
               <i className='fab fa-github '></i> Github
             </a>
           </div>

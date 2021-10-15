@@ -1,5 +1,3 @@
-import { baseURL } from '../..';
-
 const callAPI = async (method, endPoint, data, isFile) => {
   try {
     let response;
@@ -14,9 +12,9 @@ const callAPI = async (method, endPoint, data, isFile) => {
             },
         body: isFile ? data : JSON.stringify(data),
       };
-      response = await fetch(`${baseURL}/${endPoint}`, init);
+      response = await fetch(`${process.env.REACT_APP_BASE_URL}/${endPoint}`, init);
     } else
-      response = await fetch(`${baseURL}/${endPoint}`, {
+      response = await fetch(`${process.env.REACT_APP_BASE_URL}/${endPoint}`, {
         credentials: 'include',
       });
     const responseData = await response.json();
