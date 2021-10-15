@@ -1,4 +1,7 @@
 ./back_end/.env
 ./back_end/node_modules
 ./front_end/node_modules
-build
+./front_end/build
+
+
+
