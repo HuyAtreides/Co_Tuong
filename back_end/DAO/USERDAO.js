@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const ObjectID = require('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectId;
 const nonAccentVietnamese = require('./nonAccentVietnamese.js');
 let users;
 
@@ -131,7 +131,7 @@ class USERDAO {
   static async insertGuest() {
     try {
       const result = await users.insertOne({
-        username: 'Guest' + Date.now(),
+        username: 'guest' + Date.now(),
         name: { lastname: null, firstname: null },
         guest: true,
         photo: 'images/Pieces/general-black.png',
@@ -145,7 +145,7 @@ class USERDAO {
   static async updateUserProfilePic(id, filename) {
     try {
       const result = await users.findOneAndUpdate(
-        { _id: ObjectID(id) },
+        { _id: ObjectId(id) },
         {
           $set: {
             photo: `https://co-tuong-online.herokuapp.com/uploads/profile_pictures/${filename}`,
@@ -175,11 +175,11 @@ class USERDAO {
         return result.value;
       } else {
         const sanitizedName = nonAccentVietnamese(profile.displayName);
-        const count = await users.countDocuments({
-          username: new RegExp(`^${sanitizedName}`),
+        const user = await users.findOne({
+          username: sanitizedName,
         });
 
-        const username = count ? sanitizedName + count : sanitizedName;
+        const username = user ? `${sanitizedName}-${provider}-${id}` : sanitizedName;
         const result = await users.insertOne({
           username: username,
           provider: provider,
