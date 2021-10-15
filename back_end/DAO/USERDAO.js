@@ -179,7 +179,7 @@ class USERDAO {
           username: new RegExp(`^${sanitizedName}`),
         });
 
-        const username = count ? profile.displayName + count : profile.displayName;
+        const username = count ? sanitizedName + count : sanitizedName;
         const result = await users.insertOne({
           username: username,
           provider: provider,
