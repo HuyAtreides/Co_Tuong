@@ -174,16 +174,14 @@ class USERDAO {
       if (result.value) {
         return result.value;
       } else {
+        const sanitizedName = nonAccentVietnamese(profile.displayName);
         const count = await users.countDocuments({
-          username: profile.displayName,
+          username: new RegExp(`^${sanitizedName}`),
         });
-        console.log(profile.displayName);
 
-        const username = count
-          ? profile.displayName + '-' + id + '-' + provider
-          : profile.displayName;
+        const username = count ? profile.displayName + count : profile.displayName;
         const result = await users.insertOne({
-          username: nonAccentVietnamese(username),
+          username: username,
           provider: provider,
           userID: id,
           email: {
