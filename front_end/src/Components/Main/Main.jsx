@@ -9,7 +9,6 @@ import Game from './Game/Game.jsx';
 import { SocketContext } from '../App/context';
 import { Redirect } from 'react-router-dom';
 import Warning from './Warning/Warning.jsx';
-import VerifyEmailNote from './VerifyEmailNote/VerifyEmailNote.jsx';
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -17,7 +16,6 @@ const Main = () => {
   const socket = useContext(SocketContext);
   const store = useStore();
   const lang = useSelector((state) => state.appState.lang);
-  const playerInfo = useSelector((state) => state.appState.playerInfo);
   const loginError = useSelector((state) => state.appState.loginError);
   const isAuthenticated = useSelector((state) => state.appState.isAuthenticated);
   const [waitForResponse, setWaitForResponse] = useFetchData();
@@ -112,9 +110,6 @@ const Main = () => {
         {isAuthenticated ? <Game /> : <EntryComponent />}
       </div>
 
-      {playerInfo && !playerInfo.guest && !playerInfo.email.verified ? (
-        <VerifyEmailNote lang={lang} />
-      ) : null}
       {connectionError ? <Warning connectionError={connectionError} /> : null}
     </Container>
   );

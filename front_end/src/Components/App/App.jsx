@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 import SignIn from '../SignIn/SignIn.jsx';
 import Main from '../Main/Main.jsx';
 import Signup from '../Signup/Signup.jsx';
-import VerifyEmail from '../VerifyEmail/VerifyEmail.jsx';
 import Home from '../Home/Home.jsx';
 import Settings from '../Settings/Settings.jsx';
 
@@ -31,9 +30,7 @@ function App() {
             <Route path='/signup'>
               <Signup />
             </Route>
-            <Route path='/verify-email'>
-              <VerifyEmail />
-            </Route>
+
             <Route path='/home/:name'>
               <Home />
             </Route>

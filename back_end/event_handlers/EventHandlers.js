@@ -278,8 +278,8 @@ class EventHandlers {
       }
     };
 
-    socket.on('disconnect', async (reason) => {
-      if (socket.player.guest) await USERDAO.removeGuest(socket.player.playername);
+    socket.on('disconnect', (reason) => {
+      if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
       else {
         USERDAO.setSocketID(socket.player.playername, null, false);
       }

@@ -216,7 +216,7 @@ class USERDAO {
         userID: null,
         password: hashedPassword,
         name: { firstname: firstname, lastname: lastname },
-        email: { value: email, verified: false },
+        email: { value: email, verified: true },
         photo: 'images/default_avatar.png',
         totalGames: { lost: 0, won: 0, draw: 0 },
         matches: [],

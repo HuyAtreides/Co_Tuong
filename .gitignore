@@ -2,6 +2,7 @@
 ./back_end/node_modules
 ./front_end/node_modules
 ./front_end/build
-
+./front_end/.git
+./back_end/.git
 
 

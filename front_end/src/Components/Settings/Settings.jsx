@@ -22,8 +22,8 @@ const Settings = () => {
     const changes = {};
     const { username, email, lastname, firstname } = validateInput;
     if (playerInfo.username !== username) changes['username'] = username;
-    if (playerInfo.email.value !== '' && playerInfo.email.value !== email) {
-      changes['email'] = { value: email, verified: false };
+    if (!playerInfo.provider && playerInfo.email.value !== email) {
+      changes['email'] = { value: email, verified: true };
     }
     changes['name.lastname'] = lastname;
     changes['name.firstname'] = firstname;
