@@ -7,7 +7,7 @@ class USERDAO {
   static async injectDB(connection) {
     try {
       users = await connection.db().collection('users');
-      await users.createIndex({ username: 1 });
+      await users.createIndex({username: 1});
     } catch (err) {
       console.log(err.toString());
     }
@@ -15,7 +15,7 @@ class USERDAO {
 
   static async updateUserLang(username, lang) {
     try {
-      await users.updateOne({ username: username }, { $set: { lang: lang } });
+      await users.updateOne({username: username}, {$set: {lang: lang}});
     } catch (err) {
       console.log(err.message);
     }
@@ -46,7 +46,7 @@ class USERDAO {
   static async findPlayers(playername, exact) {
     try {
       const regex = new RegExp(`${playername}`, 'i');
-      const result = await users.find({ username: exact ? playername : regex });
+      const result = await users.find({username: exact ? playername : regex});
       const players = await result
         .project({
           username: 1,
@@ -65,8 +65,8 @@ class USERDAO {
 
   static async setSocketID(username, id, set) {
     const result = await users.findOneAndUpdate(
-      { username: username },
-      set ? { $set: { socketID: id } } : { $unset: { socketID: '' } },
+      {username: username},
+      set ? {$set: {socketID: id}} : {$unset: {socketID: ''}},
     );
     return result.value;
   }
@@ -75,10 +75,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { 'email.value': username }],
+          $or: [{username: username}, {'email.value': username}],
         },
-        { $set: { lastOnline: new Date() } },
-        { returnOriginal: false },
+        {$set: {lastOnline: new Date()}},
+        {returnOriginal: false},
       );
       return result.value;
     } catch (err) {
@@ -99,13 +99,13 @@ class USERDAO {
     };
     try {
       await users.updateOne(
-        { username: player.playername },
+        {username: player.playername},
         {
           $push: {
             matches: {
               $each: [match],
               $slice: 20,
-              $sort: { date: -1 },
+              $sort: {date: -1},
             },
           },
           $inc: {
@@ -122,7 +122,7 @@ class USERDAO {
 
   static async removeGuest(guestName) {
     try {
-      await users.deleteOne({ username: guestName });
+      await users.deleteOne({username: guestName});
     } catch (err) {
       console.log(err.message);
     }
@@ -132,7 +132,7 @@ class USERDAO {
     try {
       const result = await users.insertOne({
         username: 'guest' + Date.now(),
-        name: { lastname: null, firstname: null },
+        name: {lastname: null, firstname: null},
         guest: true,
         photo: 'images/Pieces/general-black.png',
       });
@@ -145,13 +145,13 @@ class USERDAO {
   static async updateUserProfilePic(id, filename) {
     try {
       const result = await users.findOneAndUpdate(
-        { _id: ObjectId(id) },
+        {_id: ObjectId(id)},
         {
           $set: {
-            photo: `https://co-tuong-online.herokuapp.com/uploads/profile_pictures/${filename}`,
+            photo: `${process.env.BASE_URL}/uploads/profile_pictures/${filename}`,
           },
         },
-        { returnOriginal: false },
+        {returnOriginal: false},
       );
 
       return result.value;
@@ -162,14 +162,14 @@ class USERDAO {
 
   static async createNewUser(profile) {
     try {
-      const { id, provider, emails, name } = profile;
+      const {id, provider, emails, name} = profile;
       const email = emails ? emails[0] : null;
       const result = await users.findOneAndUpdate(
-        { userID: id, provider: provider },
+        {userID: id, provider: provider},
         {
-          $set: { lastOnline: new Date() },
+          $set: {lastOnline: new Date()},
         },
-        { returnOriginal: false },
+        {returnOriginal: false},
       );
       if (result.value) {
         return result.value;
@@ -194,7 +194,7 @@ class USERDAO {
             lastname: name && name.givenName ? name.givenName : '',
           },
           lang: 'English',
-          totalGames: { lost: 0, won: 0, draw: 0 },
+          totalGames: {lost: 0, won: 0, draw: 0},
           lastOnline: new Date(),
           join: new Date(),
           matches: [],
@@ -208,17 +208,17 @@ class USERDAO {
 
   static async insertUser(formData) {
     try {
-      const { username, password, email, firstname, lastname } = formData;
+      const {username, password, email, firstname, lastname} = formData;
       const hashedPassword = await bcrypt.hash(password, 10);
       const result = await users.insertOne({
         username: username,
         provider: null,
         userID: null,
         password: hashedPassword,
-        name: { firstname: firstname, lastname: lastname },
-        email: { value: email, verified: true },
+        name: {firstname: firstname, lastname: lastname},
+        email: {value: email, verified: true},
         photo: 'images/default_avatar.png',
-        totalGames: { lost: 0, won: 0, draw: 0 },
+        totalGames: {lost: 0, won: 0, draw: 0},
         matches: [],
         lastOnline: new Date(),
         join: new Date(),
@@ -237,10 +237,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { 'email.value': username }],
+          $or: [{username: username}, {'email.value': username}],
         },
-        { $inc: { failedLoginAttempt: 1 } },
-        { returnOriginal: false },
+        {$inc: {failedLoginAttempt: 1}},
+        {returnOriginal: false},
       );
       return result.value.failedLoginAttempt;
     } catch (err) {
@@ -254,8 +254,8 @@ class USERDAO {
         {
           username: username,
         },
-        { $set: { 'email.verified': true } },
-        { returnOriginal: false },
+        {$set: {'email.verified': true}},
+        {returnOriginal: false},
       );
       return result.value;
     } catch (err) {
@@ -267,11 +267,11 @@ class USERDAO {
     try {
       if (changes.password) changes.password = await bcrypt.hash(changes.password, 10);
       const result = await users.findOneAndUpdate(
-        { username: username },
+        {username: username},
         {
           $set: changes,
         },
-        { returnOriginal: false },
+        {returnOriginal: false},
       );
       return result.value;
     } catch (err) {
@@ -283,10 +283,10 @@ class USERDAO {
     try {
       const result = await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { 'email.value': username }],
+          $or: [{username: username}, {'email.value': username}],
         },
-        { $inc: { failedVerifyAttempt: 1 } },
-        { returnOriginal: false },
+        {$inc: {failedVerifyAttempt: 1}},
+        {returnOriginal: false},
       );
       return result.value.failedVerifyAttempt;
     } catch (err) {
@@ -298,9 +298,9 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { 'email.value': username }],
+          $or: [{username: username}, {'email.value': username}],
         },
-        { $set: { failedVerifyAttempt: 0 } },
+        {$set: {failedVerifyAttempt: 0}},
       );
     } catch (err) {
       throw new Error(err.toString());
@@ -311,9 +311,9 @@ class USERDAO {
     try {
       await users.findOneAndUpdate(
         {
-          $or: [{ username: username }, { 'email.value': username }],
+          $or: [{username: username}, {'email.value': username}],
         },
-        { $set: { failedLoginAttempt: 0 } },
+        {$set: {failedLoginAttempt: 0}},
       );
     } catch (err) {
       throw new Error(err.toString());
