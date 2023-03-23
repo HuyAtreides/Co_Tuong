@@ -28,6 +28,7 @@ app.use(cors({origin: process.env.BASE, credentials: true}));
 const io = require('socket.io')(httpServer, {
   cors: {
     origin: process.env.BASE,
+    credentials: true,
   },
   transports: ['polling'],
   pingInterval: 200, // Send a ping message to the client every 30 seconds
