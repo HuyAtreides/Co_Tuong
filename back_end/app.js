@@ -21,18 +21,19 @@ const sessionMiddleware = session({
   proxy: true,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  store: MongoStore.create({mongoUrl: process.env.MONGO_URI}),
 });
 const io = require('socket.io')(httpServer, {
   cors: {
     origin: process.env.BASE,
   },
   transports: ['websocket', 'polling'],
-  pingTimeout: 17000,
+  pingInterval: 5000,
+  pingTimeout: 20000,
 });
 
-app.use(cors({ origin: process.env.BASE, credentials: true }));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({origin: process.env.BASE, credentials: true}));
+app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
