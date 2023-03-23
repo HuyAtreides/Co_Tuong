@@ -279,14 +279,11 @@ class EventHandlers {
     };
 
     socket.on('disconnect', (reason) => {
-      if (reason !== 'ping timeout') return;
-
-      if (reason === 'server namespace disconnect') return;
       if (socket.player.guest) USERDAO.removeGuest(socket.player.playername);
       else {
         USERDAO.setSocketID(socket.player.playername, null, false);
       }
-
+      if (reason === 'server namespace disconnect') return;
       handleGameFinish();
       EventHandlers.declineAllInvites(io, socket, null);
       EventHandlers.cancelAllInvites(io, socket, null);

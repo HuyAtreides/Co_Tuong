@@ -61,7 +61,6 @@ const Main = () => {
 
   useEffect(() => {
     socket.on('disconnect', (reason) => {
-      socket.connect();
       const foundMatch = store.getState().gameState.foundMatch;
       if (!foundMatch) {
         dispatch({
@@ -76,21 +75,21 @@ const Main = () => {
         }, 700);
       }
       if (reason !== 'io client disconnect') {
-        // socket.removeAllListeners('oneSecondPass');
-        // setConnectionError(
-        //   lang === 'English' ? 'Connection Was Closed' : 'Kết nối đã đóng',
-        // );
-        // if (foundMatch) {
-        //   dispatch({type: 'setGameResult', value: undefined});
-        //   dispatch({
-        //     type: 'setMessage',
-        //     value: {
-        //       from: '',
-        //       className: 'game-message',
-        //       message: lang === 'English' ? 'Connection Was Closed' : 'Kết nối đã đóng',
-        //     },
-        //   });
-        // }
+        socket.removeAllListeners('oneSecondPass');
+        setConnectionError(
+          lang === 'English' ? 'Connection Was Closed' : 'Kết nối đã đóng',
+        );
+        if (foundMatch) {
+          dispatch({type: 'setGameResult', value: undefined});
+          dispatch({
+            type: 'setMessage',
+            value: {
+              from: '',
+              className: 'game-message',
+              message: lang === 'English' ? 'Connection Was Closed' : 'Kết nối đã đóng',
+            },
+          });
+        }
       }
     });
 
