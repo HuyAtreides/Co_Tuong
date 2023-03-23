@@ -23,6 +23,8 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   store: MongoStore.create({mongoUrl: process.env.MONGO_URI}),
 });
+
+app.use(cors({origin: process.env.BASE, credentials: true}));
 const io = require('socket.io')(httpServer, {
   cors: {
     origin: process.env.BASE,
@@ -31,8 +33,6 @@ const io = require('socket.io')(httpServer, {
   pingInterval: 200, // Send a ping message to the client every 30 seconds
   pingTimeout: 120000,
 });
-
-app.use(cors({origin: process.env.BASE, credentials: true}));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(sessionMiddleware);
