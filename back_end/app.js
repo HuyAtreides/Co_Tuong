@@ -28,6 +28,8 @@ const io = require('socket.io')(httpServer, {
     origin: process.env.BASE,
   },
   transports: ['websocket', 'polling'],
+  pingInterval: 200, // Send a ping message to the client every 30 seconds
+  pingTimeout: 3000,
 });
 
 app.use(cors({origin: process.env.BASE, credentials: true}));
