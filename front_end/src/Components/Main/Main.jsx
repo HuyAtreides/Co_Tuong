@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import EntryComponent from './EntryComponent/EntryComponent.jsx';
 import NavBar from './NavBar/NavBar.jsx';
-import { Container, Spinner } from 'react-bootstrap';
+import {Container, Spinner} from 'react-bootstrap';
 import useFetchData from '../App/useFetchData.js';
 import './Main.scss';
-import { useSelector, useDispatch, useStore } from 'react-redux';
+import {useSelector, useDispatch, useStore} from 'react-redux';
 import Game from './Game/Game.jsx';
-import { SocketContext } from '../App/context';
-import { Redirect } from 'react-router-dom';
+import {SocketContext} from '../App/context';
+import {Redirect} from 'react-router-dom';
 import Warning from './Warning/Warning.jsx';
 
 const Main = () => {
@@ -61,6 +61,7 @@ const Main = () => {
 
   useEffect(() => {
     socket.on('disconnect', (reason) => {
+      if (reason !== 'ping timeout') return;
       const foundMatch = store.getState().gameState.foundMatch;
       if (!foundMatch) {
         dispatch({
@@ -80,7 +81,7 @@ const Main = () => {
           lang === 'English' ? 'Connection Was Closed' : 'Kết nối đã đóng',
         );
         if (foundMatch) {
-          dispatch({ type: 'setGameResult', value: undefined });
+          dispatch({type: 'setGameResult', value: undefined});
           dispatch({
             type: 'setMessage',
             value: {
