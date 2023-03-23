@@ -4,7 +4,7 @@ import {io} from 'socket.io-client';
 const socket = io(`${process.env.REACT_APP_BASE_URL}/play`, {
   autoConnect: false,
   withCredentials: true,
-  transports: ['polling'],
+  transports: ['websocket', 'polling'],
   rememberUpgrade: true,
   timeout: 120000,
   heartbeatInterval: 200,
