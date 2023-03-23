@@ -61,6 +61,7 @@ const Main = () => {
 
   useEffect(() => {
     socket.on('disconnect', (reason) => {
+      socket.connect();
       const foundMatch = store.getState().gameState.foundMatch;
       if (!foundMatch) {
         dispatch({
