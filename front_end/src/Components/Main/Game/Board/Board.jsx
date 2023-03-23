@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useContext, useState} from 'react';
+import React, { useEffect, useRef, useContext, useState } from 'react';
 import Piece from './Piece/Piece.jsx';
 import './Board.scss';
-import {useSelector, useDispatch, useStore} from 'react-redux';
+import { useSelector, useDispatch, useStore } from 'react-redux';
 import getSVGLocation from './getSVGLocation.js';
-import {SocketContext, SetMoveTimerContext} from '../../../App/context.js';
+import { SocketContext, SetMoveTimerContext } from '../../../App/context.js';
 import PieceClass from '../../../../pieces/piece.js';
 import MoveHint from './MoveHint/MoveHint.jsx';
 
@@ -39,15 +39,15 @@ function Board() {
         const [curRow, curCol] = currentPiece.position;
         if (row !== curRow || curCol !== col) {
           currentPiece.showMoveHints('off', board);
-          dispatch({type: 'setGetClicked', value: false});
+          dispatch({ type: 'setGetClicked', value: false });
         }
       }
       board[row][col].showMoveHints('on', board);
-      dispatch({type: 'setBoard', value: [...board]});
-      dispatch({type: 'setTargetDisplay', value: 'inline'});
-      dispatch({type: 'setDraggable', value: true});
-      dispatch({type: 'setTargetTranslate', value: translate});
-      dispatch({type: 'setCurrentPiece', value: board[row][col]});
+      dispatch({ type: 'setBoard', value: [...board] });
+      dispatch({ type: 'setTargetDisplay', value: 'inline' });
+      dispatch({ type: 'setDraggable', value: true });
+      dispatch({ type: 'setTargetTranslate', value: translate });
+      dispatch({ type: 'setCurrentPiece', value: board[row][col] });
     }
   };
 
@@ -55,7 +55,7 @@ function Board() {
     if (moveResult && !/translate/.test(moveResult)) {
       const [capture, newRow, newCol] = moveResult;
       if (capture) {
-        dispatch({type: 'setCapturedPieces', value: board[newRow][newCol]});
+        dispatch({ type: 'setCapturedPieces', value: board[newRow][newCol] });
       }
       board[curRow][curCol] = 0;
       board[newRow][newCol] = currentPiece;
@@ -70,21 +70,21 @@ function Board() {
 
   const handleOpponentMove = ([curRow, curCol], [newRow, newCol]) => {
     if (board[curRow][curCol] && board[curRow][curCol].side === side[0]) {
-      dispatch({type: 'setOpponentTimeLeftToMove', value: 'restart'});
+      dispatch({ type: 'setOpponentTimeLeftToMove', value: 'restart' });
       board[curRow][curCol].animateMove([newRow, newCol], board, dispatch);
       socket.emit('finishMove');
-      dispatch({type: 'setTurnToMove', value: true});
+      dispatch({ type: 'setTurnToMove', value: true });
     }
   };
 
   const updateCurrentPiece = (moveResult) => {
     if ((moveResult && !/translate/.test(moveResult)) || getClicked) {
       currentPiece.showMoveHints('off', board);
-      dispatch({type: 'setTargetDisplay', value: 'none'});
-      dispatch({type: 'setCurrentPiece', value: null});
-      dispatch({type: 'setGetClicked', value: false});
+      dispatch({ type: 'setTargetDisplay', value: 'none' });
+      dispatch({ type: 'setCurrentPiece', value: null });
+      dispatch({ type: 'setGetClicked', value: false });
     } else {
-      dispatch({type: 'setGetClicked', value: true});
+      dispatch({ type: 'setGetClicked', value: true });
     }
   };
 
@@ -102,12 +102,12 @@ function Board() {
       moveResult = currentPiece.setPosition(canMove, newRow, newCol);
     else if (/translate/.test(canMove)) moveResult = canMove;
     updateBoard(moveResult, [curRow, curCol]);
-    dispatch({type: 'setDraggable', value: false});
+    dispatch({ type: 'setDraggable', value: false });
     updateCurrentPiece(moveResult);
-    dispatch({type: 'setBoard', value: [...board]});
+    dispatch({ type: 'setBoard', value: [...board] });
     if (moveResult && !/translate/.test(moveResult)) {
-      dispatch({type: 'setPlayerTimeLeftToMove', value: 'restart'});
-      dispatch({type: 'setTurnToMove', value: !turnToMove});
+      dispatch({ type: 'setPlayerTimeLeftToMove', value: 'restart' });
+      dispatch({ type: 'setTurnToMove', value: !turnToMove });
       socket.emit('opponentMove', moveResult, [curRow, curCol]);
     }
   };
@@ -125,7 +125,7 @@ function Board() {
     const [x, y] = getSVGLocation(+event.clientX, +event.clientY, svg);
     if (x >= 0 && x < boardSize[0] && y >= 0 && y < boardSize[1] && draggable) {
       currentPiece.move(x, y);
-      dispatch({type: 'setBoard', value: [...board]});
+      dispatch({ type: 'setBoard', value: [...board] });
     }
   };
 
@@ -166,8 +166,8 @@ function Board() {
 
   useEffect(() => {
     const width = document.querySelector('.board-container').offsetWidth;
-    dispatch({type: 'setBoardSize', value: [width, width / (521 / 577)]});
-    dispatch({type: 'setBoard', value: constructNewPiecesWidth(width / 9)});
+    dispatch({ type: 'setBoardSize', value: [width, width / (521 / 577)] });
+    dispatch({ type: 'setBoard', value: constructNewPiecesWidth(width / 9) });
     window.ondragstart = () => false;
 
     socket.on('setTimer', () => {
@@ -205,7 +205,7 @@ function Board() {
         let message = lostReason;
         if (lang !== 'English')
           message = lostReason === 'Checkmate' ? 'Chiếu Bí' : 'Hết Cờ';
-        dispatch({type: 'setGameResult', value: 'Lose'});
+        dispatch({ type: 'setGameResult', value: 'Lose' });
         dispatch({
           type: 'setMessage',
           value: {
@@ -238,7 +238,7 @@ function Board() {
         href='images/Target_Icon/target.gif'
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
-        style={{display: targetDisplay}}
+        style={{ display: targetDisplay }}
         transform={targetTranslate}
       ></image>
       <MoveHint board={board} boardWidth={boardSize[0]} />
@@ -252,7 +252,7 @@ function Board() {
       <image
         href='images/Legal_Capture_Icon/legal_capture.png'
         transform={warningTranslate}
-        style={{display: warningDisplay, opacity: '0.6'}}
+        style={{ display: warningDisplay, opacity: '0.6' }}
         width={boardSize[0] / 9 - 3}
         height={boardSize[0] / 9 - 3}
       ></image>
